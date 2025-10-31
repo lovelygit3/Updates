@@ -784,10 +784,9 @@ function init(){
     el.addEventListener('mouseenter', ()=> el.querySelector('.task-label').style.display='block');
     el.addEventListener('mouseleave', ()=> el.querySelector('.task-label').style.display='none');
   });
-const UPDATE_SOURCE =
-"https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"; // direct
+const UPDATE_SOURCE =https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/main.html"; // direct
 link
-const CURRENT_VERSION = "1.0.0";
+const CURRENT_VERSION = "1.0.2";
 // Loads stored HTML version from localStorage (if available)
 function loadStoredApp() {
 const saved = localStorage.getItem(STORAGE_KEY);
@@ -801,18 +800,19 @@ fetchAndStoreApp();
 }
 // Fetch latest HTML from Drive and save it
 async function fetchAndStoreApp() {
-try {
-const res = await fetch(UPDATE_SOURCE);
-if (!res.ok) throw new Error("Drive fetch failed");
-const newHTML = await res.text();
-localStorage.setItem(STORAGE_KEY, newHTML);
-alert("App updated to the latest version. Reloading...");
-location.reload();
-} catch (err) {
-console.error("Update failed:", err);
-alert("Could not update from Drive — using built-in version.");
+    try {
+        const res = await fetch(UPDATE_SOURCE);
+        if (!res.ok) throw new Error("Drive fetch failed");
+        const newHTML = await res.text();
+        localStorage.setItem(STORAGE_KEY, newHTML);
+        alert("App updated to the latest version. Reloading...");
+        location.reload(); // reload page so JS executes properly
+    } catch (err) {
+        console.error("Update failed:", err);
+        alert("Could not update from Drive — using built-in version.");
+    }
 }
-}
+
 async function updateData(manual = false) {
   const updateURL = "https://example.com/update.json"; // your actual update URL
   const STORAGE_KEY = "hallows-eve:v2";
