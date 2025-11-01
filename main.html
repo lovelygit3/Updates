@@ -189,24 +189,16 @@
       <input id="bgUrl" type="url" placeholder="Image or GIF URL (or leave blank)">
     </div>
     <div class="settings-row">
-      <label class="muted">Upload Background File (image / gif / mp4)</label>
-      <input id="bgFile" type="file" accept="image/*,video/*" />
-      <div style="display:flex; gap:6px; margin-top:8px;">
-        <button class="btn" id="removeBgFile">Remove uploaded background</button>
+ <button class="btn" id="removeBgFile">Remove uploaded background</button>
       </div>
-    </div>
     <div class="settings-row">
       <label class="muted">Text color (updates buttons & labels)</label>
       <input id="textColor" type="color" value="#ffffff" />
     </div>
     <div class="settings-row">
-      <label class="muted">Auto-update from Drive (simulated)</label>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <input id="autoUpdate" type="checkbox" />
-        <button class="btn" id="checkUpdate">Check for update</button>
       </div>
     </div>
-  </div>
+  
 
   <div id="itemEditor" class="editor" aria-hidden="true">
     <h4 id="editorTitle">Edit item</h4>
@@ -238,15 +230,62 @@
   </div>
 
   <div id="overlay" aria-hidden="true">
-    <div id="playerCard">
-      <div class="playerTop">
-        <button class="closeOverlayBtn" id="overlayOpenInTab">↗</button>
-        <button class="closeOverlayBtn" id="overlayFullscreen">⛶</button>
-        <button class="closeOverlayBtn" id="overlayClose">✕</button>
-      </div>
-      <iframe id="playerFrame" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+  <div id="playerCard">
+    <div class="playerTop">
+      <button class="closeOverlayBtn" id="overlayOpenInTab">↗</button>
+      <button class="closeOverlayBtn" id="overlayFullscreen">⛶</button>
+      <button class="closeOverlayBtn" id="overlayClose">✕</button>
+    </div>
+
+    <!-- Loader animation -->
+    <div id="video-loading" class="video-loader">
+      <div class="spinner"></div>
+      <div style="margin-top:12px;">Loading...</div>
+    </div>
+
+    <!-- Video player -->
+    <video id="custom-video" controls style="width:100%;height:100%;display:none;background:#000;"></video>
+
+    <!-- Error with retry -->
+    <div id="video-error" style="display:none;color:white;text-align:center;font-size:18px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div>Movie has reached maximum viewers at this time, please try again later.</div>
+      <button id="videoRetry" class="btn" style="margin-top:10px;">Retry</button>
     </div>
   </div>
+</div>
+
+<style>
+/* Spinning loader */
+.video-loader {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:white;
+  font-size:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.video-loader .spinner {
+  width:48px;
+  height:48px;
+  border:5px solid rgba(255,255,255,0.2);
+  border-top:5px solid #7cffb2;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform:rotate(0deg); }
+  100% { transform:rotate(360deg); }
+}
+</style>
+
+
 
 <script>
 const STORAGE_KEY = 'hallows-eve:v2';
@@ -311,9 +350,8 @@ const goHomeTop = document.getElementById('goHomeTop'), goMoviesTop = document.g
 const searchMovies = document.getElementById('searchMovies'), searchGames = document.getElementById('searchGames');
 const moviesList = document.getElementById('moviesList'), gamesList = document.getElementById('gamesList');
 const settingsPanel = document.getElementById('settingsPanel'), openSettingsBtn = document.getElementById('openSettingsBtn'), btnSettingsToggle = document.getElementById('btnSettingsToggle');
-const closeSettingsBtn = document.getElementById('closeSettings'), bgUrlIn = document.getElementById('bgUrl'), bgFileIn = document.getElementById('bgFile'), removeBgFileBtn = document.getElementById('removeBgFile');
-const textColorIn = document.getElementById('textColor'), autoUpdateIn = document.getElementById('autoUpdate'), checkUpdateBtn = document.getElementById('checkUpdate');
-const homeClock = document.getElementById('homeClock'), headerTitle = document.getElementById('headerTitle');
+const closeSettingsBtn = document.getElementById('closeSettings'), bgUrlIn = document.getElementById('bgUrl'), removeBgFileBtn = document.getElementById('removeBgFile');
+const textColorIn = document.getElementById('textColor'),homeClock = document.getElementById('homeClock'), headerTitle = document.getElementById('headerTitle');
 const bgContainer = document.getElementById('bgContainer');
 
 const itemEditor = document.getElementById('itemEditor'), editorTitle = document.getElementById('editorTitle'), editorTitleInput = document.getElementById('editorTitleInput'), editorDesc = document.getElementById('editorDesc');
@@ -356,55 +394,29 @@ function showPage(name){
 /* -------------------------
    Apply theme/background/text color from store
    ------------------------- */
-function applyTheme() {
-document.documentElement.style.setProperty('--text', store.textColor ||
-defaults.textColor);
-const clr = store.textColor || defaults.textColor;
-document.querySelectorAll('.btn, .icon-btn, .task-label').forEach(el =>
-{
-el.style.color = clr;
-});
-applyBackground(); // call background application
-}
 function applyBackground() {
-if (store.background && store.background.isFile &&
-store.background.fileData) {
-bgContainer.style.background = `url('${store.background.fileData}')
-center/cover no-repeat`;
-} else if (store.background && store.background.url) {
-const url = store.background.url;
-if (url.match(/\.(mp4|webm)$/i)) {
-if (!bgContainer._videoEl) {
-const v = document.createElement('video');
-v.autoplay = true; v.loop = true; v.muted = true; v.playsInline =
-true;
-v.style.width='100%'; v.style.height='100%';
-v.style.objectFit='cover';
-bgContainer.appendChild(v); bgContainer._videoEl = v;
+  if (store.background && store.background.url) {
+    bgContainer.style.backgroundImage = `url('${store.background.url}')`;
+    bgContainer.style.backgroundSize = 'cover';
+    bgContainer.style.backgroundPosition = 'center';
+    bgContainer.style.backgroundRepeat = 'no-repeat';
+  } else {
+    bgContainer.style.backgroundImage = '';
+    bgContainer.style.backgroundColor = '#000'; // fallback
+  }
 }
-bgContainer._videoEl.src = url;
-bgContainer.style.background = '';
-} else {
-if (bgContainer._videoEl) {
-bgContainer._videoEl.pause();
-bgContainer._videoEl.remove();
-bgContainer._videoEl = null;
-}
-bgContainer.style.background = `url('${url}') center/cover no-
-repeat`;
-bgContainer.style.backgroundSize = 'cover';
-}
-} else {
-if (bgContainer._videoEl) {
-bgContainer._videoEl.pause();
-bgContainer._videoEl.remove();
-bgContainer._videoEl = null;
-}
-bgContainer.style.background = '#000';
-}
-}
+// Apply theme colors and background
+function applyTheme() {
+  const clr = store.textColor || defaults.textColor;
+  document.documentElement.style.setProperty('--text', clr);
 
+  // Apply to labels and icons only
+  document.querySelectorAll('.task-label, .icon-btn').forEach(el => {
+    el.style.color = clr;
+  });
 
+  applyBackground(); // URL background only
+}
 /* -------------------------
    Settings logic (bg/text color/auto-update)
    ------------------------- */
@@ -421,49 +433,20 @@ store.textColor = e.target.value;
 applyTheme();
 saveStorage();
 });
-// Background URL
+// URL input listener
+// URL input listener
 bgUrlIn.addEventListener('input', (e) => {
-store.background.isFile = false;
-store.background.url = e.target.value;
-applyBackground();
-saveStorage();
-});
-// Background file upload
-bgFileIn.addEventListener('change', async (e) => {
-const file = e.target.files[0];
-if (!file) return;
-store.background.isFile = true;
-store.background.fileData = await fileToDataURL(file);
-applyBackground();
-saveStorage();
-});
-removeBgFileBtn.addEventListener('click', () => {
-store.background = { url:'', fileData:'', isFile:false };
-applyBackground();
-saveStorage();
-bgFileIn.value = '';
-bgUrlIn.value = '';
-});
-// Auto-update
-autoUpdateIn.addEventListener('change', (e) => {
-store.autoUpdate = e.target.checked;
-saveStorage();
-});
-// Wire the update button to fetch and merge new data
-checkUpdateBtn.addEventListener('click', async () => {
-    checkUpdateBtn.disabled = true;
-    checkUpdateBtn.textContent = 'Updating...';
-    try {
-        await updateData(true); // manual = true shows alert on success/failure
-        renderAll(); // re-render lists after update
-    } catch (err) {
-        console.error(err);
-    } finally {
-        checkUpdateBtn.disabled = false;
-        checkUpdateBtn.textContent = 'Check for update';
-    }
+  store.background = { url: e.target.value };
+  applyBackground();
+  saveStorage();
 });
 
+removeBgFileBtn.addEventListener('click', () => {
+  store.background = { url: '' };
+  bgUrlIn.value = '';
+  applyBackground();
+  saveStorage();
+});
 // Toggle via buttons
 [btnSettingsToggle, openSettingsBtn].forEach(b =>
 b.addEventListener('click', toggleSettings));
@@ -626,25 +609,28 @@ saveItemBtn.addEventListener('click', async () => {
 
   const { type, id } = editingItem;
   const item = store.pages[type].find(x => x.id === id);
-  if (!item) return; // <-- safe check
+  if (!item) return;
 
   // Update text
   item.title = editorTitleInput.value.trim();
   item.desc = editorDesc.value.trim();
 
-  // Prioritize file input
+  // Update cover
   const file = editorCoverFile.files[0];
   if (file) {
     item.cover = await fileToDataURL(file);
     item.coverIsData = true;
-  } 
-  // Fallback to URL input
-  else if (editorCoverUrl.value.trim()) {
+  } else if (editorCoverUrl.value.trim()) {
     item.cover = editorCoverUrl.value.trim();
     item.coverIsData = false;
   }
 
-  // Save and re-render
+  // Update mirrors
+  if (type === 'movies') {
+    item.mirrors = editorMirrors.value.split('\n').map(x => x.trim()).filter(Boolean);
+  }
+
+  // Save to storage and re-render
   saveStorage();
   renderList(type);
 
@@ -731,18 +717,23 @@ function buildLaunchPrompt(type, item){
   const bookmarkBtn = document.createElement('button'); bookmarkBtn.className='btn'; bookmarkBtn.textContent = item.bookmarked ? 'Remove bookmark' : 'Save (★)';
   bookmarkBtn.addEventListener('click', ()=>{ item.bookmarked=!item.bookmarked; saveStorage(); renderAll(); bookmarkBtn.textContent = item.bookmarked ? 'Remove bookmark' : 'Save (★)'; });
   const launchBtn = document.createElement('button'); launchBtn.className='btn primary'; launchBtn.textContent = 'Launch';
-  launchBtn.addEventListener('click', ()=>{
-    // choose url (mirror) for movies or game's html blob for games
-    if(type==='movies'){
-      const url = mirrorSelect ? mirrorSelect.value : (item.mirrors && item.mirrors[0]);
-      if(!url){ alert('No mirror selected. Please add a mirror in item settings first.'); return; }
-      openOverlayWithUrl(url);
-    } else {
-      // game's html in data: URL; open in iframe
-      openOverlayWithUrl(item.html || '');
+ launchBtn.addEventListener('click', ()=>{
+  if(type==='movies'){
+    const selectedMirrors = mirrors ? [mirrorSelect.value] : (item.mirrors || []);
+    if(selectedMirrors.length === 0 || !selectedMirrors[0]){
+      alert('No mirror selected. Please add a mirror in item settings first.');
+      return;
     }
-    if(document.body.contains(prompt)) document.body.removeChild(prompt);
-  });
+    // Use the new mirror failover function
+    openOverlayWithMirrors(item.mirrors || []);
+  } else {
+    // For games: single HTML or data URL
+    openOverlayWithUrl(item.html || '');
+  }
+
+  if(document.body.contains(prompt)) document.body.removeChild(prompt);
+});
+
   const closeBtn = document.createElement('button'); closeBtn.className='btn'; closeBtn.textContent='Close'; closeBtn.addEventListener('click', ()=>{ if(document.body.contains(prompt)) document.body.removeChild(prompt); });
 
   actions.appendChild(editBtn); actions.appendChild(bookmarkBtn); actions.appendChild(launchBtn); actions.appendChild(closeBtn);
@@ -755,14 +746,78 @@ function buildLaunchPrompt(type, item){
 /* -------------------------
    Overlay player functions
    ------------------------- */
-function openOverlayWithUrl(url){
-  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
-  playerFrame.src = url || '';
-  overlayOpenInTab.onclick = ()=>{ if(playerFrame.src) window.open(playerFrame.src, '_blank'); };
+const video = document.getElementById('custom-video');
+const loading = document.getElementById('video-loading');
+const error = document.getElementById('video-error');
+const retryBtn = document.getElementById('videoRetry');
+
+let mirrors = [];          // Array of mirror URLs for the current movie
+let currentMirrorIndex = 0; // Track which mirror we are on
+
+function openOverlayWithMirrors(mirrorList){
+  mirrors = mirrorList;
+  currentMirrorIndex = 0;
+  playMirror(currentMirrorIndex);
+  overlay.classList.add('show'); 
+  overlay.setAttribute('aria-hidden','false');
 }
+
+function playMirror(index){
+  if(!mirrors[index]){
+    // All mirrors failed
+    loading.style.display='none';
+    video.style.display='none';
+    error.style.display='block';
+    return;
+  }
+
+  const url = mirrors[index];
+  video.src = url;
+  video.load();
+
+  // Reset states
+  loading.style.display='flex';
+  video.style.display='none';
+  error.style.display='none';
+
+  video.oncanplay = () => {
+    loading.style.display='none';
+    video.style.display='block';
+    video.play().catch(()=>{});
+  };
+
+  video.onerror = () => {
+    // Try next mirror automatically
+    currentMirrorIndex++;
+    playMirror(currentMirrorIndex);
+  };
+}
+
+// Retry button for user to manually retry all mirrors
+retryBtn.addEventListener('click', ()=> {
+  currentMirrorIndex = 0;
+  playMirror(currentMirrorIndex);
+});
+
+// Close and fullscreen buttons
 overlayClose.addEventListener('click', closeOverlay);
-function closeOverlay(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); setTimeout(()=>{ playerFrame.src=''; },250); }
-overlayFullscreen.addEventListener('click', ()=>{ const el = playerFrame; if(el.requestFullscreen) el.requestFullscreen(); else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen(); else if(el.msRequestFullscreen) el.msRequestFullscreen(); });
+function closeOverlay(){
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  video.pause();
+  video.src='';
+}
+
+overlayFullscreen.addEventListener('click', ()=>{
+  if(video.requestFullscreen) video.requestFullscreen();
+  else if(video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+  else if(video.msRequestFullscreen) video.msRequestFullscreen();
+});
+
+overlayOpenInTab.onclick = ()=> { 
+  if(video.src) window.open(video.src, '_blank'); 
+};
+
 
 /* -------------------------
    Helpers
@@ -783,78 +838,22 @@ function getCoverUrl(item, fallbackWidth=160, fallbackHeight=240){
 /* -------------------------
    Init & wire everything
    ------------------------- */
-function init(){
+function init() {
   // apply settings
   store = loadStorage();
   applyTheme();
   // set UI inputs
-  if(store.background && !store.background.isFile) bgUrlIn.value = store.background.url || '';
+  if (store.background && !store.background.isFile) bgUrlIn.value = store.background.url || '';
   textColorIn.value = store.textColor || '#ffffff';
-  autoUpdateIn.checked = !!store.autoUpdate;
-  // render lists
+   // render lists
   renderAll();
 
   // wire header buttons
-  document.querySelectorAll('.task-icon').forEach(el=>{
-    el.addEventListener('mouseenter', ()=> el.querySelector('.task-label').style.display='block');
-    el.addEventListener('mouseleave', ()=> el.querySelector('.task-label').style.display='none');
+  document.querySelectorAll('.task-icon').forEach(el => {
+    el.addEventListener('mouseenter', () => el.querySelector('.task-label').style.display = 'block');
+    el.addEventListener('mouseleave', () => el.querySelector('.task-label').style.display = 'none');
   });
-const UPDATE_SOURCE =
-"https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"; // direct
-link
-const CURRENT_VERSION = "1.0.0";
-// Loads stored HTML version from localStorage (if available)
-function loadStoredApp() {
-const saved = localStorage.getItem(STORAGE_KEY);
-if (saved) {
-document.open();
-document.write(saved);
-document.close();
-} else {
-fetchAndStoreApp();
-}
-}
-// Fetch latest HTML from Drive and save it
-async function fetchAndStoreApp() {
-try {
-const res = await fetch(UPDATE_SOURCE);
-if (!res.ok) throw new Error("Drive fetch failed");
-const newHTML = await res.text();
-localStorage.setItem(STORAGE_KEY, newHTML);
-alert("App updated to the latest version. Reloading...");
-location.reload();
-} catch (err) {
-console.error("Update failed:", err);
-alert("Could not update from Drive — using built-in version.");
-}
-}
-async function updateData(manual = false) {
-  const updateURL = "https://example.com/update.json"; // your actual update URL
-  const STORAGE_KEY = "hallows-eve:v2";
-
-  try {
-    const response = await fetch(updateURL, { cache: "no-store" });
-
-    // Check if response is OK and JSON-parsable
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const newData = await response.json();
-    if (!newData || typeof newData !== "object") throw new Error("Invalid JSON format");
-
-    // Load current localStorage data
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const merged = mergeDataSafely(stored, newData);
-
-    // Save only if valid merge occurred
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-
-    if (manual) alert("Update successful!");
-    console.log("Update applied successfully.");
-
-  } catch (err) {
-    console.warn("Update failed — keeping existing data:", err.message);
-    if (manual) alert("Update failed — your current settings are safe.");
-  }
-}
+} // <-- Close init
 
 // Helper merge: keeps existing data, adds new fields, never deletes
 function mergeDataSafely(oldData, newData) {
@@ -879,43 +878,7 @@ function mergeDataSafely(oldData, newData) {
 
 // Check if a new version exists (compare stored HTML)
 async function checkForUpdate() {
-try {
-const res = await fetch(UPDATE_SOURCE + "?t=" + Date.now());
-if (!res.ok) return;
-const remoteHTML = await res.text();
-const localHTML = localStorage.getItem(STORAGE_KEY);
-if (remoteHTML !== localHTML) {
-localStorage.setItem(STORAGE_KEY, remoteHTML);
-showUpdateModal("A new version was found and installed!");
-}
-} catch (err) {
-console.warn("No update found or blocked by filter:", err);
-}
-}
-// Simple update notification modal
-function showUpdateModal(msg) {
-const modal = document.createElement("div");
-modal.style = `
-position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-background: rgba(0,0,0,0.85); color: white; display: flex;
-align-items: center; justify-content: center; flex-direction: column;
-font-family: 'Poppins', sans-serif; z-index: 9999;
-`;
-modal.innerHTML = `
-<h2>Update Installed</h2>
-<p>${msg}</p>
-<button style="margin-top: 10px; padding: 10px 20px; background:black;
-color:white; border:none; cursor:pointer; border-radius:8px;">
-Reload
-</button>
-`;
-modal.querySelector("button").onclick = () => location.reload();
-document.body.appendChild(modal);
-}
-// Run the updater safely
-(async () => {
-await checkForUpdate();
-})();
+
   // quick page top nav
   document.getElementById('goHomeTop').addEventListener('click', ()=> showPage('home'));
   document.getElementById('goMoviesTop').addEventListener('click', ()=> showPage('movies'));
