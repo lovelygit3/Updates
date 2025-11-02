@@ -28,7 +28,8 @@ const updatedFlag = sessionStorage.getItem('updatedTo');
 
 try {
   const response = await fetch(HTML_URL + '?t=' + Date.now(), {cache:'no-store'});
-  const fresh = await response.text();
+const fresh = await response.text();
+console.log('Fetched HTML:', fresh); // <-- add this line
 
   // Parse the fetched HTML
   const parser = new DOMParser();
