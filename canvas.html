@@ -12,7 +12,7 @@
 html,body{height:100%;margin:0;color:var(--text)}
 body{background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
      display:flex;flex-direction:column;overflow:hidden}
-/*  ▾  condensed style blocks (unchanged from previous file)  ▾  */
+/* ▾  condensed style blocks  ▾ */
 #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:1000}
 #splash h1{font-size:3rem;margin:0;letter-spacing:.15rem}
 .loader{width:240px;height:6px;background:#333;border-radius:3px;margin-top:24px;overflow:hidden}
@@ -56,6 +56,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
 <div id="buildTag" style="position:fixed;top:6px;left:6px;font:12px/14px monospace;background:#000a;padding:2px 6px;border-radius:4px;z-index:1200;color:#fff">
   build <span id="buildNo"></span>
 </div>
+
 <!-- splash -->
 <div id="splash"><h1>HALLOWS EVE</h1><div class="loader"></div></div>
 
@@ -72,8 +73,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
   </header>
 
   <section id="home" class="page active">
-    <div id="homePage">
-      <h2>Welcome</h2>
+    <div id="homePage"><h2>Welcome</h2>
       <div class="upBox"><p>Self-updating dashboard • FNF playable</p></div>
     </div>
   </section>
@@ -97,196 +97,155 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
   <button class="btn" id="chkUpd">Check update now</button>
   <button class="btn" id="saveTheme">Save & apply</button>
 </div>
+
 <script>
-
-/* ─────  CONSTANTS  ───── */
-/* ─────  CONSTANTS  ───── */
-const BUILD = '2025-11-2-b';  // bump here + in version.json for new release
-const MAIN_FILE = 'canvas.html';
-const RAW_ROOT = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates';
-const VERSION_URL = `${RAW_ROOT}@main/version.json`;
+/* ── CONSTANTS ── */
+const BUILD = '2025-11-2-b';
+const VERSION_URL   = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version.json';
+const DASHBOARD_URL = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/canvas.html';
 document.getElementById('buildNo').textContent = BUILD;
-console.log('[Dashboard] running build', BUILD);
 
-/* ─────  HELPERS  ───── */
-const q = s => document.querySelector(s);
+/* ── HELPERS ── */
+const q  = s => document.querySelector(s);
 const qa = s => [...document.querySelectorAll(s)];
-function toast(msg, buttons = []) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  buttons.forEach(([txt, fn]) => {
-    const b = document.createElement('button');
-    b.textContent = txt;
-    b.onclick = () => { fn(); t.remove(); };
+function toast(msg, btns=[]){
+  const t = Object.assign(document.createElement('div'),{className:'toast',textContent:msg});
+  btns.forEach(([txt,fn])=>{
+    const b=document.createElement('button');b.textContent=txt;
+    b.onclick=()=>{fn();t.remove();};
     t.appendChild(b);
   });
   document.body.appendChild(t);
-  if (!buttons.length) {
-    setTimeout(() => t.style.opacity = '0', 4500);
-    setTimeout(() => t.remove(), 5200);
-  }
+  if(!btns.length){setTimeout(()=>t.style.opacity=0,4000);setTimeout(()=>t.remove(),4700);}
 }
 
-/* ─────  SPLASH  ───── */
-setTimeout(() => q('#splash').style.animation = 'splashOut .6s forwards', 1300);
-setTimeout(() => q('#splash').remove(), 1900);
+/* ── SPLASH ── */
+setTimeout(()=>q('#splash').style.animation='splashOut .6s forwards',1200);
+setTimeout(()=>q('#splash').remove(),1800);
 
-
-/* ─────  THEME  ───── */
-function applyTheme(o){ if(o.bg)document.documentElement.style.setProperty('--bg-img',`url(${o.bg})`);
+/* ── THEME / SETTINGS PANEL ── */
+function applyTheme(o){
+  if(o.bg)  document.documentElement.style.setProperty('--bg-img',`url(${o.bg})`);
   if(o.text)document.documentElement.style.setProperty('--text',o.text);
-  if(o.acc) document.documentElement.style.setProperty('--accent',o.acc); }
-const saved=JSON.parse(localStorage.getItem('hallowsTheme')||'{}');applyTheme(saved);
-if(saved.bg)q('#bgInput').value=saved.bg;if(saved.text)q('#txtColor').value=saved.text;if(saved.acc)q('#accColor').value=saved.acc;
-q('#gear').onclick=()=>q('#settings').style.display=q('#settings').style.display?'':'block';
-q('#saveTheme').onclick=()=>{const o={bg:q('#bgInput').value.trim(),text:q('#txtColor').value,acc:q('#accColor').value};
-  localStorage.setItem('hallowsTheme',JSON.stringify(o));applyTheme(o);q('#settings').style.display='none';};
-
-/* ─────  AUTO-UPDATE PREF  ───── */
-q('#autoUpd').checked=JSON.parse(localStorage.getItem('autoUpdDash')||'false');
-q('#autoUpd').onchange=e=>localStorage.setItem('autoUpdDash',e.target.checked);
-
-/* ─────  UPDATE CHECKER  ───── */
-async function checkUpdate(manual = false) {
-  try {
-    const res = await fetch(VERSION_URL + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('http ' + res.status);
-    const remoteBuild = String((await res.json()).build || '').trim();
-    const localBuild  = String(BUILD).trim();
-
-    if (remoteBuild !== localBuild) {
-
-      /* avoid endless loop in one tab */
-      const already = sessionStorage.getItem('triedBuild');
-
-      const reload = () => {
-        sessionStorage.setItem('triedBuild', remoteBuild);
-
-        /* swap any "@…" to "@latest" and add cache-buster */
-        const clean = location.href.split('#')[0].split('?')[0];
-        const latest = clean.includes('@') ? clean.replace(/@[^/]+/, '@latest')
-                                           : clean;
-        location.href = latest + '?t=' + Date.now();
-      };
-
-      if (already !== remoteBuild) {
-        if (q('#autoUpd').checked) {
-          toast('Updating dashboard…');
-          reload();
-        } else {
-          toast('New version available', [['Update now', reload],
-                                          ['Dismiss', () => 0]]);
-        }
-      } else if (manual) {
-        toast('Update failed – clear browser cache');
-      }
-
-    } else {
-      sessionStorage.removeItem('triedBuild');
-      if (manual) toast('No update – latest build');
-    }
-  } catch (err) {
-    if (manual) toast('Update check failed');
-    console.warn('update-check:', err.message);
-  }
+  if(o.acc) document.documentElement.style.setProperty('--accent',o.acc);
 }
-q('#chkUpd').onclick = () => checkUpdate(true);
-checkUpdate();
+const savedTheme = JSON.parse(localStorage.getItem('hallowsTheme')||'{}');
+applyTheme(savedTheme);
+if(savedTheme.bg)   q('#bgInput').value=savedTheme.bg;
+if(savedTheme.text) q('#txtColor').value=savedTheme.text;
+if(savedTheme.acc)  q('#accColor').value=savedTheme.acc;
 
-q('#chkUpd').onclick = () => checkUpdate(true);  // manual button
-checkUpdate();                                   // first run
-/* manual button */
-q('#chkUpd').onclick = () => checkUpdate(true);
-/* automatic on start */
-checkUpdate();
-/* ─────  NAVIGATION  ───── */
-qa('.navBtn').forEach(b=>b.onclick=()=>{qa('.page').forEach(p=>p.classList.remove('active'));q('#'+b.dataset.page).classList.add('active');});
+/* ——  FIXED TOGGLE  —— */
+const settingsBox = q('#settings');
+q('#gear').onclick = () => {
+  settingsBox.style.display = settingsBox.style.display ? '' : 'block';
+};
 
-/* movies */
-const movies = [
-  {
-    title : 'Sample Movie',
-    cover : 'https://picsum.photos/200/300?1',
-    descr : 'YT demo',
-    url   : 'https://www.youtube.com/embed/dQw4w9WgXcQ'
-  },
-  {
-    title : 'Big Buck Bunny',
-    cover : 'https://peach.blender.org/wp-content/uploads/bbb-splash.png',
-    descr : 'Blender Open Movie',
-    url   : 'https://www.youtube.com/embed/YE7VzlLtp-4'
-  },
-  {
-    title : 'Sintel',
-    cover : 'https://download.blender.org/durian/trailer/sintel_trailer-480p.png',
-    descr : 'Another Blender short',
-    url   : 'https://www.youtube.com/embed/eRsGyueVLvQ'
+q('#saveTheme').onclick = () => {
+  const o = { bg:q('#bgInput').value.trim(),
+              text:q('#txtColor').value,
+              acc:q('#accColor').value };
+  localStorage.setItem('hallowsTheme',JSON.stringify(o));
+  applyTheme(o);
+  settingsBox.style.display='none';
+};
+
+/* ── AUTO-UPDATE CHECKBOX PERSISTENCE (RESTORED) ── */
+q('#autoUpd').checked  = JSON.parse(localStorage.getItem('autoUpdDash')||'false');
+q('#autoUpd').onchange = e => localStorage.setItem('autoUpdDash', e.target.checked);
+
+/* ── SELF-UPDATER ── */
+async function fetchRemoteBuild(){
+  try{const r=await fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw Error(r.status);
+      return String((await r.json()).build||'').trim();
+  }catch(e){console.warn('version fetch',e);return null;}
+}
+async function installLatest(){
+  const r=await fetch(DASHBOARD_URL+'?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw Error(r.status);
+  document.open(); document.write(await r.text()); document.close();
+}
+async function updater(manual=false){
+  if(!manual && !q('#autoUpd').checked) return;
+  if(sessionStorage.getItem('justUpdated')===BUILD){
+    sessionStorage.removeItem('justUpdated'); return;
   }
+  const remote=await fetchRemoteBuild();
+  if(remote && remote!==BUILD){
+    sessionStorage.setItem('justUpdated',remote);
+    toast('Updating dashboard…'); await installLatest();
+  }else if(manual){ toast('You already have the latest build'); }
+}
+q('#chkUpd').onclick = ()=>updater(true);
+updater();
+
+/* ── NAVIGATION ── */
+qa('.navBtn').forEach(b=>b.onclick=()=>{
+  qa('.page').forEach(p=>p.classList.remove('active'));
+  q('#'+b.dataset.page).classList.add('active');
+});
+
+/* MOVIES / GAMES, CARD MAKER, OVERLAY + PAGE-LOADER
+   (unchanged and already working) … */
+/* MOVIES / GAMES DATA */
+const movies=[
+  {title:'Sample Movie',cover:'https://picsum.photos/200/300?1',descr:'YT demo',url:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+  {title:'Big Buck Bunny',cover:'https://peach.blender.org/wp-content/uploads/bbb-splash.png',descr:'Blender Open Movie',url:'https://www.youtube.com/embed/YE7VzlLtp-4'},
+  {title:'Sintel',cover:'https://download.blender.org/durian/trailer/sintel_trailer-480p.png',descr:'Another Blender short',url:'https://www.youtube.com/embed/eRsGyueVLvQ'}
+];
+const games=[
+  {title:"Friday Night Funkin'",cover:'https://picsum.photos/200/300?3',descr:'jsDelivr',url:'https://cdn.jsdelivr.net/gh/genizy/fridayfunk/index.html'},
+  {title:'Jelly Mario',cover:'https://upload.wikimedia.org/wikipedia/commons/7/7d/2048_logo.svg',descr:'Classic puzzle',url:'https://gamesgo.net/game/friday-night-funkin-vs-qt-mod'},
+  {title:'Celeste Classic',cover:'https://raw.githubusercontent.com/mmalet/celeste-classic/master/assets/cover.png',descr:'Pico-8',url:'https://www.lexaloffle.com/bbs/?pid=2397#p'}
 ];
 
-/* games */
-const games = [
-  {
-    title : 'Friday Night Funkin\'',
-    cover : 'https://picsum.photos/200/300?3',
-    descr : 'jsDelivr',
-    url   : 'https://cdn.jsdelivr.net/gh/genizy/fridayfunk/index.html'
-  },
-  {
-    title : 'Jelly Mario',
-    cover : 'https://upload.wikimedia.org/wikipedia/commons/7/7d/2048_logo.svg',
-    descr : 'Classic puzzle',
-    url   : 'https://gamesgo.net/game/friday-night-funkin-vs-qt-mod'
-  },
-  {
-    title : 'Celeste Classic',
-    cover : 'https://raw.githubusercontent.com/mmalet/celeste-classic/master/assets/cover.png',
-    descr : 'Pico-8 version',
-    url   : 'https://www.lexaloffle.com/bbs/?pid=2397#p'
-  }
-];
-/* ─────  CARD BUILDER  ───── */
-/* ─────  CARD BUILDER  ───── */
-function card(o) {
-  const d = document.createElement('div');
-  d.className = 'card';
-  d.dataset.url = o.url;
-  d.innerHTML = `<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
+/* ── CARD MAKER ── */
+function card(o){
+  const d = document.createElement('div'); d.className='card'; d.dataset.url=o.url;
+  d.innerHTML=`<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
   return d;
 }
-function fill(sel, arr) {
-  const L = q(sel);
-  L.innerHTML = '';
-  arr.forEach(o => L.appendChild(card(o)));
-}
-fill('#movieList', movies);
-fill('#gameList', games);
+function fill(sel,arr){const box=q(sel); box.innerHTML=''; arr.forEach(o=>box.appendChild(card(o)));}
 
-/* ─────  OVERLAY  ───── */
-const ov=q('#overlay'),player=q('#player');
-q('#ovClose').onclick=()=>{ov.style.display='none';player.src='about:blank';};
-q('#ovFull').onclick=()=>player.requestFullscreen?.();
+fill('#movieList',movies); fill('#gameList',games);
 
-/* ─────  PAGE LOADER (FNF fix)  ───── */
+/* ── OVERLAY / ADVANCED PAGE LOADER ── */
+const ov=q('#overlay'), player=q('#player');
+q('#ovClose').onclick = ()=>{ov.style.display='none';player.src='about:blank';};
+q('#ovFull' ).onclick = ()=>player.requestFullscreen?.();
+
 function absolutise(html,base){
-  const fix=(attr,q)=>html.replace(new RegExp(`${attr}=${q}\\/`,'g'),`${attr}=${q}${base}`);
-  html=fix('src','"');html=fix('src','\'');html=fix('href','"');html=fix('href','\'');
-  return html.replace(/(["'(])assets\//g,`$1${base}assets/`)
-             .replace(/url\(\s*['"]?\/([^)'"]*)['"]?\s*\)/g,`url(${base}$1)`);
+  const fix=(attr,q)=>html.replace(new RegExp(`${attr}=${q}/`,'g'),`${attr}=${q}${base}`);
+  html = fix('src','"'); html = fix('src','\''); html = fix('href','"'); html = fix('href','\'');
+  return html
+    .replace(/(["'(])assets\//g, `$1${base}assets/`)
+    .replace(/url\(\s*['"]?\/([^)'"]*)['"]?\s*\)/g, `url(${base}$1)`);
 }
-function interceptor(base){return `<script>(function(){const B='${base}'.replace(/\\\\/g,'\\\\\\\\');function p(u){return u&&u.startsWith('/')?B+u.slice(1):u}const O=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u){arguments[1]=p(u);return O.apply(this,arguments);};const F=fetch;window.fetch=function(u,...r){return F(p(u),...r);};})();<\/script>`;}
+function interceptor(base){
+  return `<script>(function(){
+    const B='${base}'.replace(/\\\\/g,'\\\\\\\\');
+    const P=u=>u&&u.startsWith('/')?B+u.slice(1):u;
+    const O=XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open=function(m,u){arguments[1]=P(u);return O.apply(this,arguments);};
+    const F=fetch;window.fetch=function(u,...r){return F(P(u),...r);};
+  })();<\/script>`;
+}
 async function loadPage(url){
-  try{const txt=await(await fetch(url)).text();const base=url.slice(0,url.lastIndexOf('/')+1);
-    player.removeAttribute('src');player.srcdoc=`<base href="${base}">`+interceptor(base)+absolutise(txt,base);}
-  catch(e){console.error(e);player.removeAttribute('srcdoc');player.src=url;}
+  try{
+    const txt = await (await fetch(url)).text();
+    const base = url.slice(0,url.lastIndexOf('/')+1);
+    player.removeAttribute('src'); player.srcdoc = `<base href="${base}">` + interceptor(base) + absolutise(txt,base);
+  }catch(e){
+    console.error(e); player.removeAttribute('srcdoc'); player.src=url;
+  }
 }
 
-/* click delegation */
 document.addEventListener('click',e=>{
-  if(!(e.target.closest('.launch')||e.target.closest('.cover')))return;
-  const url=e.target.closest('.card').dataset.url;if(!url)return;
-  if(/\.(html?|php)$/i.test(url)) loadPage(url); else{player.removeAttribute('srcdoc');player.src=url;}
+  const trg = e.target.closest('.launch,.cover'); if(!trg) return;
+  const url = trg.closest('.card').dataset.url;
+  if(/\.(html?|php)$/i.test(url)) loadPage(url);
+  else { player.removeAttribute('srcdoc'); player.src=url; }
   ov.style.display='flex';
 });
 </script>
