@@ -1,7 +1,7 @@
 /* updater.js  ─────────────── */
 const BUILD       = '2025-11-02-a';      //  bump here each release
-const VERSION_URL = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version.json';
-const HTML_URL    = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/test.html';
+const VERSION_URL = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version2.json';
+const HTML_URL    = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/test2.html';
 
 export async function checkUpdate(manual = false) {
 
