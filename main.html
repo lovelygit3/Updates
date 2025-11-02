@@ -1,253 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  
-  <base href="https://cdn.jsdelivr.net/gh/genizy/fridayfunk/">
-  <meta charset="utf-8">
-  <title>Friday Night Funkin'</title>
-  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" type="image/png" href="https://cdn.jsdelivr.net/gh/genizy/fridayfunk/favicon.png">
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/genizy/fridayfunk/Funkin.js"></script>
-  <script>
-    window.addEventListener("touchmove", function(event) {
-      event.preventDefault();
-    }, {
-      capture: false,
-      passive: false
-    });
-    if (typeof window.devicePixelRatio != 'undefined' && window.devicePixelRatio > 2) {
-      var meta = document.getElementById("viewport");
-      meta.setAttribute('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
-    }
-  </script>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hallows Eve Dashboard</title>
 
-    #openfl-content {
-      background: #000000;
-      width: 100%;
-      height: 100%;
-    }
+<!-- ────────────  STYLES  ──────────── -->
+<style>
+:root{
+  --bg-img:url("https://picsum.photos/id/1011/1600/900");
+  --bg-col:#000; --text:#fff; --accent:#7cffb2; --muted:rgba(255,255,255,.65);
+  --r:12px; --w:150px; --h:225px;
+  font-family:Inter,system-ui,sans-serif;
+}
+html,body{height:100%;margin:0;color:var(--text)}
+body{
+  background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
+  display:flex;flex-direction:column;overflow:hidden;
+}
 
-    @font-face {
-      font-family: '5by7';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7.svg#5by7') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
+/* splash */
+#splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+        justify-content:center;background:#000;z-index:1000}
+#splash h1{font-size:3rem;margin:0;letter-spacing:.15rem}
+.loader{width:240px;height:6px;background:#333;border-radius:3px;margin-top:24px;overflow:hidden}
+.loader::before{content:"";display:block;width:40%;height:100%;
+                background:var(--accent);animation:load 1.2s linear infinite}
+@keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+@keyframes splashOut{to{opacity:0;visibility:hidden}}
 
-    @font-face {
-      font-family: '5by7 Bold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7_b.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7_b.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7_b.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/5by7_b.svg#5by7%20Bold') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
+/* header / pages */
+#app{flex:1;display:flex;flex-direction:column;opacity:0;animation:appIn .6s 1.4s forwards}
+@keyframes appIn{to{opacity:1}}
+header{display:flex;justify-content:space-between;align-items:center;
+       padding:10px 24px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px)}
+#brand{margin:0;font-size:1.55rem;letter-spacing:.12rem}
+.nav{display:flex;gap:10px}
+.btn{background:transparent;border:2px solid var(--accent);color:var(--text);
+     padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--accent);color:#000}
 
-    @font-face {
-      font-family: 'DS-Digital';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGI.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGI.TTF') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+.page{display:none;flex:1;overflow:auto;padding:26px}
+.page.active{display:block;animation:pgIn .4s}@keyframes pgIn{from{opacity:0;transform:translateY(26px)}to{opacity:1}}
+#homePage{display:flex;flex-direction:column;align-items:center;text-align:center}
+#homePage h2{font-size:2.4rem;margin:0 0 10px}
+.upBox{background:rgba(255,255,255,.07);padding:22px 26px;border-radius:var(--r);max-width:540px}
 
-    @font-face {
-      font-family: 'DS-Digital Bold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGIB.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGIB.TTF') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+/* cards */
+.list{display:flex;flex-direction:column;gap:20px;max-width:1200px;margin:auto}
+.card{display:flex;gap:16px;padding:14px;background:rgba(255,255,255,.07);border-radius:var(--r);
+      align-items:center;box-shadow:0 6px 18px #000a}
+.cover{width:var(--w);height:var(--h);border-radius:var(--r);overflow:hidden;cursor:pointer}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.cover:hover img{transform:scale(1.07)}
+.title{font-size:1.05rem;font-weight:700}.descr{font-size:.9rem;color:var(--muted)}
+.launch{margin-left:auto;background:var(--accent);color:#000;border:none;border-radius:8px;
+        padding:8px 16px;font-weight:600;cursor:pointer}
 
-    @font-face {
-      font-family: 'DS-Digital Italic';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGII.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGII.TTF') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+/* overlay */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;
+         align-items:center;justify-content:center;z-index:900}
+#playerBox{width:90%;height:85%;background:#000;border-radius:var(--r);overflow:hidden;
+           position:relative;display:flex;flex-direction:column}
+#player{flex:1;border:none;background:#000}
+.ovBtns{position:fixed;top:18px;right:24px;display:flex;gap:10px;z-index:1001}
+.ovBtn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;
+       padding:8px 12px;font-size:18px;cursor:pointer}
+#ovFull{order:0} #ovClose{order:1}
 
-    @font-face {
-      font-family: 'DS-Digital Bold Italic';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGIT.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/DS-DIGIT.TTF') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+/* settings */
+#settings{position:fixed;top:76px;right:24px;background:#111;padding:14px;border:1px solid #333;
+          border-radius:var(--r);display:none;z-index:950;width:260px}
+#settings label{font-size:.83rem;color:var(--muted)}
+#settings input{width:100%;padding:6px;border-radius:5px;border:1px solid #444;background:#222;
+               color:#ddd;margin-bottom:10px;font-size:.85rem}
+#settings .btn{width:100%;padding:6px}
 
-    @font-face {
-      font-family: 'Inconsolata Black';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Black.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Black.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Black.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Black.svg#Inconsolata%20Black') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata Bold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Bold.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Bold.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Bold.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Bold.svg#Inconsolata%20Bold') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata ExtraBold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraBold.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraBold.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraBold.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraBold.svg#Inconsolata%20ExtraBold') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata ExtraLight';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraLight.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraLight.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraLight.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-ExtraLight.svg#Inconsolata%20ExtraLight') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata Medium';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Medium.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Medium.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Medium.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Medium.svg#Inconsolata%20Medium') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata Regular';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Regular.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Regular.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Regular.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-Regular.svg#Inconsolata%20Regular') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Inconsolata SemiBold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-SemiBold.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-SemiBold.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-SemiBold.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Inconsolata-SemiBold.svg#Inconsolata%20SemiBold') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Pixel Arial 11 Bold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/pixel.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/pixel.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/pixel.otf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Quantico-Bold';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Bold.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Bold.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Bold.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Bold.svg#Quantico-Bold') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Quantico-BoldItalic';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-BoldItalic.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-BoldItalic.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-BoldItalic.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-BoldItalic.svg#Quantico-BoldItalic') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Quantico-Italic';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Italic.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Italic.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Italic.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Italic.svg#Quantico-Italic') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Quantico';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Regular.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Regular.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Regular.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/Quantico-Regular.svg#Quantico') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'VCR OSD Mono';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/vcr.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/vcr.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/vcr.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/assets/fonts/vcr.svg#VCR%20OSD%20Mono') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Nokia Cellphone FC Small';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/nokiafc22.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/nokiafc22.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/nokiafc22.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/nokiafc22.svg#Nokia%20Cellphone%20FC%20Small') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    @font-face {
-      font-family: 'Monsterrat';
-      src: url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/monsterrat.eot?#iefix') format('embedded-opentype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/monsterrat.woff') format('woff'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/monsterrat.ttf') format('truetype'),
-        url('https://cdn.jsdelivr.net/gh/genizy/fridayfunk/flixel/fonts/monsterrat.svg#Monsterrat') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-  </style>
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+       background:#222;color:#fff;padding:12px 18px;border-radius:8px;box-shadow:0 6px 18px #000a;
+       z-index:1100;display:flex;gap:10px;align-items:center}
+.toast button{background:var(--accent);border:none;border-radius:6px;padding:4px 8px;
+              font-weight:600;cursor:pointer;color:#000;font-size:.8rem}
+</style>
 </head>
-
 <body>
-  <noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
-  <div id="openfl-content"></div>
-  <script type="text/javascript">
-    lime.embed("Funkin", "openfl-content", 1280, 720, {
-      parameters: {}
-    });
-  </script>
-</body>
 
+<!-- splash -->
+<div id="splash"><h1>HALLOWS EVE</h1><div class="loader"></div></div>
+
+<!-- app -->
+<div id="app">
+  <header>
+    <h1 id="brand">HALLOWS EVE</h1>
+    <div class="nav">
+      <button class="btn navBtn" data-page="home">Home</button>
+      <button class="btn navBtn" data-page="movies">Movies</button>
+      <button class="btn navBtn" data-page="games">Games</button>
+      <button class="btn" id="gear">⚙️</button>
+    </div>
+  </header>
+
+  <section id="home" class="page active">
+    <div id="homePage">
+      <h2>Welcome</h2>
+      <div class="upBox"><p>Self-updating dashboard • theme settings • FNF card works</p></div>
+    </div>
+  </section>
+
+  <section id="movies" class="page"><div class="list" id="movieList"></div></section>
+  <section id="games"  class="page"><div class="list" id="gameList"></div></section>
+</div>
+
+<!-- overlay -->
+<div id="overlay">
+  <div class="ovBtns"><button class="ovBtn" id="ovFull">⛶</button><button class="ovBtn" id="ovClose">✖</button></div>
+  <div id="playerBox"><iframe id="player" allowfullscreen></iframe></div>
+</div>
+
+<!-- settings -->
+<div id="settings">
+  <label>Background image URL</label><input id="bgInput" type="text">
+  <label>Text colour</label><input id="txtColor" type="color">
+  <label>Accent / button colour</label><input id="accColor" type="color">
+  <label><input type="checkbox" id="autoUpd"> Auto-update dashboard</label>
+  <button class="btn" id="chkUpd">Check update now</button>
+  <button class="btn" id="saveTheme">Save & apply</button>
+</div>
+
+<script>
+/* ────── VERSION CONFIG ────── */
+const BUILD      = '2023-11-27-a';                 //  ← update each release
+const CDNROOT    = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/';
+const VERSION_URL= CDNROOT + 'version.json';
+
+/* ────── HELPERS ────── */
+const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
+const toast=(msg,btns=[])=>{
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  btns.forEach(([txt,fn])=>{const b=document.createElement('button');b.textContent=txt;b.onclick=()=>{fn();t.remove();};t.appendChild(b)});
+  document.body.appendChild(t);
+};
+
+/* ────── SPLASH OUT ────── */
+setTimeout(()=>q('#splash').style.animation='splashOut .6s forwards',1300);
+setTimeout(()=>q('#splash').remove(),1900);
+
+/* ────── SETTINGS (theme) ────── */
+function applyTheme(o){
+  if(o.bg)   document.documentElement.style.setProperty('--bg-img',`url(${o.bg})`);
+  if(o.text) document.documentElement.style.setProperty('--text',o.text);
+  if(o.acc)  document.documentElement.style.setProperty('--accent',o.acc);
+}
+const saved=JSON.parse(localStorage.getItem('hallowsTheme')||'{}'); applyTheme(saved);
+if(saved.bg)   q('#bgInput').value=saved.bg;
+if(saved.text) q('#txtColor').value=saved.text;
+if(saved.acc)  q('#accColor').value=saved.acc;
+
+q('#gear').onclick = ()=> q('#settings').style.display = q('#settings').style.display?'':'block';
+q('#saveTheme').onclick = ()=>{
+  const o={bg:q('#bgInput').value.trim(),text:q('#txtColor').value,acc:q('#accColor').value};
+  localStorage.setItem('hallowsTheme',JSON.stringify(o)); applyTheme(o);
+  q('#settings').style.display='none';
+};
+
+/* ────── AUTO-UPDATE setting ────── */
+q('#autoUpd').checked = JSON.parse(localStorage.getItem('autoUpdDash')||'false');
+q('#autoUpd').onchange = e=>localStorage.setItem('autoUpdDash',e.target.checked);
+
+/* ────── UPDATE CHECKER (safe) ────── */
+async function checkUpdate(manual=false){
+  try{
+    const res=await fetch(VERSION_URL+'?nocache='+Date.now(),{cache:'no-store'});
+    if(!res.ok) throw new Error('http '+res.status);
+
+    let remote; try{remote=await res.json();}catch{throw new Error('not-json');}
+
+    if(remote.build && remote.build!==BUILD){
+      const reload=()=>location.href = CDNROOT+'index.html?nocache='+Date.now();
+      if(q('#autoUpd').checked){ toast('Updating dashboard…'); reload(); }
+      else toast('New version available',['Update now',reload],['Dismiss',()=>0]);
+    }else if(manual){ toast('No update – latest build'); }
+  }catch(err){ if(manual) toast('Update check failed'); console.warn('update-check:',err.message); }
+}
+q('#chkUpd').onclick = ()=>checkUpdate(true);  /* manual button */
+checkUpdate();                                 /* run once on load */
+
+/* ────── NAVIGATION ────── */
+qa('.navBtn').forEach(b=>b.onclick=()=>{
+  qa('.page').forEach(p=>p.classList.remove('active'));
+  q('#'+b.dataset.page).classList.add('active');
+});
+
+/* ────── data (KEEP AS REQUESTED) ────── */
+const movies=[{title:'Sample Movie',cover:'https://picsum.photos/200/300?1',
+               descr:'YT demo',url:'https://www.youtube.com/embed/dQw4w9WgXcQ'}];
+const games =[{title:'Friday Night Funkin\'',cover:'https://picsum.photos/200/300?3',
+               descr:'jsDelivr',url:'https://cdn.jsdelivr.net/gh/genizy/fridayfunk/index.html'}];
+
+/* ────── list builder ────── */
+function card(o){
+  const d=document.createElement('div');d.className='card';d.dataset.url=o.url;
+  d.innerHTML=`<div class="cover"><img src="${o.cover}"></div>
+               <div class="meta"><div class="title">${o.title}</div>
+               <div class="descr">${o.descr}</div></div>
+               <button class="launch">Launch</button>`;
+  return d;
+}
+function fill(sel,arr){const L=q(sel);L.innerHTML='';arr.forEach(o=>L.appendChild(card(o)));}
+fill('#movieList',movies); fill('#gameList',games);
+
+/* ────── OVERLAY ────── */
+const ov=q('#overlay'), player=q('#player');
+q('#ovClose').onclick = ()=>{ov.style.display='none';player.src='about:blank';};
+q('#ovFull').onclick  = ()=>player.requestFullscreen?.();
+
+/* click delegation */
+document.addEventListener('click',e=>{
+  if(!(e.target.closest('.launch')||e.target.closest('.cover'))) return;
+  const url=e.target.closest('.card').dataset.url; if(!url) return;
+  player.src=url; ov.style.display='flex';
+});
+</script>
+</body>
 </html>
