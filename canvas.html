@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hallows Eve Dashboard</title>
 
-<!-- ────────────  STYLES  ──────────── -->
+<!-- ──────────────  STYLES  ────────────── -->
 <style>
 :root{
   --bg-img:url("https://picsum.photos/id/1011/1600/900");
@@ -14,22 +14,20 @@
   font-family:Inter,system-ui,sans-serif;
 }
 html,body{height:100%;margin:0;color:var(--text)}
-body{
-  background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
-  display:flex;flex-direction:column;overflow:hidden;
-}
+body{background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
+     display:flex;flex-direction:column;overflow:hidden}
 
 /* splash */
 #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
         justify-content:center;background:#000;z-index:1000}
 #splash h1{font-size:3rem;margin:0;letter-spacing:.15rem}
 .loader{width:240px;height:6px;background:#333;border-radius:3px;margin-top:24px;overflow:hidden}
-.loader::before{content:"";display:block;width:40%;height:100%;
-                background:var(--accent);animation:load 1.2s linear infinite}
+.loader::before{content:"";display:block;width:40%;height:100%;background:var(--accent);
+                animation:load 1.25s linear infinite}
 @keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 @keyframes splashOut{to{opacity:0;visibility:hidden}}
 
-/* header / pages */
+/* header / layout */
 #app{flex:1;display:flex;flex-direction:column;opacity:0;animation:appIn .6s 1.4s forwards}
 @keyframes appIn{to{opacity:1}}
 header{display:flex;justify-content:space-between;align-items:center;
@@ -40,8 +38,9 @@ header{display:flex;justify-content:space-between;align-items:center;
      padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer}
 .btn:hover{background:var(--accent);color:#000}
 
+/* pages */
 .page{display:none;flex:1;overflow:auto;padding:26px}
-.page.active{display:block;animation:pgIn .4s}@keyframes pgIn{from{opacity:0;transform:translateY(26px)}to{opacity:1}}
+.page.active{display:block;animation:pgIn .4s}@keyframes pgIn{from{opacity:0;transform:translateY(24px)}to{opacity:1}}
 #homePage{display:flex;flex-direction:column;align-items:center;text-align:center}
 #homePage h2{font-size:2.4rem;margin:0 0 10px}
 .upBox{background:rgba(255,255,255,.07);padding:22px 26px;border-radius:var(--r);max-width:540px}
@@ -78,8 +77,8 @@ header{display:flex;justify-content:space-between;align-items:center;
 
 /* toast */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
-       background:#222;color:#fff;padding:12px 18px;border-radius:8px;box-shadow:0 6px 18px #000a;
-       z-index:1100;display:flex;gap:10px;align-items:center}
+       background:#222;color:#fff;padding:12px 18px;border-radius:8px;
+       box-shadow:0 6px 18px #000a;z-index:1100;display:flex;gap:10px;align-items:center}
 .toast button{background:var(--accent);border:none;border-radius:6px;padding:4px 8px;
               font-weight:600;cursor:pointer;color:#000;font-size:.8rem}
 </style>
@@ -104,7 +103,7 @@ header{display:flex;justify-content:space-between;align-items:center;
   <section id="home" class="page active">
     <div id="homePage">
       <h2>Welcome</h2>
-      <div class="upBox"><p>Self-updating dashboard • theme settings • FNF card works</p></div>
+      <div class="upBox"><p>Self-updating dashboard • theme settings • FNF card</p></div>
     </div>
   </section>
 
@@ -125,16 +124,17 @@ header{display:flex;justify-content:space-between;align-items:center;
   <label>Accent / button colour</label><input id="accColor" type="color">
   <label><input type="checkbox" id="autoUpd"> Auto-update dashboard</label>
   <button class="btn" id="chkUpd">Check update now</button>
-  <button class="btn" id="saveTheme">Save & apply</button>
+  <button class="btn" id="saveTheme">Save &amp; apply</button>
 </div>
 
 <script>
-/* ────── VERSION CONFIG ────── */
-const BUILD      = '2023-11-27-a';                 //  ← update each release
-const CDNROOT    = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/';
-const VERSION_URL= CDNROOT + 'version.json';
+/* ─────────  UPDATE CONSTANTS  ───────── */
+const BUILD       = '2023-12-04-a';   //  keep in sync with version.json
+const CDNROOT     = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/';
+const MAIN_FILE   = 'main.html';
+const VERSION_URL = CDNROOT + 'version.json';
 
-/* ────── HELPERS ────── */
+/* ─────────  HELPERS  ───────── */
 const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
 const toast=(msg,btns=[])=>{
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
@@ -142,11 +142,11 @@ const toast=(msg,btns=[])=>{
   document.body.appendChild(t);
 };
 
-/* ────── SPLASH OUT ────── */
+/* ─────────  SPLASH  ───────── */
 setTimeout(()=>q('#splash').style.animation='splashOut .6s forwards',1300);
 setTimeout(()=>q('#splash').remove(),1900);
 
-/* ────── SETTINGS (theme) ────── */
+/* ─────────  THEME SETTINGS  ───────── */
 function applyTheme(o){
   if(o.bg)   document.documentElement.style.setProperty('--bg-img',`url(${o.bg})`);
   if(o.text) document.documentElement.style.setProperty('--text',o.text);
@@ -164,41 +164,44 @@ q('#saveTheme').onclick = ()=>{
   q('#settings').style.display='none';
 };
 
-/* ────── AUTO-UPDATE setting ────── */
+/* ─────────  AUTO-UPDATE PREFERENCE  ───────── */
 q('#autoUpd').checked = JSON.parse(localStorage.getItem('autoUpdDash')||'false');
 q('#autoUpd').onchange = e=>localStorage.setItem('autoUpdDash',e.target.checked);
 
-/* ────── UPDATE CHECKER (safe) ────── */
+/* ─────────  UPDATE CHECKER (safe)  ───────── */
 async function checkUpdate(manual=false){
   try{
-    const res=await fetch(VERSION_URL+'?nocache='+Date.now(),{cache:'no-store'});
+    const res = await fetch(VERSION_URL+'?nocache='+Date.now(),{cache:'no-store'});
     if(!res.ok) throw new Error('http '+res.status);
 
-    let remote; try{remote=await res.json();}catch{throw new Error('not-json');}
+    let remote; try{ remote = await res.json(); }catch{ throw new Error('not-json'); }
 
-    if(remote.build && remote.build!==BUILD){
-      const reload=()=>location.href = CDNROOT+'index.html?nocache='+Date.now();
+    if(remote.build && remote.build !== BUILD){
+      const reload = ()=>location.href = CDNROOT + MAIN_FILE + '?nocache=' + Date.now();
       if(q('#autoUpd').checked){ toast('Updating dashboard…'); reload(); }
       else toast('New version available',['Update now',reload],['Dismiss',()=>0]);
     }else if(manual){ toast('No update – latest build'); }
-  }catch(err){ if(manual) toast('Update check failed'); console.warn('update-check:',err.message); }
+  }catch(err){
+    if(manual) toast('Update check failed');
+    console.warn('update-check:',err.message);
+  }
 }
-q('#chkUpd').onclick = ()=>checkUpdate(true);  /* manual button */
-checkUpdate();                                 /* run once on load */
+q('#chkUpd').onclick = ()=>checkUpdate(true);
+checkUpdate();   /* run on load */
 
-/* ────── NAVIGATION ────── */
+/* ─────────  NAVIGATION  ───────── */
 qa('.navBtn').forEach(b=>b.onclick=()=>{
   qa('.page').forEach(p=>p.classList.remove('active'));
   q('#'+b.dataset.page).classList.add('active');
 });
 
-/* ────── data (KEEP AS REQUESTED) ────── */
+/* ─────────  DATA (your arrays)  ───────── */
 const movies=[{title:'Sample Movie',cover:'https://picsum.photos/200/300?1',
                descr:'YT demo',url:'https://www.youtube.com/embed/dQw4w9WgXcQ'}];
-const games =[{title:'Friday Night Funkin\'',cover:'https://picsum.photos/200/300?3',
-               descr:'jsDelivr',url:'https://cdn.jsdelivr.net/gh/genizy/fridayfunk/index.html'}];
+const games=[{title:'Friday Night Funkin\'',cover:'https://picsum.photos/200/300?3',
+              descr:'jsDelivr',url:'https://cdn.jsdelivr.net/gh/genizy/fridayfunk/index.html'}];
 
-/* ────── list builder ────── */
+/* ─────────  CARD BUILDER  ───────── */
 function card(o){
   const d=document.createElement('div');d.className='card';d.dataset.url=o.url;
   d.innerHTML=`<div class="cover"><img src="${o.cover}"></div>
@@ -210,7 +213,7 @@ function card(o){
 function fill(sel,arr){const L=q(sel);L.innerHTML='';arr.forEach(o=>L.appendChild(card(o)));}
 fill('#movieList',movies); fill('#gameList',games);
 
-/* ────── OVERLAY ────── */
+/* ─────────  OVERLAY  ───────── */
 const ov=q('#overlay'), player=q('#player');
 q('#ovClose').onclick = ()=>{ov.style.display='none';player.src='about:blank';};
 q('#ovFull').onclick  = ()=>player.requestFullscreen?.();
