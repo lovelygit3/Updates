@@ -1,104 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hallows Eve Dashboard</title>
-
-<style>
-:root{--bg-img:url("https://picsum.photos/id/1011/1600/900");--bg-col:#000;--text:#fff;
-      --accent:#7cffb2;--muted:rgba(255,255,255,.65);--r:12px;--w:150px;--h:225px;
-      font-family:Inter,system-ui,sans-serif}
-html,body{height:100%;margin:0;color:var(--text)}
-body{background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
-     display:flex;flex-direction:column;overflow:hidden}
-/* ▾  condensed style blocks  ▾ */
-#splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:1000}
-#splash h1{font-size:3rem;margin:0;letter-spacing:.15rem}
-.loader{width:240px;height:6px;background:#333;border-radius:3px;margin-top:24px;overflow:hidden}
-.loader::before{content:"";display:block;width:40%;height:100%;background:var(--accent);animation:load 1.2s linear infinite}
-@keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
-@keyframes splashOut{to{opacity:0;visibility:hidden}}
-#app{flex:1;display:flex;flex-direction:column;opacity:0;animation:appIn .6s 1.4s forwards}
-@keyframes appIn{to{opacity:1}}
-header{display:flex;justify-content:space-between;align-items:center;padding:10px 24px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px)}
-#brand{margin:0;font-size:1.55rem;letter-spacing:.12rem}
-.nav{display:flex;gap:10px}
-.btn{background:transparent;border:2px solid var(--accent);color:var(--text);padding:6px 14px;border-radius:8px;font-weight:600;cursor:pointer}
-.btn:hover{background:var(--accent);color:#000}
-.page{display:none;flex:1;overflow:auto;padding:26px}
-.page.active{display:block;animation:pgIn .4s}@keyframes pgIn{from{opacity:0;transform:translateY(24px)}to{opacity:1}}
-#homePage{display:flex;flex-direction:column;align-items:center;text-align:center}
-#homePage h2{font-size:2.4rem;margin:0 0 10px}
-.upBox{background:rgba(255,255,255,.07);padding:22px 26px;border-radius:var(--r);max-width:540px}
-.list{display:flex;flex-direction:column;gap:20px;max-width:1200px;margin:auto}
-.card{display:flex;gap:16px;padding:14px;background:rgba(255,255,255,.07);border-radius:var(--r);align-items:center;box-shadow:0 6px 18px #000a}
-.cover{width:var(--w);height:var(--h);border-radius:var(--r);overflow:hidden;cursor:pointer}
-.cover img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
-.cover:hover img{transform:scale(1.07)}
-.title{font-size:1.05rem;font-weight:700}.descr{font-size:.9rem;color:var(--muted)}
-.launch{margin-left:auto;background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:900}
-#playerBox{width:90%;height:85%;background:#000;border-radius:var(--r);overflow:hidden;position:relative;display:flex;flex-direction:column}
-#player{flex:1;border:none;background:#000}
-.ovBtns{position:fixed;top:18px;right:24px;display:flex;gap:10px;z-index:1001}
-.ovBtn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:8px 12px;font-size:18px;cursor:pointer}
-#settings{position:fixed;top:76px;right:24px;background:#111;padding:14px;border:1px solid #333;border-radius:var(--r);display:none;z-index:950;width:260px}
-#settings label{font-size:.83rem;color:var(--muted)}
-#settings input{width:100%;padding:6px;border-radius:5px;border:1px solid #444;background:#222;color:#ddd;margin-bottom:10px;font-size:.85rem}
-#settings .btn{width:100%;padding:6px}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:8px;box-shadow:0 6px 18px #000a;z-index:1100;display:flex;gap:10px;align-items:center;opacity:0;animation:toastIn .3s forwards}
-@keyframes toastIn{to{opacity:1}}
-.toast button{background:var(--accent);border:none;border-radius:6px;padding:4px 8px;font-weight:600;cursor:pointer;color:#000;font-size:.8rem}
-</style>
-</head>
-<body>
-<div id="buildTag" style="position:fixed;top:6px;left:6px;font:12px/14px monospace;background:#000a;padding:2px 6px;border-radius:4px;z-index:1200;color:#fff">
-  build <span id="buildNo"></span>
-</div>
-
-<!-- splash -->
-<div id="splash"><h1>HALLOWS EVE</h1><div class="loader"></div></div>
-
-<!-- app -->
-<div id="app">
-  <header>
-    <h1 id="brand">HALLOWS EVE</h1>
-    <div class="nav">
-      <button class="btn navBtn" data-page="home">Home</button>
-      <button class="btn navBtn" data-page="movies">Movies</button>
-      <button class="btn navBtn" data-page="games">Games</button>
-      <button class="btn" id="gear">⚙️</button>
-    </div>
-  </header>
-
-  <section id="home" class="page active">
-    <div id="homePage"><h2>Welcome</h2>
-      <div class="upBox"><p>Self-updating dashboard • FNF playable</p></div>
-    </div>
-  </section>
-
-  <section id="movies" class="page"><div class="list" id="movieList"></div></section>
-  <section id="games"  class="page"><div class="list" id="gameList"></div></section>
-</div>
-
-<!-- overlay -->
-<div id="overlay">
-  <div class="ovBtns"><button class="ovBtn" id="ovFull">⛶</button><button class="ovBtn" id="ovClose">✖</button></div>
-  <div id="playerBox"><iframe id="player" allowfullscreen></iframe></div>
-</div>
-
-<!-- settings -->
-<div id="settings">
-  <label>Background image URL</label><input id="bgInput" type="text">
-  <label>Text colour</label><input id="txtColor" type="color">
-  <label>Accent / button colour</label><input id="accColor" type="color">
-  <label><input type="checkbox" id="autoUpd"> Auto-update dashboard</label>
-  <button class="btn" id="chkUpd">Check update now</button>
-  <button class="btn" id="saveTheme">Save & apply</button>
-</div>
-
 <script>
+(() => {               /*  ←--- added wrapper  */
+
 /* ── CONSTANTS ── */
 const BUILD = '2025-11-2-b';
 const VERSION_URL   = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version.json';
@@ -135,12 +37,10 @@ if(savedTheme.bg)   q('#bgInput').value=savedTheme.bg;
 if(savedTheme.text) q('#txtColor').value=savedTheme.text;
 if(savedTheme.acc)  q('#accColor').value=savedTheme.acc;
 
-/* ——  FIXED TOGGLE  —— */
 const settingsBox = q('#settings');
 q('#gear').onclick = () => {
   settingsBox.style.display = settingsBox.style.display ? '' : 'block';
 };
-
 q('#saveTheme').onclick = () => {
   const o = { bg:q('#bgInput').value.trim(),
               text:q('#txtColor').value,
@@ -150,20 +50,20 @@ q('#saveTheme').onclick = () => {
   settingsBox.style.display='none';
 };
 
-/* ── AUTO-UPDATE CHECKBOX PERSISTENCE (RESTORED) ── */
+/* store / load auto-update checkbox */
 q('#autoUpd').checked  = JSON.parse(localStorage.getItem('autoUpdDash')||'false');
-q('#autoUpd').onchange = e => localStorage.setItem('autoUpdDash', e.target.checked);
+q('#autoUpd').onchange = e => localStorage.setItem('autoUpdDash',e.target.checked);
 
 /* ── SELF-UPDATER ── */
 async function fetchRemoteBuild(){
-  try{const r=await fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'});
-      if(!r.ok)throw Error(r.status);
+  try{const r = await fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok) throw Error(r.status);
       return String((await r.json()).build||'').trim();
   }catch(e){console.warn('version fetch',e);return null;}
 }
 async function installLatest(){
-  const r=await fetch(DASHBOARD_URL+'?t='+Date.now(),{cache:'no-store'});
-  if(!r.ok)throw Error(r.status);
+  const r = await fetch(DASHBOARD_URL+'?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw Error(r.status);
   document.open(); document.write(await r.text()); document.close();
 }
 async function updater(manual=false){
@@ -171,7 +71,7 @@ async function updater(manual=false){
   if(sessionStorage.getItem('justUpdated')===BUILD){
     sessionStorage.removeItem('justUpdated'); return;
   }
-  const remote=await fetchRemoteBuild();
+  const remote = await fetchRemoteBuild();
   if(remote && remote!==BUILD){
     sessionStorage.setItem('justUpdated',remote);
     toast('Updating dashboard…'); await installLatest();
@@ -186,8 +86,6 @@ qa('.navBtn').forEach(b=>b.onclick=()=>{
   q('#'+b.dataset.page).classList.add('active');
 });
 
-/* MOVIES / GAMES, CARD MAKER, OVERLAY + PAGE-LOADER
-   (unchanged and already working) … */
 /* MOVIES / GAMES DATA */
 const movies=[
   {title:'Sample Movie',cover:'https://picsum.photos/200/300?1',descr:'YT demo',url:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
@@ -200,17 +98,16 @@ const games=[
   {title:'Celeste Classic',cover:'https://raw.githubusercontent.com/mmalet/celeste-classic/master/assets/cover.png',descr:'Pico-8',url:'https://www.lexaloffle.com/bbs/?pid=2397#p'}
 ];
 
-/* ── CARD MAKER ── */
+/* ── CARD MAKER / LISTS ── */
 function card(o){
-  const d = document.createElement('div'); d.className='card'; d.dataset.url=o.url;
+  const d=document.createElement('div'); d.className='card'; d.dataset.url=o.url;
   d.innerHTML=`<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
   return d;
 }
 function fill(sel,arr){const box=q(sel); box.innerHTML=''; arr.forEach(o=>box.appendChild(card(o)));}
-
 fill('#movieList',movies); fill('#gameList',games);
 
-/* ── OVERLAY / ADVANCED PAGE LOADER ── */
+/* ── OVERLAY / ADVANCED PAGE-LOADER ── */
 const ov=q('#overlay'), player=q('#player');
 q('#ovClose').onclick = ()=>{ov.style.display='none';player.src='about:blank';};
 q('#ovFull' ).onclick = ()=>player.requestFullscreen?.();
@@ -218,29 +115,28 @@ q('#ovFull' ).onclick = ()=>player.requestFullscreen?.();
 function absolutise(html,base){
   const fix=(attr,q)=>html.replace(new RegExp(`${attr}=${q}/`,'g'),`${attr}=${q}${base}`);
   html = fix('src','"'); html = fix('src','\''); html = fix('href','"'); html = fix('href','\'');
-  return html
-    .replace(/(["'(])assets\//g, `$1${base}assets/`)
-    .replace(/url\(\s*['"]?\/([^)'"]*)['"]?\s*\)/g, `url(${base}$1)`);
+  return html.replace(/(["'(])assets\//g,`$1${base}assets/`)
+             .replace(/url\(\s*['"]?\/([^)'"]*)['"]?\s*\)/g,`url(${base}$1)`);
 }
 function interceptor(base){
   return `<script>(function(){
-    const B='${base}'.replace(/\\\\/g,'\\\\\\\\');
-    const P=u=>u&&u.startsWith('/')?B+u.slice(1):u;
+    const ABS='${base}'.replace(/\\\\/g,'\\\\\\\\');
+    const patch=u=>u&&u.startsWith('/')?ABS+u.slice(1):u;
     const O=XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open=function(m,u){arguments[1]=P(u);return O.apply(this,arguments);};
-    const F=fetch;window.fetch=function(u,...r){return F(P(u),...r);};
+    XMLHttpRequest.prototype.open=function(m,u){arguments[1]=patch(u);return O.apply(this,arguments);};
+    const F=fetch;window.fetch=function(u,...r){return F(patch(u),...r);};
   })();<\/script>`;
 }
 async function loadPage(url){
   try{
     const txt = await (await fetch(url)).text();
     const base = url.slice(0,url.lastIndexOf('/')+1);
-    player.removeAttribute('src'); player.srcdoc = `<base href="${base}">` + interceptor(base) + absolutise(txt,base);
+    player.removeAttribute('src');
+    player.srcdoc = `<base href="${base}">` + interceptor(base) + absolutise(txt,base);
   }catch(e){
     console.error(e); player.removeAttribute('srcdoc'); player.src=url;
   }
 }
-
 document.addEventListener('click',e=>{
   const trg = e.target.closest('.launch,.cover'); if(!trg) return;
   const url = trg.closest('.card').dataset.url;
@@ -248,6 +144,6 @@ document.addEventListener('click',e=>{
   else { player.removeAttribute('srcdoc'); player.src=url; }
   ov.style.display='flex';
 });
+
+})();  /* ←--- end wrapper */
 </script>
-</body>
-</html>
