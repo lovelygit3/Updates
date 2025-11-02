@@ -53,9 +53,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
 </style>
 </head>
 <body>
-<div id="buildTag" style="position:fixed;top:6px;left:6px;
-            font:12px/14px monospace;background:#000a;padding:2px 6px;
-            border-radius:4px;z-index:1200;color:#fff">
+<div id="buildTag" style="position:fixed;top:6px;left:6px;font:12px/14px monospace;background:#000a;padding:2px 6px;border-radius:4px;z-index:1200;color:#fff">
   build <span id="buildNo"></span>
 </div>
 <!-- splash -->
@@ -249,11 +247,13 @@ const games = [
   }
 ];
 /* ─────  CARD BUILDER  ───── */
-function card(o){const d=document.createElement('div');d.className='card';d.dataset.url=o.url;
-  d.innerHTML=`<div class="cover"><img src="${o.cover}"></div>
-               <div class="meta"><div class="title">${o.title}</div>
-               <div class="descr">${o.descr}</div></div>
-               <button class="launch">Launch</button>`;return d;}
+function card(o) {
+  const d = document.createElement('div');
+  d.className = 'card';
+  d.dataset.url = o.url;
+  d.innerHTML = `<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
+  return d;
+}
 function fill(sel,arr){const L=q(sel);L.innerHTML='';arr.forEach(o=>L.appendChild(card(o)));}
 fill('#movieList',movies);fill('#gameList',games);
 
