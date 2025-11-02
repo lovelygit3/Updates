@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hallows Eve Dashboard</title>
 
+<!-- updater fetched from jsDelivr – runs before any UI code -->
+<script type="module" defer
+        src="https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/updater.js?b=2025-11-02-b"></script>
+
 <style>
 :root{--bg-img:url("https://picsum.photos/id/1011/1600/900");--bg-col:#000;--text:#fff;
       --accent:#7cffb2;--muted:rgba(255,255,255,.65);--r:12px;--w:150px;--h:225px;
@@ -12,7 +16,7 @@
 html,body{height:100%;margin:0;color:var(--text)}
 body{background:var(--bg-col) var(--bg-img) center/cover no-repeat fixed;
      display:flex;flex-direction:column;overflow:hidden}
-/* ▾  condensed style blocks  ▾ */
+/*  ↓ all your condensed style blocks – unchanged ↓  */
 #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:1000}
 #splash h1{font-size:3rem;margin:0;letter-spacing:.15rem}
 .loader{width:240px;height:6px;background:#333;border-radius:3px;margin-top:24px;overflow:hidden}
@@ -52,7 +56,9 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
 .toast button{background:var(--accent);border:none;border-radius:6px;padding:4px 8px;font-weight:600;cursor:pointer;color:#000;font-size:.8rem}
 </style>
 </head>
+
 <body>
+
 <div id="buildTag" style="position:fixed;top:6px;left:6px;font:12px/14px monospace;background:#000a;padding:2px 6px;border-radius:4px;z-index:1200;color:#fff">
   build <span id="buildNo"></span>
 </div>
@@ -95,98 +101,58 @@ header{display:flex;justify-content:space-between;align-items:center;padding:10p
   <label>Accent / button colour</label><input id="accColor" type="color">
   <label><input type="checkbox" id="autoUpd"> Auto-update dashboard</label>
   <button class="btn" id="chkUpd">Check update now</button>
-  <button class="btn" id="saveTheme">Save & apply</button>
+  <button class="btn" id="saveTheme">Save &amp; apply</button>
 </div>
 
+<!-- MAIN DASHBOARD SCRIPT – original, updater removed -->
 <script>
-(() => {               /*  ←--- added wrapper  */
+(() => {
 
-/* ── CONSTANTS ── */
-const BUILD = '2025-11-2-b';
-const VERSION_URL   = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version.json';
-const DASHBOARD_URL = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/test.html';
+const BUILD='2025-11-02-c';
 document.getElementById('buildNo').textContent = BUILD;
 
-/* ── HELPERS ── */
-const q  = s => document.querySelector(s);
-const qa = s => [...document.querySelectorAll(s)];
-function toast(msg, btns=[]){
-  const t = Object.assign(document.createElement('div'),{className:'toast',textContent:msg});
-  btns.forEach(([txt,fn])=>{
-    const b=document.createElement('button');b.textContent=txt;
-    b.onclick=()=>{fn();t.remove();};
-    t.appendChild(b);
-  });
+/* helpers */
+const q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
+function toast(msg,btns=[]){
+  const t=Object.assign(document.createElement('div'),{className:'toast',textContent:msg});
+  btns.forEach(([txt,fn])=>{const b=document.createElement('button');b.textContent=txt;
+                            b.onclick=()=>{fn();t.remove();};t.appendChild(b);});
   document.body.appendChild(t);
-  if(!btns.length){setTimeout(()=>t.style.opacity=0,4000);setTimeout(()=>t.remove(),4700);}
+  if(!btns.length){setTimeout(()=>t.style.opacity=0,4e3);setTimeout(()=>t.remove(),4700);}
 }
 
-/* ── SPLASH ── */
+/* splash */
 setTimeout(()=>q('#splash').style.animation='splashOut .6s forwards',1200);
 setTimeout(()=>q('#splash').remove(),1800);
 
-/* ── THEME / SETTINGS PANEL ── */
+/* theme / settings */
 function applyTheme(o){
   if(o.bg)  document.documentElement.style.setProperty('--bg-img',`url(${o.bg})`);
   if(o.text)document.documentElement.style.setProperty('--text',o.text);
   if(o.acc) document.documentElement.style.setProperty('--accent',o.acc);
 }
-const savedTheme = JSON.parse(localStorage.getItem('hallowsTheme')||'{}');
-applyTheme(savedTheme);
-if(savedTheme.bg)   q('#bgInput').value=savedTheme.bg;
-if(savedTheme.text) q('#txtColor').value=savedTheme.text;
-if(savedTheme.acc)  q('#accColor').value=savedTheme.acc;
+const sTheme=JSON.parse(localStorage.getItem('hallowsTheme')||'{}'); applyTheme(sTheme);
+if(sTheme.bg)q('#bgInput').value=sTheme.bg;if(sTheme.text)q('#txtColor').value=sTheme.text;if(sTheme.acc)q('#accColor').value=sTheme.acc;
 
-const settingsBox = q('#settings');
-q('#gear').onclick = () => {
-  settingsBox.style.display = settingsBox.style.display ? '' : 'block';
+const box=q('#settings');
+q('#gear').onclick=()=>box.style.display=box.style.display?'':'block';
+q('#saveTheme').onclick=()=>{
+  const o={bg:q('#bgInput').value.trim(),text:q('#txtColor').value,acc:q('#accColor').value};
+  localStorage.setItem('hallowsTheme',JSON.stringify(o));applyTheme(o);box.style.display='none';
 };
-q('#saveTheme').onclick = () => {
-  const o = { bg:q('#bgInput').value.trim(),
-              text:q('#txtColor').value,
-              acc:q('#accColor').value };
-  localStorage.setItem('hallowsTheme',JSON.stringify(o));
-  applyTheme(o);
-  settingsBox.style.display='none';
-};
-
-/* store / load auto-update checkbox */
 q('#autoUpd').checked  = JSON.parse(localStorage.getItem('autoUpdDash')||'false');
-q('#autoUpd').onchange = e => localStorage.setItem('autoUpdDash',e.target.checked);
+q('#autoUpd').onchange = e=>localStorage.setItem('autoUpdDash',e.target.checked);
 
-/* ── SELF-UPDATER ── */
-async function fetchRemoteBuild(){
-  try{const r = await fetch(VERSION_URL+'?t='+Date.now(),{cache:'no-store'});
-      if(!r.ok) throw Error(r.status);
-      return String((await r.json()).build||'').trim();
-  }catch(e){console.warn('version fetch',e);return null;}
-}
-async function installLatest(){
-  const r = await fetch(DASHBOARD_URL+'?t='+Date.now(),{cache:'no-store'});
-  if(!r.ok) throw Error(r.status);
-  document.open(); document.write(await r.text()); document.close();
-}
-async function updater(manual=false){
-  if(!manual && !q('#autoUpd').checked) return;
-  if(sessionStorage.getItem('justUpdated')===BUILD){
-    sessionStorage.removeItem('justUpdated'); return;
-  }
-  const remote = await fetchRemoteBuild();
-  if(remote && remote!==BUILD){
-    sessionStorage.setItem('justUpdated',remote);
-    toast('Updating dashboard…'); await installLatest();
-  }else if(manual){ toast('You already have the latest build'); }
-}
-q('#chkUpd').onclick = ()=>updater(true);
-updater();
+/* MANUAL UPDATE BUTTON – calls function from updater.js */
+q('#chkUpd').onclick = () => window.__dashUpdate(true);
 
-/* ── NAVIGATION ── */
+/* navigation */
 qa('.navBtn').forEach(b=>b.onclick=()=>{
   qa('.page').forEach(p=>p.classList.remove('active'));
   q('#'+b.dataset.page).classList.add('active');
 });
 
-/* MOVIES / GAMES DATA */
+/* MOVIES / GAMES DATA (unchanged) */
 const movies=[
   {title:'Sample Movie',cover:'https://picsum.photos/200/300?1',descr:'YT demo',url:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
   {title:'Big Buck Bunny',cover:'https://peach.blender.org/wp-content/uploads/bbb-splash.png',descr:'Blender Open Movie',url:'https://www.youtube.com/embed/YE7VzlLtp-4'},
@@ -198,54 +164,38 @@ const games=[
   {title:'Celeste Classic',cover:'https://raw.githubusercontent.com/mmalet/celeste-classic/master/assets/cover.png',descr:'Pico-8',url:'https://www.lexaloffle.com/bbs/?pid=2397#p'}
 ];
 
-/* ── CARD MAKER / LISTS ── */
+/* cards */
 function card(o){
   const d=document.createElement('div'); d.className='card'; d.dataset.url=o.url;
   d.innerHTML=`<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
   return d;
 }
-function fill(sel,arr){const box=q(sel); box.innerHTML=''; arr.forEach(o=>box.appendChild(card(o)));}
+const fill=(sel,arr)=>{const box=q(sel);box.innerHTML='';arr.forEach(o=>box.appendChild(card(o)));};
 fill('#movieList',movies); fill('#gameList',games);
 
-/* ── OVERLAY / ADVANCED PAGE-LOADER ── */
-const ov=q('#overlay'), player=q('#player');
+/* overlay player */
+const ov=q('#overlay'),player=q('#player');
 q('#ovClose').onclick = ()=>{ov.style.display='none';player.src='about:blank';};
 q('#ovFull' ).onclick = ()=>player.requestFullscreen?.();
 
-function absolutise(html,base){
-  const fix=(attr,q)=>html.replace(new RegExp(`${attr}=${q}/`,'g'),`${attr}=${q}${base}`);
-  html = fix('src','"'); html = fix('src','\''); html = fix('href','"'); html = fix('href','\'');
-  return html.replace(/(["'(])assets\//g,`$1${base}assets/`)
-             .replace(/url\(\s*['"]?\/([^)'"]*)['"]?\s*\)/g,`url(${base}$1)`);
-}
-function interceptor(base){
-  return `<script>(function(){
-    const ABS='${base}'.replace(/\\\\/g,'\\\\\\\\');
-    const patch=u=>u&&u.startsWith('/')?ABS+u.slice(1):u;
-    const O=XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open=function(m,u){arguments[1]=patch(u);return O.apply(this,arguments);};
-    const F=fetch;window.fetch=function(u,...r){return F(patch(u),...r);};
-  })();<\/script>`;
-}
-async function loadPage(url){
-  try{
-    const txt = await (await fetch(url)).text();
-    const base = url.slice(0,url.lastIndexOf('/')+1);
-    player.removeAttribute('src');
-    player.srcdoc = `<base href="${base}">` + interceptor(base) + absolutise(txt,base);
-  }catch(e){
-    console.error(e); player.removeAttribute('srcdoc'); player.src=url;
-  }
+function absolutise(h,b){const f=(a,q)=>h.replace(new RegExp(`${a}=${q}/`,'g'),`${a}=${q}${b}`);
+ return f('src','"').replace(/src='\/?/g,`src='${b}`).replace(/href="\/?/g,`href="${b}`)
+ .replace(/(["'(])assets\//g,`$1${b}assets/`);}
+function interceptor(b){return `<script>(function(){const r='${b}'.replace(/\\\\/g,'\\\\\\\\');
+const p=u=>u&&u.startsWith('/')?r+u.slice(1):u;XMLHttpRequest.prototype.open=new Proxy(XMLHttpRequest.prototype.open,{apply:(t,s,a)=>(a[1]=p(a[1]),t.apply(s,a))});const F=fetch;window.fetch=(u,...x)=>F(p(u),...x);})();<\/script>`;}
+async function loadPage(u){
+  try{const t=await (await fetch(u)).text();const b=u.slice(0,u.lastIndexOf('/')+1);
+      player.removeAttribute('src');player.srcdoc=`<base href="${b}">`+interceptor(b)+absolutise(t,b);}
+  catch(e){console.error(e);player.removeAttribute('srcdoc');player.src=u;}
 }
 document.addEventListener('click',e=>{
-  const trg = e.target.closest('.launch,.cover'); if(!trg) return;
-  const url = trg.closest('.card').dataset.url;
-  if(/\.(html?|php)$/i.test(url)) loadPage(url);
-  else { player.removeAttribute('srcdoc'); player.src=url; }
+  const trg=e.target.closest('.launch,.cover'); if(!trg) return;
+  const url=trg.closest('.card').dataset.url;
+  /\.(html?|php)$/i.test(url)?loadPage(url):(player.removeAttribute('srcdoc'),player.src=url);
   ov.style.display='flex';
 });
 
-})();  /* ←--- end wrapper */
+})(); /* end IIFE */
 </script>
 </body>
 </html>
