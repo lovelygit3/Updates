@@ -1,5 +1,5 @@
 /* updater.js  ─────────────── */
-const BUILD       = '2025-11-04-a';      //  bump here each release
+const BUILD       = '2025-11-05-a';      //  bump here each release
 const VERSION_URL = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/version4.json';
 const HTML_URL    = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@latest/test4.html';
 
