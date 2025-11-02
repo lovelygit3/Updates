@@ -247,6 +247,7 @@ const games = [
   }
 ];
 /* ─────  CARD BUILDER  ───── */
+/* ─────  CARD BUILDER  ───── */
 function card(o) {
   const d = document.createElement('div');
   d.className = 'card';
@@ -254,8 +255,13 @@ function card(o) {
   d.innerHTML = `<div class="cover"><img src="${o.cover}"></div><div class="meta"><div class="title">${o.title}</div><div class="descr">${o.descr}</div></div><button class="launch">Launch</button>`;
   return d;
 }
-function fill(sel,arr){const L=q(sel);L.innerHTML='';arr.forEach(o=>L.appendChild(card(o)));}
-fill('#movieList',movies);fill('#gameList',games);
+function fill(sel, arr) {
+  const L = q(sel);
+  L.innerHTML = '';
+  arr.forEach(o => L.appendChild(card(o)));
+}
+fill('#movieList', movies);
+fill('#gameList', games);
 
 /* ─────  OVERLAY  ───── */
 const ov=q('#overlay'),player=q('#player');
