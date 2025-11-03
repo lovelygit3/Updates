@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="app-version" content="1.6.9">
+<meta name="app-version" content="1.7.1">
 <title>Media Hub</title>
 <link id="dynamic-favicon" rel="icon" href="">
 <style>
@@ -39,6 +39,12 @@
     --nav-active: var(--accent-color);
     --card-bg: rgba(49,50,68,0.75);
     --shadow-color: rgba(0,0,0,0.35);
+
+    /* New: Customizable font size and performance mode */
+    --font-size-base: 16px;
+    --performance-mode: 0; /* 1 = enabled, reduces effects */
+    --viewer-width: 98vw;
+    --viewer-height: 98vh;
   }
 
   html, body {
@@ -51,8 +57,13 @@
     background-size: cover;
     background-position: center;
     transition: background-color 300ms ease, color 300ms ease, background-image 300ms ease;
+    font-size: var(--font-size-base);
   }
   body.no-scroll { overflow: hidden; }
+  body.performance-mode {
+    --shadow-color: transparent; /* Reduce shadows */
+    transition: none; /* Disable transitions for perf */
+  }
 
   .topbar {
     position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: var(--nav-bg);
@@ -98,7 +109,7 @@
 
   .overlay { position: fixed; inset: 0; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 60; }
   .overlay.open { display: flex; }
-  .viewer { position: relative; width: 80vw; height: 65vh; max-width: 1100px; border-radius: 12px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--surface1); box-shadow: 0 20px 40px var(--shadow-color); display: grid; grid-template-rows: auto 1fr; }
+  .viewer { position: relative; width: var(--viewer-width); height: var(--viewer-height); max-width: none; border-radius: 12px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--surface1); box-shadow: 0 20px 40px var(--shadow-color); display: grid; grid-template-rows: auto 1fr; }
   .viewer-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(49,50,68,0.5); border-bottom: 1px solid var(--surface1); }
   .viewer-iframe { width: 100%; height: 100%; background: #0a0a0f; border: none; display: block; }
 
@@ -141,7 +152,7 @@
 
   .wizard { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
   .wizard-inner { width: 680px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 14px; box-shadow: 0 20px 44px var(--shadow-color); padding: 16px; }
-  .wizard-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--surface1); padding-bottom: 10px; }
+  .wizard-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--surface1); }
   .wizard-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
   .update-modal { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
@@ -165,6 +176,56 @@
   .modal-preview { border: 1px solid var(--surface1); border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, color-mix(in oklab, var(--accent-color) 28%, transparent), color-mix(in oklab, var(--button-color) 28%, transparent)); height: 340px; display: grid; place-items: center; }
   .modal-preview img { width: 100%; height: 100%; object-fit: cover; }
   .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top: 8px; }
+
+  /* Added for scrolling only in games/movies boxes */
+  #moviesGrid, #gamesList {
+    max-height: 60vh; /* Limit height to 60% of viewport height for scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding-right: 8px; /* Optional: space for scrollbar */
+  }
+
+  /* Optimization for Chromebook: Scale UI for common resolutions (e.g., 1366x768) */
+  @media screen and (max-width: 1366px) and (max-height: 768px) {
+    body {
+      transform: scale(0.9); /* Scale down the entire body slightly for better fit */
+      transform-origin: top left;
+      width: 111.11%; /* Compensate for scaling to avoid clipping */
+      height: 111.11%;
+    }
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller cards for more on screen */
+    }
+    main {
+      max-width: 100%; /* Full width on smaller screens */
+      padding: 10px; /* Reduce padding */
+    }
+    .topbar {
+      padding: 6px 12px; /* Slightly smaller topbar */
+    }
+    .card .thumb {
+      height: 200px; /* Reduce thumb height */
+    }
+  }
+
+  /* Enhanced Chromebook optimizations */
+  @media screen and (max-width: 1366px) and (max-height: 768px),
+         screen and (max-width: 1280px) and (max-height: 800px) { /* Common Chromebook res */
+    body {
+      transform: scale(0.85); /* Further scale down for better fit */
+      transform-origin: top left;
+      width: 117.65%; /* Compensate */
+      height: 117.65%;
+      --font-size-base: 14px; /* Smaller fonts */
+    }
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Even smaller cards */
+    }
+    main { padding: 8px; margin-bottom: 90px; }
+    .card .thumb { height: 180px; }
+    .topbar { padding: 4px 10px; }
+    #moviesGrid, #gamesList { max-height: 50vh; } /* Tighter scrolling */
+  }
 </style>
 </head>
 <body>
@@ -290,7 +351,7 @@
       <input type="text" id="gameSearch" placeholder="Search games by title...">
       <button class="btn btn-secondary" onclick="clearGameSearch()">Clear</button>
     </div>
-    <p class="small muted">Place your game folders beside this HTML (e.g., ./games/friday-night-funkin/index.html). Some games may block embedding.</p>
+    <p class="small muted">enjoy</p>
     <div class="list" id="gamesList"></div>
   </section>
 
@@ -316,19 +377,19 @@
 
   <section id="proxies" class="page">
     <h2>Proxies</h2>
-    <p class="small muted">Simple list of proxies (placeholder content).</p>
+    <p class="small muted">Simple list of proxies.</p>
     <div class="list">
       <div class="list-item">
-        <div><div class="title">Ultraviolet Proxy</div><div class="muted">Fast, simple HTTP proxy</div></div>
-        <a href="https://example-proxy-uv.com" target="_blank" rel="noopener">Open</a>
+        <div><div class="title">Blocked</div><div class="muted">Fast, simple HTTP proxy</div></div>
+        <a href="https://144-202-49-64.plesk.page/" target="_blank" rel="noopener">Open</a>
       </div>
       <div class="list-item">
-        <div><div class="title">Space Proxy</div><div class="muted">Bypass restrictions</div></div>
-        <a href="https://example-space-proxy.com" target="_blank" rel="noopener">Open</a>
+        <div><div class="title">Refix</div><div class="muted"></div></div>
+        <a href="https://bav1.wadmc.site.cdn.cloudflare.net" target="_blank" rel="noopener">Open</a>
       </div>
       <div class="list-item">
-        <div><div class="title">Nebula Proxy</div><div class="muted">Minimal and fast</div></div>
-        <a href="https://example-nebula-proxy.com" target="_blank" rel="noopener">Open</a>
+        <div><div class="title">Hm</div><div class="muted"></div></div>
+        <a href="https://bav1.wadmc.site.cdn.cloudflare.net" target="_blank" rel="noopener">Open</a>
       </div>
     </div>
   </section>
@@ -386,6 +447,46 @@
             <option value="light">Light</option>
             <option value="halloween">Halloween</option>
             <option value="christmas">Christmas</option>
+            <option value="minimalist">Minimalist (Chromebook)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Viewer Width (%)
+          <input type="number" id="viewerWidthInput" min="50" max="100" value="98">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Viewer Height (%)
+          <input type="number" id="viewerHeightInput" min="50" max="100" value="98">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Panic Key (e.g., Escape)
+          <input type="text" id="panicKeyInput" placeholder="Escape">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Panic Redirect URL
+          <input type="url" id="panicUrlInput" placeholder="https://www.google.com">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Font Size (px)
+          <input type="number" id="fontSizeInput" min="12" max="20" value="16">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Performance Mode (for Chromebooks)
+          <select id="performanceModeSelect">
+            <option value="0">Off</option>
+            <option value="1">On</option>
           </select>
         </label>
       </div>
@@ -414,7 +515,7 @@
     <div class="form-row" style="margin-top:8px;">
       <div class="form-col" style="grid-column: 1 / -1;">
         <label>Update Source URL (jsDelivr)
-          <input type="url" id="updateUrlInput" placeholder="https://cdn.jsdelivr.net/gh/yourname/yourrepo@latest/index.html">
+          <input type="url" id="updateUrlInput" placeholder="https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/update3.html">
         </label>
       </div>
     </div>
@@ -527,7 +628,8 @@
       <h3 style="margin:0;">Update available</h3>
       <span class="badge" id="versionLabel"></span>
     </div>
-    <p class="small">A newer version of this app is available from jsDelivr. Update now to get the latest features. Your settings will be preserved.</p>
+    <p class="small">A newer version of this app is available from jsDelivr. Update now to get the latest features. Your settings will be preserved.
+    You will be asked to update constantly unless you update the file to the newest html as this is just pulling the data</p>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
       <button class="btn btn-secondary" id="updateLaterBtn">Later</button>
       <button class="btn btn-primary" id="updateNowBtn">Update Now</button>
@@ -578,7 +680,13 @@
     lastSong: 'lastSongIndex',
     currentPlaylist: 'currentPlaylistIndex',
     tabCloak: 'tabCloakSettings',
-    updateUrl: 'updateSourceUrl'
+    updateUrl: 'updateSourceUrl',
+    viewerWidth: 'viewerWidth',
+    viewerHeight: 'viewerHeight',
+    panicKey: 'panicKey',
+    panicUrl: 'panicUrl',
+    fontSize: 'fontSize',
+    performanceMode: 'performanceMode'
   };
 
   // Persistent runtime update keys
@@ -600,18 +708,20 @@
   };
   const defaultProfile = { username: 'User', description: 'Customize your space with themes, movies, games, music, and more.', genres: ['Action','Adventure','Synthwave'], avatarUrl: '' };
   const defaultMovies = [
-    { title: 'Movie One', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+1', driveLink: 'https://drive.google.com/file/d/1q2w3e4r5t6y7u8i9/preview' },
-    { title: 'Movie Two', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+2', driveLink: 'https://drive.google.com/file/d/9i8u7y6t5r4e3w2q1/preview' },
-    { title: 'Movie Three', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+3', driveLink: 'https://drive.google.com/file/d/abcdef1234567890/preview' },
-    { title: 'Movie Four', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+4', driveLink: 'https://drive.google.com/file/d/0987654321fedcba/preview' }
+    { title: 'Insidious', coverUrl: '' },
+    { title: ' A Nightmare On Elm Street', coverUrl: '' },
+    { title: 'A Nightmare On Elm Street 3', coverUrl: '', driveLink: '' },
+    { title: 'New Movie Example', coverUrl: '', driveLink: '' } // New for merging
   ];
   const defaultGames = [
-    { title: 'Friday Night Funkin (local)', src: './games/friday-night-funkin/index.html', runtime: 'classic' },
-    { title: 'Example Local Game', src: './games/example-game/index.html', runtime: 'classic' }
+    { title: 'Friday Night Funkin', src: './games/Fnf.html', runtime: 'classic' },
+    { title: 'New Game Example', src: './games/new-game.html', runtime: 'classic' }, // New for merging
+     { title: 'Update #1', src: './games/new-game.html', runtime: 'classic' }
   ];
+
   const defaultSongs = [];
   const defaultPlaylists = [];
-  const defaultUpdateUrl = '';
+  const defaultUpdateUrl = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/update3.html';
 
   function saveJson(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){} }
   function loadJson(key, fallback){ try{ const raw=localStorage.getItem(key); if(raw==null) return fallback; return JSON.parse(raw); }catch(e){ return fallback; } }
@@ -653,6 +763,7 @@
     else if(name==='light'){ t.bgColor='#E6E9EF'; t.textColor='#4C4F69'; t.accentColor='#ACB0BE'; t.buttonColor='#1e66f5'; t.overallThemeColor='#179299'; t.effectColor='rgba(147,153,178,0.25)'; t.bgImage=''; }
     else if(name==='halloween'){ t.bgColor='#0d0b12'; t.textColor='#F9E2AF'; t.accentColor='#FAB387'; t.buttonColor='#F38BA8'; t.overallThemeColor='#EBA0AC'; t.effectColor='rgba(250,179,135,0.35)'; t.bgImage=''; }
     else if(name==='christmas'){ t.bgColor='#101418'; t.textColor='#E6E9EF'; t.accentColor='#A6E3A1'; t.buttonColor='#F38BA8'; t.overallThemeColor='#94E2D5'; t.effectColor='rgba(166,227,161,0.35)'; t.bgImage=''; }
+    else if(name==='minimalist'){ t.bgColor='#FFFFFF'; t.textColor='#000000'; t.accentColor='#AAAAAA'; t.buttonColor='#DDDDDD'; t.effectColor='rgba(170,170,170,0.1)'; t.bgImage=''; }
     theme=t; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm();
   }
 
@@ -752,7 +863,7 @@
 
   function renderGames(){
     const list=document.getElementById('gamesList'); list.innerHTML='';
-    const items = games.filter(g => (g.title || '').toLowerCase().includes(gameQuery.toLowerCase()));
+    const items = games.filter(g => g && (g.title || '').toLowerCase().includes(gameQuery.toLowerCase()));
     items.forEach(g=>{
       const idx=games.indexOf(g);
       const item=document.createElement('div'); item.className='list-item';
@@ -785,11 +896,25 @@
   function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; renderGames(); }
   document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); renderGames(); });
 
-  function openViewer(title, src){
+  function openViewer(title, src, type){
     document.body.classList.add('no-scroll');
     document.getElementById('overlay').classList.add('open');
     document.getElementById('viewerTitle').textContent = title || 'Viewer';
-    document.getElementById('viewerIframe').src = src || 'about:blank';
+    const iframe = document.getElementById('viewerIframe');
+    iframe.src = 'about:blank'; // Reset
+    if (type === 'movie' && src.includes('drive.google.com')) {
+      iframe.src = src;
+      iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
+      iframe.onload = () => {
+        if (iframe.contentDocument && iframe.contentDocument.body.innerHTML.includes('error')) {
+          alert('Drive preview error. Trying direct embed...');
+          iframe.src = src.replace('/preview', '/view'); // Fallback
+        }
+      };
+    } else {
+      iframe.src = src || 'about:blank';
+    }
   }
   function closeViewer(){
     document.getElementById('overlay').classList.remove('open');
@@ -812,7 +937,6 @@
         }
       }
     });
-    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && document.getElementById('overlay').classList.contains('open')){ if(document.fullscreenElement) document.exitFullscreen(); else closeViewer(); } });
     document.addEventListener('fullscreenchange',()=>{
       const viewer=document.getElementById('viewer');
       if(document.fullscreenElement===viewer){ viewer.classList.add('fs'); }
@@ -962,6 +1086,12 @@
     document.getElementById('tabTitleInput').value = cloak.title || '';
     document.getElementById('tabIconInput').value = cloak.icon || '';
     document.getElementById('updateUrlInput').value = updateSourceUrl || '';
+    document.getElementById('viewerWidthInput').value = localStorage.getItem(LS_KEYS.viewerWidth) || '98';
+    document.getElementById('viewerHeightInput').value = localStorage.getItem(LS_KEYS.viewerHeight) || '98';
+    document.getElementById('panicKeyInput').value = localStorage.getItem(LS_KEYS.panicKey) || 'Escape';
+    document.getElementById('panicUrlInput').value = localStorage.getItem(LS_KEYS.panicUrl) || 'https://www.google.com';
+    document.getElementById('fontSizeInput').value = localStorage.getItem(LS_KEYS.fontSize) || '16';
+    document.getElementById('performanceModeSelect').value = localStorage.getItem(LS_KEYS.performanceMode) || '0';
   }
   function saveSettings(){
     theme.bgColor=document.getElementById('bgColorPicker').value;
@@ -979,6 +1109,14 @@
 
     const url=document.getElementById('updateUrlInput').value.trim();
     updateSourceUrl=url; if(url) localStorage.setItem(LS_KEYS.updateUrl, updateSourceUrl);
+
+    localStorage.setItem(LS_KEYS.viewerWidth, document.getElementById('viewerWidthInput').value);
+    localStorage.setItem(LS_KEYS.viewerHeight, document.getElementById('viewerHeightInput').value);
+    localStorage.setItem(LS_KEYS.panicKey, document.getElementById('panicKeyInput').value);
+    localStorage.setItem(LS_KEYS.panicUrl, document.getElementById('panicUrlInput').value);
+    localStorage.setItem(LS_KEYS.fontSize, document.getElementById('fontSizeInput').value);
+    localStorage.setItem(LS_KEYS.performanceMode, document.getElementById('performanceModeSelect').value);
+    applyCustomSettings();
   }
   function resetSettings(){ if(!confirm('Reset settings to default theme?')) return; theme={...defaultTheme}; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm(); }
 
@@ -1072,6 +1210,14 @@
     }
   }
 
+  function mergeDefaults(existing, defaults, keyField = 'title') {
+    const merged = [...existing];
+    defaults.forEach(def => {
+      if (!existing.some(ex => ex[keyField] === def[keyField])) merged.push(def);
+    });
+    return merged;
+  }
+
   // Update checker: persists runtime HTML and navigates to a fresh blob
   function checkForUpdate(userInitiated=false){
     const url=updateSourceUrl;
@@ -1087,6 +1233,8 @@
           document.getElementById('updateLaterBtn').onclick=()=>{ modal.style.display='none'; };
           document.getElementById('updateNowBtn').onclick=()=>{
             const base = getBaseFromUrl(url);
+            movies = mergeDefaults(movies, defaultMovies); saveJson(LS_KEYS.movies, movies);
+            games = mergeDefaults(games, defaultGames); saveJson(LS_KEYS.games, games);
             localStorage.setItem(RUNTIME_KEYS.html, html);
             localStorage.setItem(RUNTIME_KEYS.base, base);
             localStorage.setItem(RUNTIME_KEYS.version, latest);
@@ -1101,6 +1249,24 @@
   document.getElementById('testUpdateBtn').addEventListener('click',()=>checkForUpdate(true));
 
   function bindNav(){ document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click',()=>showPage(btn.dataset.target)); }); }
+
+  function applyCustomSettings() {
+    const root = document.documentElement;
+    root.style.setProperty('--viewer-width', (localStorage.getItem(LS_KEYS.viewerWidth) || '98') + 'vw');
+    root.style.setProperty('--viewer-height', (localStorage.getItem(LS_KEYS.viewerHeight) || '98') + 'vh');
+    root.style.setProperty('--font-size-base', (localStorage.getItem(LS_KEYS.fontSize) || '16') + 'px');
+    document.body.classList.toggle('performance-mode', localStorage.getItem(LS_KEYS.performanceMode) === '1');
+  }
+
+  // Panic button
+  document.addEventListener('keydown', (e) => {
+    const panicKey = localStorage.getItem(LS_KEYS.panicKey) || 'Escape';
+    const panicUrl = localStorage.getItem(LS_KEYS.panicUrl) || 'https://www.google.com';
+    if (e.key === panicKey) {
+      window.open(panicUrl, '_blank');
+      window.location.href = panicUrl; // Fallback redirect
+    }
+  });
 
   // Kick off persistent boot to blob if enabled (runs before init)
   bootFromRuntimeIfEnabled();
@@ -1122,6 +1288,7 @@
     initOverlayControls();
     initPlayerControls();
     showWizardIfNeeded();
+    applyCustomSettings();
 
     // Silent update check on load; manual button shows alerts
     checkForUpdate(false);
