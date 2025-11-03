@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="app-version" content="1.6.6">
+<title>Media Hub</title>
+<link id="dynamic-favicon" rel="icon" href="">
+<style>
+  :root {
+    --rosewater: #F5E0DC;
+    --flamingo: #F2CDCD;
+    --pink: #F5C2E7;
+    --mauve: #CBA6F7;
+    --red: #F38BA8;
+    --maroon: #EBA0AC;
+    --peach: #FAB387;
+    --yellow: #F9E2AF;
+    --green: #A6E3A1;
+    --teal: #94E2D5;
+    --sky: #89DCEB;
+    --sapphire: #74C7EC;
+    --blue: #89B4FA;
+    --lavender: #B4BEFE;
+    --text: #CDD6F4;
+    --subtext: #A6ADC8;
+    --surface1: #45475A;
+    --surface0: #313244;
+    --base: #1E1E2E;
+    --mantle: #181825;
+
+    --bg-color: var(--base);
+    --bg-image: none;
+    --text-color: var(--text);
+    --accent-color: var(--mauve);
+    --button-color: var(--blue);
+    --effect-color: rgba(203,166,247,0.3);
+    --nav-bg: rgba(24,24,37,0.6);
+    --nav-active: var(--accent-color);
+    --card-bg: rgba(49,50,68,0.75);
+    --shadow-color: rgba(0,0,0,0.35);
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    transition: background-color 300ms ease, color 300ms ease, background-image 300ms ease;
+  }
+  body.no-scroll { overflow: hidden; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: var(--nav-bg);
+    display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--surface1);
+  }
+
+  .user-id { display: flex; align-items: center; gap: 12px; cursor: pointer; position: relative; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-color), var(--button-color)); box-shadow: 0 4px 12px var(--shadow-color); overflow: hidden; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .username { font-weight: 600; letter-spacing: 0.2px; }
+  .profile-dropdown { position: absolute; top: 48px; left: 0; width: 320px; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 10px; box-shadow: 0 12px 30px var(--shadow-color); padding: 12px; display: none; }
+  .profile-dropdown label { font-size: 12px; color: var(--subtext); }
+  .profile-dropdown input, .profile-dropdown textarea { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; margin-top: 4px; margin-bottom: 8px; }
+  .profile-actions { display: flex; gap: 8px; }
+
+  .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: transform 120ms ease, box-shadow 120ms ease, background-color 200ms ease, color 200ms ease; }
+  .btn-primary { background: var(--button-color); color: #0b0b12; box-shadow: 0 6px 18px color-mix(in oklab, var(--button-color) 60%, black 40%); }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-secondary { background: transparent; border: 1px solid var(--surface1); color: var(--text-color); }
+
+  .nav { display: flex; gap: 8px; }
+  .nav button { background: transparent; border: 1px solid var(--surface1); color: var(--text-color); padding: 8px 12px; border-radius: 10px; cursor: pointer; transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 120ms ease; }
+  .nav button:hover { background: rgba(203,166,247,0.12); transform: translateY(-1px); }
+  .nav button.active { background: var(--nav-active); color: #0a0a10; border-color: transparent; box-shadow: 0 8px 20px color-mix(in oklab, var(--nav-active) 60%, black 40%); }
+
+  main { padding: 20px; max-width: 1200px; margin: 0 auto 110px auto; }
+  section.page { display: none; }
+  section.page.active { display: block; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .card { background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px var(--shadow-color); transition: transform 150ms ease, box-shadow 150ms ease, border-color 200ms ease; position: relative; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 14px 28px var(--shadow-color); border-color: var(--accent-color); }
+  .card .thumb { width: 100%; height: 240px; background: linear-gradient(135deg, color-mix(in oklab, var(--accent-color) 28%, transparent), color-mix(in oklab, var(--button-color) 28%, transparent)); display: grid; place-items: center; color: var(--text-color); position: relative; }
+  .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb .edit-mask { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35)); opacity: 0; transition: opacity 200ms ease; pointer-events: none; }
+  .card .thumb:hover .edit-mask { opacity: 1; }
+  .edit-mask .mask-btn { background: var(--accent-color); color: #0b0b12; border: none; border-radius: 999px; padding: 6px 12px; font-weight: 700; box-shadow: 0 8px 20px color-mix(in oklab, var(--accent-color) 60%, black 40%); pointer-events: all; cursor: pointer; }
+
+  .card .info { padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .small { font-size: 12px; color: var(--subtext); }
+  .icon-btn { background: rgba(0,0,0,0.12); border: 1px solid var(--surface1); color: var(--text-color); padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background-color 200ms ease, border-color 200ms ease, transform 120ms ease; }
+  .icon-btn:hover { background: rgba(203,166,247,0.18); transform: translateY(-1px); }
+
+  /* Overlay and Viewer */
+  .overlay { position: fixed; inset: 0; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 60; }
+  .overlay.open { display: flex; }
+  .viewer { position: relative; width: 80vw; height: 65vh; max-width: 1100px; border-radius: 12px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--surface1); box-shadow: 0 20px 40px var(--shadow-color); display: grid; grid-template-rows: auto 1fr; }
+  .viewer-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(49,50,68,0.5); border-bottom: 1px solid var(--surface1); }
+  .viewer-iframe { width: 100%; height: 100%; background: #0a0a0f; border: none; display: block; }
+
+  /* Robust fullscreen: both class and :fullscreen */
+  .viewer.fs,
+  .viewer:fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    grid-template-rows: 1fr !important;
+    background: #000 !important;
+  }
+  .viewer.fs .viewer-header,
+  .viewer:fullscreen .viewer-header { display: none !important; }
+
+  .player-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 55; backdrop-filter: blur(12px); background: linear-gradient(135deg, color-mix(in oklab, var(--nav-bg) 70%, transparent), rgba(0,0,0,0.25)); border-top: 1px solid var(--surface1); padding: 10px 16px; display: grid; grid-template-columns: 320px 1fr 320px; align-items: center; gap: 14px; box-shadow: 0 -10px 24px var(--shadow-color); }
+  .player-meta { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+  .player-art { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, var(--accent-color), var(--button-color)); box-shadow: 0 8px 20px var(--shadow-color); border: 1px solid var(--surface1); }
+  .player-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-subrow { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .eq .bar { width: 3px; background: var(--accent-color); border-radius: 2px; height: 4px; }
+  .player-controls { display: flex; gap: 10px; align-items: center; justify-content: center; }
+  .btn-circle { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 10px 22px color-mix(in oklab, var(--button-color) 50%, black 50%); }
+  .btn-circle.btn-primary { background: linear-gradient(135deg, var(--button-color), var(--accent-color)); color: #0b0b12; }
+  .btn-circle.btn-secondary { background: rgba(49,50,68,0.6); border: 1px solid var(--surface1); color: var(--text-color); }
+  .progress-wrap { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
+  .time-label { font-size: 12px; color: var(--subtext); text-align: center; }
+  .range { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(203,166,247,0.18); border-radius: 8px; outline: none; }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-color); border: 2px solid var(--mantle); box-shadow: 0 2px 8px color-mix(in oklab, var(--accent-color) 60%, black 40%); cursor: pointer; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-col { display: flex; flex-direction: column; gap: 6px; }
+  input[type="color"], input[type="text"], input[type="url"], select { padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; }
+  textarea { padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; min-height: 80px; }
+  hr { border: none; border-top: 1px solid var(--surface1); margin: 16px 0; }
+
+  .wizard { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
+  .wizard-inner { width: 680px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 14px; box-shadow: 0 20px 44px var(--shadow-color); padding: 16px; }
+  .wizard-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--surface1); padding-bottom: 10px; }
+  .wizard-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+  .update-modal { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
+  .update-box { width: 520px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; box-shadow: 0 18px 38px var(--shadow-color); padding: 16px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); font-size: 12px; color: var(--subtext); }
+
+  .home-hero { padding: 20px; border: 1px solid var(--surface1); background: linear-gradient(145deg, rgba(49,50,68,0.5), rgba(49,50,68,0.3)); border-radius: 16px; box-shadow: 0 16px 36px var(--shadow-color); display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; }
+  .chip { display: inline-block; margin-right: 6px; margin-top: 6px; padding: 4px 8px; border-radius: 999px; background: rgba(203,166,247,0.18); border: 1px solid var(--surface1); font-size: 12px; color: var(--text-color); }
+
+  .list { display: grid; gap: 8px; }
+  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-radius: 10px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); }
+  .list-item .title { font-weight: 600; }
+  .muted { color: var(--subtext); font-size: 12px; }
+
+  .searchbar { display: flex; gap: 8px; align-items: center; margin: 8px 0 16px 0; }
+  .searchbar input { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; }
+  .searchbar .btn { white-space: nowrap; }
+
+  .modal { position: fixed; inset: 0; z-index: 75; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 70%, black 30%); backdrop-filter: blur(10px); }
+  .modal-inner { width: 720px; max-width: 92%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 14px; box-shadow: 0 20px 44px var(--shadow-color); padding: 16px; display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+  .modal-preview { border: 1px solid var(--surface1); border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, color-mix(in oklab, var(--accent-color) 28%, transparent), color-mix(in oklab, var(--button-color) 28%, transparent)); height: 340px; display: grid; place-items: center; }
+  .modal-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="user-id" id="userIdBtn">
+    <div class="avatar"><img id="avatarImg" alt="avatar"></div>
+    <div class="username" id="usernameText">User</div>
+    <div class="profile-dropdown" id="profileDropdown">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+        <div class="avatar" style="width:48px; height:48px;"><img id="avatarPreview" alt="avatar preview"></div>
+        <span class="badge">Profile</span>
+      </div>
+      <label>Username
+        <input type="text" id="profileUsername" placeholder="Enter your username">
+      </label>
+      <label>Profile Picture URL
+        <input type="url" id="profileAvatarUrl" placeholder="https://example.com/me.png">
+      </label>
+      <label>Description
+        <textarea id="profileDescription" placeholder="Tell us about yourself"></textarea>
+      </label>
+      <label>Favorite Genres (comma-separated)
+        <input type="text" id="profileGenres" placeholder="Action, RPG, Synthwave">
+      </label>
+      <div class="profile-actions">
+        <button class="btn btn-secondary" id="profileCancel">Cancel</button>
+        <button class="btn btn-primary" id="profileSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button data-target="home" class="active">Home</button>
+    <button data-target="movies">Movies</button>
+    <button data-target="games">Games</button>
+    <button data-target="music">Music</button>
+    <button data-target="proxies">Proxies</button>
+    <button data-target="settings">Settings</button>
+  </div>
+</div>
+
+<main>
+  <section id="home" class="page active">
+    <div class="home-hero">
+      <div class="avatar"><img id="homeAvatar" alt="avatar"></div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h2 id="homeUsername" style="margin:0;">Welcome, User</h2>
+          <span class="badge">Catppuccin</span>
+        </div>
+        <p id="homeDescription" class="small" style="margin:6px 0 4px 0;">Customize your space with themes, movies, games, music, and more.</p>
+        <div id="homeGenres"></div>
+      </div>
+    </div>
+    <hr>
+    <h3>Quick Actions</h3>
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px,1fr));">
+      <div class="card">
+        <div class="thumb" style="height:150px; place-items:center;">
+          <div class="player-art"></div>
+        </div>
+        <div class="info">
+          <div>
+            <div class="title">Continue Listening</div>
+            <div class="small muted" id="quickSong">No song playing</div>
+          </div>
+          <button class="btn btn-primary" onclick="showPage('music')">Open</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="thumb" style="height:150px; place-items:center;">
+          <span class="title">Latest Movies</span>
+        </div>
+        <div class="info">
+          <div>
+            <div class="title">Watch Now</div>
+            <div class="small muted">Your curated movie grid</div>
+          </div>
+          <button class="btn btn-primary" onclick="showPage('movies')">Open</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="thumb" style="height:150px; place-items:center;">
+          <span class="title">Games</span>
+        </div>
+        <div class="info">
+          <div>
+            <div class="title">Play Instantly</div>
+            <div class="small muted">Load local folder</div>
+          </div>
+          <button class="btn btn-primary" onclick="showPage('games')">Open</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="movies" class="page">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h2>Movies</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" onclick="openMovieEditor(null)">Add Movie</button>
+        <button class="btn btn-secondary" onclick="resetMovies()">Reset Grid</button>
+      </div>
+    </div>
+    <div class="searchbar">
+      <input type="text" id="movieSearch" placeholder="Search movies by title...">
+      <button class="btn btn-secondary" onclick="clearMovieSearch()">Clear</button>
+    </div>
+    <p class="small muted">Click a cover to preview from Google Drive. Hover a cover to Edit image and link.</p>
+    <div class="grid" id="moviesGrid"></div>
+  </section>
+
+  <section id="games" class="page">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h2>Games</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" onclick="addGamePrompt()">Add Game</button>
+        <button class="btn btn-secondary" onclick="resetGames()">Reset List</button>
+      </div>
+    </div>
+    <div class="searchbar">
+      <input type="text" id="gameSearch" placeholder="Search games by title...">
+      <button class="btn btn-secondary" onclick="clearGameSearch()">Clear</button>
+    </div>
+    <p class="small muted">Place your game folders beside this HTML (e.g., ./games/friday-night-funkin/index.html). Some games may block embedding.</p>
+    <div class="list" id="gamesList"></div>
+  </section>
+
+  <section id="music" class="page">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h2>Music Library</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" onclick="addSongPrompt()">Add Google Drive Song</button>
+        <button class="btn btn-secondary" onclick="createPlaylistPrompt()">New Playlist</button>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <div>
+        <h3>Songs</h3>
+        <div class="list" id="songsList"></div>
+      </div>
+      <div>
+        <h3>Playlists</h3>
+        <div class="list" id="playlistsList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proxies" class="page">
+    <h2>Proxies</h2>
+    <p class="small muted">Simple list of proxies (placeholder content).</p>
+    <div class="list">
+      <div class="list-item">
+        <div><div class="title">Ultraviolet Proxy</div><div class="muted">Fast, simple HTTP proxy</div></div>
+        <a href="https://example-proxy-uv.com" target="_blank" rel="noopener">Open</a>
+      </div>
+      <div class="list-item">
+        <div><div class="title">Space Proxy</div><div class="muted">Bypass restrictions</div></div>
+        <a href="https://example-space-proxy.com" target="_blank" rel="noopener">Open</a>
+      </div>
+      <div class="list-item">
+        <div><div class="title">Nebula Proxy</div><div class="muted">Minimal and fast</div></div>
+        <a href="https://example-nebula-proxy.com" target="_blank" rel="noopener">Open</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="settings" class="page">
+    <h2>Settings</h2>
+    <p class="small muted">Customize background, colors, theme, tab cloaker, and auto-update. Settings persist in localStorage.</p>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Background Color
+          <input type="color" id="bgColorPicker">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Background Image URL
+          <input type="url" id="bgImageUrl" placeholder="https://example.com/background.jpg">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Overall Theme Color
+          <input type="color" id="overallThemeColor">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Accent Color
+          <input type="color" id="accentColorPicker">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Button Color
+          <input type="color" id="buttonColorPicker">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Text Color
+          <input type="color" id="textColorPicker">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Effect Color
+          <input type="color" id="effectColorPicker">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Preset Theme
+          <select id="presetThemeSelect">
+            <option value="">Select preset...</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="halloween">Halloween</option>
+            <option value="christmas">Christmas</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <hr>
+    <h3>Tab Cloaker</h3>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Tab Title
+          <input type="text" id="tabTitleInput" placeholder="e.g., Google">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Favicon Image URL
+          <input type="url" id="tabIconInput" placeholder="https://www.google.com/favicon.ico">
+        </label>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="btn btn-primary" id="applyTabCloakBtn">Apply Cloak</button>
+      <button class="btn btn-secondary" id="cloakGoogleBtn">Cloak as Google</button>
+      <button class="btn btn-secondary" id="resetCloakBtn">Reset Cloak</button>
+    </div>
+    <hr>
+    <h3>Auto-Update (jsDelivr)</h3>
+    <div class="form-row" style="margin-top:8px;">
+      <div class="form-col" style="grid-column: 1 / -1;">
+        <label>Update Source URL (jsDelivr)
+          <input type="url" id="updateUrlInput" placeholder="https://cdn.jsdelivr.net/gh/yourname/yourrepo@latest/index.html">
+        </label>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="btn btn-secondary" id="testUpdateBtn">Test Check</button>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+      <button class="btn btn-secondary" onclick="resetSettings()">Reset to Default</button>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="viewer" id="viewer">
+    <div class="viewer-header" id="viewerHeader">
+      <div class="viewer-title" id="viewerTitle">Viewer</div>
+      <div style="display:flex; gap:8px;" id="viewerHeaderBtns">
+        <button class="icon-btn" id="fullscreenBtn">Fullscreen</button>
+        <button class="icon-btn" id="closeOverlayBtn">Close</button>
+      </div>
+    </div>
+    <iframe class="viewer-iframe" id="viewerIframe" allowfullscreen></iframe>
+  </div>
+</div>
+
+<div class="player-bar" id="playerBar">
+  <div class="player-meta">
+    <div class="player-art" id="playerArt"></div>
+    <div>
+      <div class="player-title" id="playerTitle">No song selected</div>
+      <div class="player-subrow">
+        <div class="muted small" id="playerArtist">-</div>
+        <div class="eq" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="player-controls">
+      <button class="btn-circle btn-secondary" id="prevBtn" title="Previous">⟨</button>
+      <button class="btn-circle btn-primary" id="playPauseBtn" title="Play/Pause">▶</button>
+      <button class="btn-circle btn-secondary" id="nextBtn" title="Next">⟩</button>
+    </div>
+    <div class="progress-wrap" style="margin-top:8px;">
+      <span class="time-label" id="currentTimeLabel">0:00</span>
+      <input type="range" min="0" max="1000" step="1" value="0" class="range" id="progressRange" aria-label="Seek">
+      <span class="time-label" id="durationLabel">0:00</span>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
+    <span class="small muted">Volume</span>
+    <input type="range" min="0" max="1" step="0.01" value="1" class="range" id="volumeRange" aria-label="Volume">
+  </div>
+</div>
+<audio id="audioElement" preload="metadata"></audio>
+
+<div class="wizard" id="wizard">
+  <div class="wizard-inner">
+    <div class="wizard-header">
+      <h3 style="margin:0;">Welcome! Let's set up your theme</h3>
+      <span class="badge">Setup Wizard</span>
+    </div>
+    <p class="small muted">Choose your colors. You can change them later in Settings.</p>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Overall Theme Color
+          <input type="color" id="wizOverall">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Accent Color
+          <input type="color" id="wizAccent">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Button Color
+          <input type="color" id="wizButton">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Text Color
+          <input type="color" id="wizText">
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Effect Color
+          <input type="color" id="wizEffect">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Background Color
+          <input type="color" id="wizBg">
+        </label>
+      </div>
+    </div>
+    <div class="wizard-actions">
+      <button class="btn btn-secondary" id="wizSkip">Skip</button>
+      <button class="btn btn-primary" id="wizApply">Apply</button>
+    </div>
+  </div>
+</div>
+
+<div class="update-modal" id="updateModal">
+  <div class="update-box">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <h3 style="margin:0;">Update available</h3>
+      <span class="badge" id="versionLabel"></span>
+    </div>
+    <p class="small">A newer version of this app is available from jsDelivr. Update now to get the latest features. Your settings will be preserved.</p>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button class="btn btn-secondary" id="updateLaterBtn">Later</button>
+      <button class="btn btn-primary" id="updateNowBtn">Update Now</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="movieEditorModal">
+  <div class="modal-inner">
+    <div>
+      <div class="modal-preview" id="moviePreviewBox">
+        <img id="moviePreviewImg" alt="Cover preview">
+      </div>
+    </div>
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0;">Edit Movie</h3>
+        <span class="badge">Cover & Link</span>
+      </div>
+      <div class="form-col" style="margin-top:8px;">
+        <label>Title
+          <input type="text" id="editMovieTitle" placeholder="Movie title">
+        </label>
+        <label>Cover Image URL
+          <input type="url" id="editMovieCover" placeholder="https://example.com/cover.jpg">
+        </label>
+        <label>Google Drive Preview Link
+          <input type="url" id="editMovieLink" placeholder="https://drive.google.com/file/.../preview">
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="movieEditCancel">Cancel</button>
+        <button class="btn btn-primary" id="movieEditSave">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const LS_KEYS = {
+    setupDone: 'setupDone',
+    theme: 'themeSettings',
+    profile: 'userProfile',
+    movies: 'moviesList',
+    games: 'gamesList',
+    songs: 'songsList',
+    playlists: 'playlistsList',
+    lastSong: 'lastSongIndex',
+    currentPlaylist: 'currentPlaylistIndex',
+    tabCloak: 'tabCloakSettings',
+    updateUrl: 'updateSourceUrl'
+  };
+
+  // Keys used by the updater to stage and apply a fetched build
+  const UPDATE_KEYS = {
+    stagedHtml: 'update_staged_html',
+    stagedVersion: 'update_staged_version',
+    stagedBase: 'update_staged_base',
+    useStaged: 'update_use_staged'
+  };
+
+  const defaultTheme = {
+    bgColor: getComputedStyle(document.documentElement).getPropertyValue('--base').trim() || '#1E1E2E',
+    bgImage: '',
+    overallThemeColor: getComputedStyle(document.documentElement).getPropertyValue('--mauve').trim() || '#CBA6F7',
+    accentColor: getComputedStyle(document.documentElement).getPropertyValue('--mauve').trim() || '#CBA6F7',
+    buttonColor: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim() || '#89B4FA',
+    textColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#CDD6F4',
+    effectColor: 'rgba(203,166,247,0.3)'
+  };
+  const defaultProfile = { username: 'User', description: 'Customize your space with themes, movies, games, music, and more.', genres: ['Action','Adventure','Synthwave'], avatarUrl: '' };
+  const defaultMovies = [
+    { title: 'Movie One', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+1', driveLink: 'https://drive.google.com/file/d/1q2w3e4r5t6y7u8i9/preview' },
+    { title: 'Movie Two', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+2', driveLink: 'https://drive.google.com/file/d/9i8u7y6t5r4e3w2q1/preview' },
+    { title: 'Movie Three', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+3', driveLink: 'https://drive.google.com/file/d/abcdef1234567890/preview' },
+    { title: 'Movie Four', coverUrl: 'https://via.placeholder.com/300x450?text=Movie+4', driveLink: 'https://drive.google.com/file/d/0987654321fedcba/preview' }
+  ];
+  const defaultGames = [
+    { title: 'Friday Night Funkin (local)', src: './games/friday-night-funkin/index.html', runtime: 'classic' },
+    { title: 'Example Local Game', src: './games/example-game/index.html', runtime: 'classic' }
+  ];
+  const defaultSongs = [];
+  const defaultPlaylists = [];
+  const defaultUpdateUrl = '';
+
+  function saveJson(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){} }
+  function loadJson(key, fallback){ try{ const raw=localStorage.getItem(key); if(raw==null) return fallback; return JSON.parse(raw); }catch(e){ return fallback; } }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+  function rgbToHex(rgb){ if(!rgb) return '#000000'; rgb=rgb.trim(); if(rgb.startsWith('#')) return rgb; const m=rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i); if(!m) return '#000000'; return '#' + [m[1],m[2],m[3]].map(x=>parseInt(x,10).toString(16).padStart(2,'0')).join(''); }
+  function hexToRgba(hex,a=1){ hex=hex.replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join(''); const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+  function extractRGB(str){ const m=String(str||'').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i); if(!m) return null; return `rgb(${m[1]}, ${m[2]}, ${m[3]})`; }
+  function semverCompare(a,b){ const pa=a.split('.').map(n=>parseInt(n,10)||0), pb=b.split('.').map(n=>parseInt(n,10)||0); for(let i=0;i<Math.max(pa.length,pb.length);i++){const ai=pa[i]||0,bi=pb[i]||0; if(ai>bi) return 1; if(ai<bi) return -1;} return 0; }
+
+  let theme = loadJson(LS_KEYS.theme, defaultTheme);
+  let profile = loadJson(LS_KEYS.profile, defaultProfile);
+  let movies = loadJson(LS_KEYS.movies, defaultMovies);
+  let games = loadJson(LS_KEYS.games, defaultGames);
+  let songs = loadJson(LS_KEYS.songs, defaultSongs);
+  let playlists = loadJson(LS_KEYS.playlists, defaultPlaylists);
+  let cloak = loadJson(LS_KEYS.tabCloak, { title: document.title, icon: '' });
+  let updateSourceUrl = localStorage.getItem(LS_KEYS.updateUrl) || defaultUpdateUrl;
+
+  let currentPlaylistIndex = parseInt(localStorage.getItem(LS_KEYS.currentPlaylist) || '-1', 10);
+  let currentSongIndex = parseInt(localStorage.getItem(LS_KEYS.lastSong) || '0', 10);
+  let isPlaying = false;
+  let movieQuery = '';
+  let gameQuery = '';
+
+  function applyTheme(t=theme){
+    const root=document.documentElement;
+    root.style.setProperty('--bg-color', t.bgColor || defaultTheme.bgColor);
+    root.style.setProperty('--bg-image', t.bgImage && t.bgImage.trim().length>6 ? `url("${t.bgImage}")` : 'none');
+    root.style.setProperty('--text-color', t.textColor || defaultTheme.textColor);
+    root.style.setProperty('--accent-color', t.accentColor || defaultTheme.accentColor);
+    root.style.setProperty('--button-color', t.buttonColor || defaultTheme.buttonColor);
+    root.style.setProperty('--effect-color', t.effectColor || defaultTheme.effectColor);
+    root.style.setProperty('--nav-active', t.overallThemeColor || t.accentColor || defaultTheme.accentColor);
+  }
+
+  function presetTheme(name){
+    let t={...defaultTheme};
+    if(name==='dark'){ t.bgColor=getComputedStyle(document.documentElement).getPropertyValue('--base').trim(); t.textColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim(); t.accentColor=getComputedStyle(document.documentElement).getPropertyValue('--mauve').trim(); t.buttonColor=getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(); t.overallThemeColor=t.accentColor; t.effectColor='rgba(203,166,247,0.3)'; t.bgImage=''; }
+    else if(name==='light'){ t.bgColor='#E6E9EF'; t.textColor='#4C4F69'; t.accentColor='#ACB0BE'; t.buttonColor='#1e66f5'; t.overallThemeColor='#179299'; t.effectColor='rgba(147,153,178,0.25)'; t.bgImage=''; }
+    else if(name==='halloween'){ t.bgColor='#0d0b12'; t.textColor='#F9E2AF'; t.accentColor='#FAB387'; t.buttonColor='#F38BA8'; t.overallThemeColor='#EBA0AC'; t.effectColor='rgba(250,179,135,0.35)'; t.bgImage=''; }
+    else if(name==='christmas'){ t.bgColor='#101418'; t.textColor='#E6E9EF'; t.accentColor='#A6E3A1'; t.buttonColor='#F38BA8'; t.overallThemeColor='#94E2D5'; t.effectColor='rgba(166,227,161,0.35)'; t.bgImage=''; }
+    theme=t; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm();
+  }
+
+  function showPage(id){
+    document.querySelectorAll('.nav button').forEach(btn=>btn.classList.toggle('active', btn.dataset.target===id));
+    document.querySelectorAll('section.page').forEach(sec=>sec.classList.toggle('active', sec.id===id));
+  }
+
+  function renderProfile(){
+    document.getElementById('usernameText').textContent = profile.username || 'User';
+    document.getElementById('homeUsername').textContent = `Welcome, ${profile.username || 'User'}`;
+    document.getElementById('homeDescription').textContent = profile.description || defaultProfile.description;
+
+    const avatarImgEl = document.getElementById('avatarImg');
+    const avatarPreviewEl = document.getElementById('avatarPreview');
+    const homeAvatarEl = document.getElementById('homeAvatar');
+    if(profile.avatarUrl){ avatarImgEl.src=profile.avatarUrl; avatarPreviewEl.src=profile.avatarUrl; homeAvatarEl.src=profile.avatarUrl; }
+    else { avatarImgEl.removeAttribute('src'); avatarPreviewEl.removeAttribute('src'); homeAvatarEl.removeAttribute('src'); }
+
+    const homeGenresEl=document.getElementById('homeGenres'); homeGenresEl.innerHTML='';
+    const genres = Array.isArray(profile.genres) ? profile.genres : (profile.genres || '').split(',').map(s=>s.trim()).filter(Boolean);
+    genres.forEach(g=>{ const chip=document.createElement('span'); chip.className='chip'; chip.textContent=g; homeGenresEl.appendChild(chip); });
+
+    document.getElementById('profileUsername').value = profile.username || '';
+    document.getElementById('profileAvatarUrl').value = profile.avatarUrl || '';
+    document.getElementById('profileDescription').value = profile.description || '';
+    document.getElementById('profileGenres').value = Array.isArray(profile.genres) ? profile.genres.join(', ') : (profile.genres || '');
+  }
+  function initProfileDropdown(){
+    const userIdBtn=document.getElementById('userIdBtn');
+    const dropdown=document.getElementById('profileDropdown');
+    userIdBtn.addEventListener('click',(e)=>{ if(e.target.closest('.profile-dropdown')) return; dropdown.style.display = dropdown.style.display==='block' ? 'none' : 'block'; });
+    document.getElementById('profileCancel').addEventListener('click',()=>{ dropdown.style.display='none'; renderProfile(); });
+    document.getElementById('profileSave').addEventListener('click',()=>{
+      profile.username=document.getElementById('profileUsername').value.trim() || 'User';
+      profile.avatarUrl=document.getElementById('profileAvatarUrl').value.trim();
+      profile.description=document.getElementById('profileDescription').value.trim();
+      const genresStr=document.getElementById('profileGenres').value.trim();
+      profile.genres=genresStr? genresStr.split(',').map(s=>s.trim()).filter(Boolean) : [];
+      saveJson(LS_KEYS.profile, profile); renderProfile(); dropdown.style.display='none';
+    });
+    document.getElementById('profileAvatarUrl').addEventListener('input',(e)=>{ document.getElementById('avatarPreview').src=e.target.value.trim(); });
+    document.addEventListener('click',(e)=>{ if(!e.target.closest('#userIdBtn')) dropdown.style.display='none'; });
+  }
+
+  let movieEditIndex=null;
+  function renderMovies(){
+    const grid=document.getElementById('moviesGrid'); grid.innerHTML='';
+    const items = movies.filter(m => (m.title || '').toLowerCase().includes(movieQuery.toLowerCase()));
+    items.forEach(m=>{
+      const idx=movies.indexOf(m);
+      const card=document.createElement('div'); card.className='card';
+      const thumb=document.createElement('div'); thumb.className='thumb';
+      if(m.coverUrl){ const img=document.createElement('img'); img.src=m.coverUrl; thumb.appendChild(img); } else { thumb.textContent=m.title; }
+      const mask=document.createElement('div'); mask.className='edit-mask';
+      const maskBtn=document.createElement('button'); maskBtn.className='mask-btn'; maskBtn.textContent='Edit Cover';
+      maskBtn.addEventListener('click',(e)=>{ e.stopPropagation(); openMovieEditor(idx); });
+      mask.appendChild(maskBtn); thumb.appendChild(mask);
+      thumb.addEventListener('click',()=>openViewer(m.title, m.driveLink, 'movie'));
+      const info=document.createElement('div'); info.className='info';
+      const left=document.createElement('div');
+      const titleDiv=document.createElement('div'); titleDiv.className='title'; titleDiv.textContent=m.title;
+      const sub=document.createElement('div'); sub.className='small muted'; sub.textContent='Click to watch';
+      left.appendChild(titleDiv); left.appendChild(sub);
+      const editBtn=document.createElement('button'); editBtn.className='icon-btn'; editBtn.textContent='Edit';
+      editBtn.addEventListener('click',(e)=>{ e.stopPropagation(); openMovieEditor(idx); });
+      info.appendChild(left); info.appendChild(editBtn);
+      card.appendChild(thumb); card.appendChild(info);
+      grid.appendChild(card);
+    });
+  }
+  function openMovieEditor(idx){
+    movieEditIndex=idx;
+    const modal=document.getElementById('movieEditorModal');
+    const titleEl=document.getElementById('editMovieTitle');
+    const coverEl=document.getElementById('editMovieCover');
+    const linkEl=document.getElementById('editMovieLink');
+    const previewImg=document.getElementById('moviePreviewImg');
+    if(idx==null){ titleEl.value=''; coverEl.value=''; linkEl.value=''; previewImg.removeAttribute('src'); }
+    else { const m=movies[idx]; titleEl.value=m.title||''; coverEl.value=m.coverUrl||''; linkEl.value=m.driveLink||''; if(m.coverUrl) previewImg.src=m.coverUrl; }
+    coverEl.oninput=()=>{ const url=coverEl.value.trim(); if(url) previewImg.src=url; else previewImg.removeAttribute('src'); };
+    document.getElementById('movieEditCancel').onclick=()=>{ modal.style.display='none'; document.body.classList.remove('no-scroll'); };
+    document.getElementById('movieEditSave').onclick=()=>{
+      const title=titleEl.value.trim() || 'Untitled';
+      const cover=coverEl.value.trim();
+      const link=linkEl.value.trim();
+      if(movieEditIndex==null) movies.push({ title, coverUrl: cover, driveLink: link });
+      else movies[movieEditIndex]={ title, coverUrl: cover, driveLink: link };
+      saveJson(LS_KEYS.movies, movies); modal.style.display='none'; document.body.classList.remove('no-scroll'); renderMovies();
+    };
+    modal.style.display='flex'; document.body.classList.add('no-scroll');
+    modal.addEventListener('click',(e)=>{ if(!e.target.closest('.modal-inner')){ modal.style.display='none'; document.body.classList.remove('no-scroll'); } }, { once:true });
+  }
+  function resetMovies(){ if(!confirm('Reset movie grid to defaults?')) return; movies=defaultMovies.slice(); saveJson(LS_KEYS.movies, movies); renderMovies(); }
+  function clearMovieSearch(){ movieQuery=''; document.getElementById('movieSearch').value=''; renderMovies(); }
+  document.getElementById('movieSearch').addEventListener('input',(e)=>{ movieQuery=e.target.value.trim(); renderMovies(); });
+
+  function renderGames(){
+    const list=document.getElementById('gamesList'); list.innerHTML='';
+    const items = games.filter(g => (g.title || '').toLowerCase().includes(gameQuery.toLowerCase()));
+    items.forEach(g=>{
+      const idx=games.indexOf(g);
+      const item=document.createElement('div'); item.className='list-item';
+      const left=document.createElement('div');
+      const title=document.createElement('div'); title.className='title'; title.textContent=g.title;
+      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=`Local: ${g.src}`;
+      left.appendChild(title); left.appendChild(muted);
+      const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
+      const playBtn=document.createElement('button'); playBtn.className='btn btn-primary'; playBtn.textContent='Play';
+      playBtn.addEventListener('click',()=>openViewer(g.title, g.src, 'game'));
+      const editBtn=document.createElement('button'); editBtn.className='btn btn-secondary'; editBtn.textContent='Edit';
+      editBtn.addEventListener('click',()=>editGamePrompt(idx));
+      right.appendChild(playBtn); right.appendChild(editBtn);
+      item.appendChild(left); item.appendChild(right);
+      list.appendChild(item);
+    });
+  }
+  function addGamePrompt(){
+    const title=prompt('Game title:'); if(!title) return;
+    const src=prompt('Local path to game HTML (e.g., ./games/my-game/index.html):', './games/my-game/index.html');
+    games.push({ title, src: src || '', runtime: 'classic' }); saveJson(LS_KEYS.games, games); renderGames();
+  }
+  function editGamePrompt(idx){
+    const g=games[idx];
+    const title=prompt('Edit title:', g.title) || g.title;
+    const src=prompt('Edit local path:', g.src || '') || g.src;
+    games[idx] = { title, src, runtime: 'classic' }; saveJson(LS_KEYS.games, games); renderGames();
+  }
+  function resetGames(){ if(!confirm('Reset games list to defaults?')) return; games=defaultGames.slice(); saveJson(LS_KEYS.games, games); renderGames(); }
+  function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; renderGames(); }
+  document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); renderGames(); });
+
+  function openViewer(title, src){
+    document.body.classList.add('no-scroll');
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('viewerTitle').textContent = title || 'Viewer';
+    document.getElementById('viewerIframe').src = src || 'about:blank';
+  }
+  function closeViewer(){
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('viewerIframe').src = 'about:blank';
+    document.body.classList.remove('no-scroll');
+    const viewer = document.getElementById('viewer');
+    viewer.classList.remove('fs');
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  }
+  function initOverlayControls(){
+    document.getElementById('closeOverlayBtn').addEventListener('click', closeViewer);
+    document.getElementById('fullscreenBtn').addEventListener('click', ()=>{
+      const viewer=document.getElementById('viewer');
+      if(document.fullscreenElement){ document.exitFullscreen(); }
+      else{
+        if(viewer.requestFullscreen){
+          viewer.requestFullscreen().then(()=>{ viewer.classList.add('fs'); }).catch(()=>{ viewer.classList.add('fs'); });
+        } else {
+          viewer.classList.add('fs');
+        }
+      }
+    });
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && document.getElementById('overlay').classList.contains('open')){ if(document.fullscreenElement) document.exitFullscreen(); else closeViewer(); } });
+    document.addEventListener('fullscreenchange',()=>{
+      const viewer=document.getElementById('viewer');
+      if(document.fullscreenElement===viewer){ viewer.classList.add('fs'); }
+      else { viewer.classList.remove('fs'); }
+    });
+  }
+
+  function normalizeDriveAudio(input){
+    const str=String(input||'').trim(); if(!str) return '';
+    const idMatch=str.match(/(?:\/d\/|id=)([a-zA-Z0-9_-]{10,})/);
+    let id=idMatch? idMatch[1]: null;
+    if(!id && /^[a-zA-Z0-9_-]{10,}$/.test(str)) id=str;
+    if(id) return `https://drive.google.com/uc?export=download&id=${id}`;
+    if(str.startsWith('https://drive.google.com/uc?')) return str;
+    return str;
+  }
+
+  function renderSongs(){
+    const list=document.getElementById('songsList'); list.innerHTML='';
+    songs.forEach((s, idx)=>{
+      const item=document.createElement('div'); item.className='list-item';
+      const left=document.createElement('div');
+      const title=document.createElement('div'); title.className='title'; title.textContent=s.title || 'Untitled';
+      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=s.artist || 'Unknown';
+      left.appendChild(title); left.appendChild(muted);
+      const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
+      const playBtn=document.createElement('button'); playBtn.className='btn btn-primary'; playBtn.textContent='Play';
+      playBtn.addEventListener('click',()=>{ currentPlaylistIndex=-1; localStorage.setItem(LS_KEYS.currentPlaylist, String(currentPlaylistIndex)); playSong(idx); });
+      const addBtn=document.createElement('button'); addBtn.className='btn btn-secondary'; addBtn.textContent='Add to Playlist';
+      addBtn.addEventListener('click',()=>{
+        const plName=prompt('Add to which playlist? Enter name:'); if(!plName) return;
+        let pl=playlists.find(p=>p.name.toLowerCase()===plName.toLowerCase());
+        if(!pl){ pl={ name: plName, songIds: [] }; playlists.push(pl); }
+        pl.songIds.push(idx); saveJson(LS_KEYS.playlists, playlists); renderPlaylists(); alert('Added to playlist: '+pl.name);
+      });
+      right.appendChild(playBtn); right.appendChild(addBtn);
+      item.appendChild(left); item.appendChild(right);
+      list.appendChild(item);
+    });
+  }
+  function renderPlaylists(){
+    const list=document.getElementById('playlistsList'); list.innerHTML='';
+    playlists.forEach((pl, pidx)=>{
+      const item=document.createElement('div'); item.className='list-item';
+      const left=document.createElement('div');
+      const title=document.createElement('div'); title.className='title'; title.textContent=pl.name;
+      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=`${pl.songIds.length} songs`;
+      left.appendChild(title); left.appendChild(muted);
+      const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
+      const playBtn=document.createElement('button'); playBtn.className='btn btn-primary'; playBtn.textContent='Play';
+      playBtn.addEventListener('click',()=>{
+        currentPlaylistIndex=pidx; localStorage.setItem(LS_KEYS.currentPlaylist, String(currentPlaylistIndex));
+        if(pl.songIds.length>0){ playSong(pl.songIds[0]); } else { alert('Playlist is empty.'); }
+      });
+      const editBtn=document.createElement('button'); editBtn.className='btn btn-secondary'; editBtn.textContent='Edit';
+      editBtn.addEventListener('click',()=>editPlaylistPrompt(pidx));
+      right.appendChild(playBtn); right.appendChild(editBtn);
+      item.appendChild(left); item.appendChild(right);
+      list.appendChild(item);
+    });
+  }
+  function addSongPrompt(){
+    const title=prompt('Song title (shown in player):'); if(!title) return;
+    const artist=prompt('Artist (optional):','') || '';
+    const driveInput=prompt('Google Drive audio link or File ID:\nExample: https://drive.google.com/file/d/FILE_ID/view\nOr paste just FILE_ID:','');
+    const art=prompt('Cover Art URL (optional):','');
+    const url=normalizeDriveAudio(driveInput);
+    songs.push({ title, artist, url: url || '', art: art || '' }); saveJson(LS_KEYS.songs, songs); renderSongs();
+  }
+  function createPlaylistPrompt(){ const name=prompt('Playlist name:'); if(!name) return; playlists.push({ name, songIds: [] }); saveJson(LS_KEYS.playlists, playlists); renderPlaylists(); }
+  function editPlaylistPrompt(idx){
+    const pl=playlists[idx];
+    const action=prompt('Edit playlist:\n1) Rename\n2) Remove song by index\n3) Add song by index\n4) Delete playlist\nEnter number:'); if(!action) return;
+    const n=parseInt(action,10);
+    if(n===1){ const name=prompt('New name:', pl.name); if(name) pl.name=name; }
+    else if(n===2){ const si=parseInt(prompt('Song index to remove (0-based):'),10); if(!isNaN(si)) pl.songIds=pl.songIds.filter(id=>id!==si); }
+    else if(n===3){ const si=parseInt(prompt('Song index to add (0-based):'),10); if(!isNaN(si) && songs[si]) pl.songIds.push(si); }
+    else if(n===4){ if(confirm('Delete playlist "'+pl.name+'"?')) playlists.splice(idx,1); }
+    saveJson(LS_KEYS.playlists, playlists); renderPlaylists();
+  }
+
+  function fmtTime(sec){ if(!isFinite(sec)) return '0:00'; const m=Math.floor(sec/60), s=Math.floor(sec%60); return m+':'+String(s).padStart(2,'0'); }
+  function playSong(index){
+    const s=songs[clamp(index,0,songs.length-1)]; if(!s) return;
+    currentSongIndex=index; localStorage.setItem(LS_KEYS.lastSong, String(currentSongIndex));
+    document.getElementById('playerTitle').textContent=s.title || 'Unknown';
+    document.getElementById('playerArtist').textContent=s.artist || 'Unknown';
+    const artEl=document.getElementById('playerArt');
+    if(s.art){ artEl.style.backgroundImage=`url("${s.art}")`; artEl.style.backgroundSize='cover'; artEl.style.backgroundPosition='center'; } else { artEl.style.backgroundImage=''; }
+    const qs=document.getElementById('quickSong'); if(qs) qs.textContent=`${s.title || 'Unknown'} — ${s.artist || 'Unknown'}`;
+    const audioEl=document.getElementById('audioElement');
+    audioEl.pause(); audioEl.src=s.url || ''; audioEl.currentTime=0; audioEl.load();
+    audioEl.play().then(()=>{ document.getElementById('playPauseBtn').textContent='⏸'; })
+    .catch(()=>{ document.getElementById('playPauseBtn').textContent='▶'; alert('Playback blocked or link invalid. Make sure the Drive file is public and try pressing Play.'); });
+  }
+  function nextSong(){
+    if(currentPlaylistIndex>=0 && playlists[currentPlaylistIndex]){
+      const pl=playlists[currentPlaylistIndex]; if(pl.songIds.length===0) return;
+      const nextPos=(pl.songIds.indexOf(currentSongIndex)+1)%pl.songIds.length; playSong(pl.songIds[nextPos]);
+    } else if(songs.length>0){ playSong((currentSongIndex+1)%songs.length); }
+  }
+  function prevSong(){
+    if(currentPlaylistIndex>=0 && playlists[currentPlaylistIndex]){
+      const pl=playlists[currentPlaylistIndex]; if(pl.songIds.length===0) return;
+      const prevPos=(pl.songIds.indexOf(currentSongIndex)-1+pl.songIds.length)%pl.songIds.length; playSong(pl.songIds[prevPos]);
+    } else if(songs.length>0){ playSong((currentSongIndex-1+songs.length)%songs.length); }
+  }
+  function syncProgress(){
+    const audioEl=document.getElementById('audioElement');
+    const cur=audioEl.currentTime||0, dur=audioEl.duration||0;
+    document.getElementById('currentTimeLabel').textContent=fmtTime(cur);
+    document.getElementById('durationLabel').textContent=fmtTime(dur);
+    const progressRange=document.getElementById('progressRange');
+    progressRange.max = dur ? Math.floor(dur*1000) : 1000;
+    progressRange.value = dur ? Math.floor(cur*1000) : 0;
+  }
+  function initPlayerControls(){
+    const audioEl=document.getElementById('audioElement');
+    const playPauseBtn=document.getElementById('playPauseBtn');
+    const prevBtn=document.getElementById('prevBtn');
+    const nextBtn=document.getElementById('nextBtn');
+    const volumeRange=document.getElementById('volumeRange');
+    const progressRange=document.getElementById('progressRange');
+
+    playPauseBtn.addEventListener('click',()=>{ if(!audioEl.src){ playSong(currentSongIndex); return; } if(audioEl.paused){ audioEl.play().catch(()=>{}); } else { audioEl.pause(); } });
+    prevBtn.addEventListener('click', prevSong);
+    nextBtn.addEventListener('click', nextSong);
+    volumeRange.addEventListener('input',()=>{ audioEl.volume=parseFloat(volumeRange.value); });
+    audioEl.addEventListener('play',()=>{ isPlaying=true; playPauseBtn.textContent='⏸'; document.getElementById('playerBar').classList.add('playing'); });
+    audioEl.addEventListener('pause',()=>{ isPlaying=false; playPauseBtn.textContent='▶'; document.getElementById('playerBar').classList.remove('playing'); });
+    audioEl.addEventListener('ended', nextSong);
+    audioEl.addEventListener('timeupdate', syncProgress);
+    audioEl.addEventListener('loadedmetadata', syncProgress);
+    audioEl.addEventListener('error',()=>{ alert('Failed to load track. Ensure Google Drive file is public and URL is correct.'); setTimeout(nextSong,200); });
+    progressRange.addEventListener('input',()=>{ const dur=audioEl.duration||0; if(dur) audioEl.currentTime=parseFloat(progressRange.value)/1000; });
+  }
+
+  function bindSettingsForm(){
+    document.getElementById('bgColorPicker').value = rgbToHex(theme.bgColor || defaultTheme.bgColor);
+    document.getElementById('bgImageUrl').value = theme.bgImage || '';
+    document.getElementById('overallThemeColor').value = rgbToHex(theme.overallThemeColor || theme.accentColor || defaultTheme.accentColor);
+    document.getElementById('accentColorPicker').value = rgbToHex(theme.accentColor || defaultTheme.accentColor);
+    document.getElementById('buttonColorPicker').value = rgbToHex(theme.buttonColor || defaultTheme.buttonColor);
+    document.getElementById('textColorPicker').value = rgbToHex(theme.textColor || defaultTheme.textColor);
+    document.getElementById('effectColorPicker').value = rgbToHex(extractRGB(theme.effectColor) || '#CBA6F7');
+    document.getElementById('presetThemeSelect').value='';
+    document.getElementById('tabTitleInput').value = cloak.title || '';
+    document.getElementById('tabIconInput').value = cloak.icon || '';
+    document.getElementById('updateUrlInput').value = updateSourceUrl || '';
+  }
+  function saveSettings(){
+    theme.bgColor=document.getElementById('bgColorPicker').value;
+    theme.bgImage=document.getElementById('bgImageUrl').value.trim();
+    theme.overallThemeColor=document.getElementById('overallThemeColor').value;
+    theme.accentColor=document.getElementById('accentColorPicker').value;
+    theme.buttonColor=document.getElementById('buttonColorPicker').value;
+    theme.textColor=document.getElementById('textColorPicker').value;
+    theme.effectColor=hexToRgba(document.getElementById('effectColorPicker').value, 0.3);
+    saveJson(LS_KEYS.theme, theme); applyTheme();
+
+    cloak.title=document.getElementById('tabTitleInput').value.trim() || document.title;
+    cloak.icon=document.getElementById('tabIconInput').value.trim();
+    saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak();
+
+    const url=document.getElementById('updateUrlInput').value.trim();
+    updateSourceUrl=url; if(url) localStorage.setItem(LS_KEYS.updateUrl, updateSourceUrl);
+  }
+  function resetSettings(){ if(!confirm('Reset settings to default theme?')) return; theme={...defaultTheme}; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm(); }
+
+  function applyTabCloak(){
+    if(cloak.title) document.title=cloak.title;
+    const link=document.getElementById('dynamic-favicon') || (()=>{ const l=document.createElement('link'); l.rel='icon'; l.id='dynamic-favicon'; document.head.appendChild(l); return l; })();
+    if(cloak.icon && cloak.icon.length>3) link.href=cloak.icon; else link.removeAttribute('href');
+  }
+  document.getElementById('applyTabCloakBtn').addEventListener('click',()=>{ cloak.title=document.getElementById('tabTitleInput').value.trim() || cloak.title; cloak.icon=document.getElementById('tabIconInput').value.trim(); saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak(); });
+  document.getElementById('cloakGoogleBtn').addEventListener('click',()=>{ cloak={ title:'Google', icon:'https://www.google.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
+  document.getElementById('resetCloakBtn').addEventListener('click',()=>{ cloak={ title:'Media Hub', icon:'' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
+
+  // Updater helpers: derive base href and inject into fetched HTML so relative assets resolve to jsDelivr
+  function getBaseFromUrl(u){
+    try{
+      const url = new URL(u, location.href);
+      return url.origin + url.pathname.replace(/[^/]*$/, '');
+    }catch(e){ return ''; }
+  }
+  function injectBase(html, baseHref){
+    if(!baseHref) return html;
+    if(/<base\s/i.test(html)){
+      return html.replace(/<base[^>]*>/i, `<base href="${baseHref}">`);
+    }
+    return html.replace(/<head([^>]*)>/i, `<head$1><base href="${baseHref}">`);
+  }
+  // If a staged update is flagged, write it into the document immediately (localStorage persists)
+  function applyStagedUpdateIfAny(){
+    if(localStorage.getItem(UPDATE_KEYS.useStaged)==='true'){
+      const html = localStorage.getItem(UPDATE_KEYS.stagedHtml) || '';
+      const base = localStorage.getItem(UPDATE_KEYS.stagedBase) || '';
+      if(html){
+        const injected = injectBase(html, base);
+        // clear one-shot flag, keep staged copy in case of reloads until a newer one arrives
+        localStorage.removeItem(UPDATE_KEYS.useStaged);
+        document.open();
+        document.write(injected);
+        document.close();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function showWizardIfNeeded(){
+    const done=localStorage.getItem(LS_KEYS.setupDone)==='true';
+    if(!done){
+      const wiz=document.getElementById('wizard'); wiz.style.display='flex';
+      document.getElementById('wizOverall').value=rgbToHex(theme.overallThemeColor || theme.accentColor || defaultTheme.accentColor);
+      document.getElementById('wizAccent').value=rgbToHex(theme.accentColor || defaultTheme.accentColor);
+      document.getElementById('wizButton').value=rgbToHex(theme.buttonColor || defaultTheme.buttonColor);
+      document.getElementById('wizText').value=rgbToHex(theme.textColor || defaultTheme.textColor);
+      document.getElementById('wizEffect').value=rgbToHex(extractRGB(theme.effectColor) || '#CBA6F7');
+      document.getElementById('wizBg').value=rgbToHex(theme.bgColor || defaultTheme.bgColor);
+      document.getElementById('wizApply').onclick=()=>{ theme.overallThemeColor=document.getElementById('wizOverall').value; theme.accentColor=document.getElementById('wizAccent').value; theme.buttonColor=document.getElementById('wizButton').value; theme.textColor=document.getElementById('wizText').value; theme.effectColor=hexToRgba(document.getElementById('wizEffect').value, 0.3); theme.bgColor=document.getElementById('wizBg').value; saveJson(LS_KEYS.theme, theme); applyTheme(); localStorage.setItem(LS_KEYS.setupDone,'true'); wiz.style.display='none'; };
+      document.getElementById('wizSkip').onclick=()=>{ localStorage.setItem(LS_KEYS.setupDone,'true'); wiz.style.display='none'; };
+    }
+  }
+
+  function checkForUpdate(){
+    const url=updateSourceUrl;
+    if(!url) return;
+    fetch(url,{cache:'no-store'})
+      .then(res=>{ if(!res.ok) throw new Error('Failed'); return res.text(); })
+      .then(html=>{
+        const latest=(html.match(/<meta[^>]+name=["']app-version["'][^>]+content=["']([^"']+)["']/i)||[])[1];
+        const cur=document.querySelector('meta[name="app-version"]')?.content || '0.0.0';
+        if(latest && semverCompare(latest, cur)>0){
+          document.getElementById('versionLabel').textContent=`Current ${cur} → Latest ${latest}`;
+          const modal=document.getElementById('updateModal'); modal.style.display='flex';
+          document.getElementById('updateLaterBtn').onclick=()=>{ modal.style.display='none'; };
+          document.getElementById('updateNowBtn').onclick=()=>{
+            // Stage the HTML and base so relative assets resolve correctly, then reload
+            const base = getBaseFromUrl(url);
+            localStorage.setItem(UPDATE_KEYS.stagedHtml, html);
+            localStorage.setItem(UPDATE_KEYS.stagedVersion, latest);
+            localStorage.setItem(UPDATE_KEYS.stagedBase, base);
+            localStorage.setItem(UPDATE_KEYS.useStaged, 'true');
+            location.reload();
+          };
+        } else {
+          alert('You are already on the latest version.');
+        }
+      }).catch(()=>{ alert('Failed to check updates. Verify URL and CORS.'); });
+  }
+  document.getElementById('testUpdateBtn').addEventListener('click',()=>checkForUpdate());
+
+  function bindNav(){ document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click',()=>showPage(btn.dataset.target)); }); }
+
+  function init(){
+    // If an update was staged, apply it immediately (preserves localStorage)
+    if(applyStagedUpdateIfAny()){ return; }
+
+    applyTheme();
+    applyTabCloak();
+    renderProfile();
+    initProfileDropdown();
+    bindNav();
+    renderMovies();
+    renderGames();
+    renderSongs();
+    renderPlaylists();
+    bindSettingsForm();
+    initOverlayControls();
+    initPlayerControls();
+    showWizardIfNeeded();
+    checkForUpdate();
+
+    // Connect Preset Theme dropdown to apply presets immediately
+    const presetSelect = document.getElementById('presetThemeSelect');
+    if (presetSelect) {
+      presetSelect.addEventListener('change', (e) => {
+        const name = e.target.value;
+        if (!name) return;
+        presetTheme(name);
+        e.target.value = '';
+      });
+    }
+
+    if(songs[currentSongIndex]){
+      const s=songs[currentSongIndex];
+      document.getElementById('playerTitle').textContent=s.title || 'Unknown';
+      document.getElementById('playerArtist').textContent=s.artist || 'Unknown';
+      const artEl=document.getElementById('playerArt');
+      if(s.art){ artEl.style.backgroundImage=`url("${s.art}")`; artEl.style.backgroundSize='cover'; artEl.style.backgroundPosition='center'; }
+    }
+    document.getElementById('audioElement').volume = parseFloat(document.getElementById('volumeRange').value || '1');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
