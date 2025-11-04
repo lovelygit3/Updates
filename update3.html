@@ -378,20 +378,7 @@
   <section id="proxies" class="page">
     <h2>Proxies</h2>
     <p class="small muted">Simple list of proxies.</p>
-    <div class="list">
-      <div class="list-item">
-        <div><div class="title">Blocked</div><div class="muted">Fast, simple HTTP proxy</div></div>
-        <a href="https://144-202-49-64.plesk.page/" target="_blank" rel="noopener">Open</a>
-      </div>
-      <div class="list-item">
-        <div><div class="title">Refix</div><div class="muted"></div></div>
-        <a href="https://bav1.wadmc.site.cdn.cloudflare.net" target="_blank" rel="noopener">Open</a>
-      </div>
-      <div class="list-item">
-        <div><div class="title">Hm</div><div class="muted"></div></div>
-        <a href="https://bav1.wadmc.site.cdn.cloudflare.net" target="_blank" rel="noopener">Open</a>
-      </div>
-    </div>
+    <div class="list" id="proxiesList"></div> <!-- Made dynamic for merging -->
   </section>
 
   <section id="settings" class="page">
@@ -686,15 +673,8 @@
     panicKey: 'panicKey',
     panicUrl: 'panicUrl',
     fontSize: 'fontSize',
-    performanceMode: 'performanceMode'
-  };
-
-  // Persistent runtime update keys
-  const RUNTIME_KEYS = {
-    html:    'update_runtime_html',
-    base:    'update_runtime_base',
-    version: 'update_runtime_version',
-    enabled: 'update_runtime_enabled'
+    performanceMode: 'performanceMode',
+    proxies: 'proxiesList' // New for dynamic proxies
   };
 
   const defaultTheme = {
@@ -715,8 +695,13 @@
   ];
   const defaultGames = [
     { title: 'Friday Night Funkin', src: './games/Fnf.html', runtime: 'classic' },
-    { title: 'New Game Example', src: './games/new-game.html', runtime: 'classic' }, // New for merging
-     { title: 'Update #1', src: './games/new-game.html', runtime: 'classic' }
+    { title: 'New Game Example', src: './games/new-game.html', runtime: 'classic' } // New for merging
+  ];
+  const defaultProxies = [
+    { title: 'Sakura', url: 'https://144-202-49-64.plesk.page/', description: 'Fast, simple HTTP proxy' },
+    { title: 'Petezah', url: 'https://bav1.wadmc.site.cdn.cloudflare.net', description: '' },
+    { title: 'Astroid', url: 'https://bav1.wadmc.site.cdn.cloudflare.net', description: '' },
+    { title: 'New Proxy Example', url: 'https://new-proxy.example.com', description: 'New for updates' } // New for merging
   ];
 
   const defaultSongs = [];
@@ -735,6 +720,7 @@
   let profile = loadJson(LS_KEYS.profile, defaultProfile);
   let movies = loadJson(LS_KEYS.movies, defaultMovies);
   let games = loadJson(LS_KEYS.games, defaultGames);
+  let proxies = loadJson(LS_KEYS.proxies, defaultProxies); // New: Load/merge proxies
   let songs = loadJson(LS_KEYS.songs, defaultSongs);
   let playlists = loadJson(LS_KEYS.playlists, defaultPlaylists);
   let cloak = loadJson(LS_KEYS.tabCloak, { title: document.title, icon: '' });
@@ -896,6 +882,21 @@
   function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; renderGames(); }
   document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); renderGames(); });
 
+  // New: Render proxies dynamically (for merging during updates)
+  function renderProxies(){
+    const list=document.getElementById('proxiesList'); list.innerHTML='';
+    proxies.forEach(p=>{
+      const item=document.createElement('div'); item.className='list-item';
+      const left=document.createElement('div');
+      const title=document.createElement('div'); title.className='title'; title.textContent=p.title;
+      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=p.description || '';
+      left.appendChild(title); left.appendChild(muted);
+      const a=document.createElement('a'); a.href=p.url; a.target='_blank'; a.rel='noopener'; a.textContent='Open';
+      item.appendChild(left); item.appendChild(a);
+      list.appendChild(item);
+    });
+  }
+
   function openViewer(title, src, type){
     document.body.classList.add('no-scroll');
     document.getElementById('overlay').classList.add('open');
@@ -922,7 +923,7 @@
     document.body.classList.remove('no-scroll');
     const viewer = document.getElementById('viewer');
     viewer.classList.remove('fs');
-    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); 
   }
   function initOverlayControls(){
     document.getElementById('closeOverlayBtn').addEventListener('click', closeViewer);
@@ -1125,75 +1126,6 @@
     const link=document.getElementById('dynamic-favicon') || (()=>{ const l=document.createElement('link'); l.rel='icon'; l.id='dynamic-favicon'; document.head.appendChild(l); return l; })();
     if(cloak.icon && cloak.icon.length>3) link.href=cloak.icon; else link.removeAttribute('href');
   }
-  document.getElementById('applyTabCloakBtn').addEventListener('click',()=>{ cloak.title=document.getElementById('tabTitleInput').value.trim() || cloak.title; cloak.icon=document.getElementById('tabIconInput').value.trim(); saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak(); });
-  document.getElementById('cloakGoogleBtn').addEventListener('click',()=>{ cloak={ title:'Google', icon:'https://www.google.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
-  document.getElementById('resetCloakBtn').addEventListener('click',()=>{ cloak={ title:'Media Hub', icon:'' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
-
-  // Inject a <base> tag into fetched HTML so relative assets resolve correctly from CDN
-  function injectBaseSafe (html, baseHref) {
-    if (!baseHref) return html;
-    try {
-      const parser = new DOMParser();
-      const doc    = parser.parseFromString(html, 'text/html');
-      let base = doc.head.querySelector('base');
-      if (!base) {
-        base = doc.createElement('base');
-        doc.head.insertBefore(base, doc.head.firstChild);
-      }
-      base.setAttribute('href', baseHref);
-      return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-    } catch (e) {
-      console.error('base-injection failed:', e);
-      return html;
-    }
-  }
-
-  // Compute directory base from an absolute file URL
-  function getBaseFromUrl(u) {
-    try {
-      const url = new URL(u, location.href);
-      url.hash = '';
-      const hrefNoQuery = url.origin + url.pathname;
-      const i = hrefNoQuery.lastIndexOf('/');
-      if (i > -1) return hrefNoQuery.slice(0, i + 1);
-      return hrefNoQuery;
-    } catch (e) {
-      console.error('getBaseFromUrl failed:', e);
-      return '';
-    }
-  }
-
-  // Navigate to a blob of provided HTML; remember previous blob to revoke later
-  function navigateToBlob(html, baseHref) {
-    const htmlWithBase = injectBaseSafe(html, baseHref);
-    const newUrl = URL.createObjectURL(new Blob([htmlWithBase], { type: 'text/html;charset=utf-8' }));
-    try {
-      if (location.protocol === 'blob:') {
-        sessionStorage.setItem('oldBlobUrl', location.href);
-      }
-    } catch (e) {}
-    location.replace(newUrl);
-  }
-
-  // Revoke previous blob URL once the new document loads
-  window.addEventListener('DOMContentLoaded', () => {
-    const old = sessionStorage.getItem('oldBlobUrl');
-    if (old) {
-      URL.revokeObjectURL(old);
-      sessionStorage.removeItem('oldBlobUrl');
-    }
-  });
-
-  // Persistent boot to blob if a runtime update is enabled
-  function bootFromRuntimeIfEnabled() {
-    if (location.protocol === 'blob:') return false; // already running from blob
-    if (localStorage.getItem(RUNTIME_KEYS.enabled) !== 'true') return false;
-    const html = localStorage.getItem(RUNTIME_KEYS.html) || '';
-    const base = localStorage.getItem(RUNTIME_KEYS.base) || '';
-    if (!html) return false;
-    navigateToBlob(html, base);
-    return true;
-  }
 
   function showWizardIfNeeded(){
     const done=localStorage.getItem(LS_KEYS.setupDone)==='true';
@@ -1218,7 +1150,7 @@
     return merged;
   }
 
-  // Update checker: persists runtime HTML and navigates to a fresh blob
+  // New update function: Fetch HTML and rewrite document in place
   function checkForUpdate(userInitiated=false){
     const url=updateSourceUrl;
     if(!url) return;
@@ -1232,21 +1164,22 @@
           const modal=document.getElementById('updateModal'); modal.style.display='flex';
           document.getElementById('updateLaterBtn').onclick=()=>{ modal.style.display='none'; };
           document.getElementById('updateNowBtn').onclick=()=>{
-            const base = getBaseFromUrl(url);
+            // Merge defaults before applying update
             movies = mergeDefaults(movies, defaultMovies); saveJson(LS_KEYS.movies, movies);
             games = mergeDefaults(games, defaultGames); saveJson(LS_KEYS.games, games);
-            localStorage.setItem(RUNTIME_KEYS.html, html);
-            localStorage.setItem(RUNTIME_KEYS.base, base);
-            localStorage.setItem(RUNTIME_KEYS.version, latest);
-            localStorage.setItem(RUNTIME_KEYS.enabled, 'true');
-            navigateToBlob(html, base);
+            proxies = mergeDefaults(proxies, defaultProxies, 'title'); saveJson(LS_KEYS.proxies, proxies);
+            modal.style.display='none';
+
+            // Rewrite the document with new HTML (updates in place)
+            document.open();
+            document.write(html);
+            document.close();
           };
         } else {
           if (userInitiated) alert('You are already on the latest version.');
         }
       }).catch(()=>{ if (userInitiated) alert('Failed to check updates. Verify URL and CORS.'); });
   }
-  document.getElementById('testUpdateBtn').addEventListener('click',()=>checkForUpdate(true));
 
   function bindNav(){ document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click',()=>showPage(btn.dataset.target)); }); }
 
@@ -1268,13 +1201,7 @@
     }
   });
 
-  // Kick off persistent boot to blob if enabled (runs before init)
-  bootFromRuntimeIfEnabled();
-
   function init(){
-    // Guard: if booting to blob happened, do not continue booting origin page
-    if (bootFromRuntimeIfEnabled()) return;
-
     applyTheme();
     applyTabCloak();
     renderProfile();
@@ -1284,6 +1211,7 @@
     renderGames();
     renderSongs();
     renderPlaylists();
+    renderProxies(); // New: Render proxies
     bindSettingsForm();
     initOverlayControls();
     initPlayerControls();
@@ -1302,6 +1230,11 @@
         e.target.value = '';
       });
     }
+
+    document.getElementById('applyTabCloakBtn').addEventListener('click',()=>{ cloak.title=document.getElementById('tabTitleInput').value.trim() || cloak.title; cloak.icon=document.getElementById('tabIconInput').value.trim(); saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak(); });
+    document.getElementById('cloakGoogleBtn').addEventListener('click',()=>{ cloak={ title:'Google', icon:'https://www.google.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
+    document.getElementById('resetCloakBtn').addEventListener('click',()=>{ cloak={ title:'Media Hub', icon:'' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
+    document.getElementById('testUpdateBtn').addEventListener('click',()=>checkForUpdate(true));
 
     if(songs[currentSongIndex]){
       const s=songs[currentSongIndex];
