@@ -65,6 +65,68 @@
     transition: none; /* Disable transitions for perf */
   }
 
+  /* Theme-specific classes for layout and button variations */
+  body.theme-nordic-dark {
+    --button-border-radius: 8px; /* Standard buttons */
+    --layout-grid-gap: 16px; /* Standard spacing */
+  }
+  body.theme-sweet {
+    --button-border-radius: 8px;
+    --layout-grid-gap: 16px;
+  }
+  body.theme-chrome-os {
+    --button-border-radius: 8px;
+    --layout-grid-gap: 16px;
+  }
+  body.theme-dracula {
+    --button-border-radius: 8px;
+    --layout-grid-gap: 16px;
+  }
+  body.theme-halloween {
+    --button-border-radius: 12px;
+    --layout-grid-gap: 18px;
+    /* Spooky effects */
+    .card { border: 2px solid orange; }
+    .btn { background: linear-gradient(135deg, orange, purple); color: black; }
+    /* Subtle Halloween background pattern */
+    body { background-image: linear-gradient(45deg, black 25%, transparent 25%), linear-gradient(-45deg, black 25%, transparent 25%), linear-gradient(45deg, transparent 75%, black 75%), linear-gradient(-45deg, transparent 75%, black 75%); background-size: 20px 20px; }
+  }
+  body.theme-christmas {
+    --button-border-radius: 10px;
+    --layout-grid-gap: 20px;
+    /* Festive effects: Snow pattern, red/green borders */
+    .card { border: 2px solid #228B22; } /* Green border */
+    .btn { background: linear-gradient(135deg, #FF0000, #228B22); color: white; } /* Red to green gradient */
+    /* Subtle snow background pattern */
+    body { background-image: radial-gradient(white 15%, transparent 16%); background-size: 30px 30px; background-color: #101418; }
+    .nav button { border: 1px solid #FF0000; } /* Red borders for nav */
+    .home-hero { background: linear-gradient(135deg, #228B22, #FF0000); color: white; border: none; } /* Festive hero */
+    .modal-inner { background: #101418; border: 2px solid #228B22; } /* Green bordered popups */
+  }
+  body.theme-mandela {
+    --button-border-radius: 4px;
+    --layout-grid-gap: 12px;
+    /* 90's black and white creepy theme */
+    filter: grayscale(100%) contrast(1.2); /* Black and white filter */
+    font-family: 'Courier New', monospace; /* Old-school font */
+    /* Creepy effects: Slight glitch animation */
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+    body { animation: glitch 2s infinite; background-color: #000; color: #FFF; }
+    .card, .btn, .modal-inner { border: 1px solid #FFF; background: #333; color: #FFF; }
+    .nav button { background: #000; color: #FFF; border: 1px solid #FFF; }
+    .nav button:hover { background: #FFF; color: #000; }
+  }
+
+  .grid { gap: var(--layout-grid-gap, 16px); }
+  .btn { border-radius: var(--button-border-radius, 8px); }
+
   .topbar {
     position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: var(--nav-bg);
     display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--surface1);
@@ -79,18 +141,19 @@
   .profile-dropdown input, .profile-dropdown textarea { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; margin-top: 4px; margin-bottom: 8px; }
   .profile-actions { display: flex; gap: 8px; }
 
-  .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: transform 120ms ease, box-shadow 120ms ease, background-color 200ms ease, color 200ms ease; animation: btn-pulse 1.5s infinite alternate; }
+  .btn { padding: 8px 12px; border: none; cursor: pointer; font-weight: 600; transition: transform 120ms ease, box-shadow 120ms ease, background-color 200ms ease, color 200ms ease; animation: btn-pulse 1.5s infinite alternate; }
   @keyframes btn-pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
   .btn-primary { background: var(--button-color); color: #0b0b12; box-shadow: 0 6px 18px color-mix(in oklab, var(--button-color) 60%, black 40%); }
   .btn-primary:hover { transform: translateY(-1px); }
   .btn-secondary { background: transparent; border: 1px solid var(--surface1); color: var(--text-color); }
+  .btn-delete { background: var(--red); color: white; }
 
   .nav { display: flex; gap: 8px; }
   .nav button { background: transparent; border: 1px solid var(--surface1); color: var(--text-color); padding: 8px 12px; border-radius: 10px; cursor: pointer; transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, transform 120ms ease; }
   .nav button:hover { background: rgba(203,166,247,0.12); transform: translateY(-1px); }
   .nav button.active { background: var(--nav-active); color: #0a0a10; border-color: transparent; box-shadow: 0 8px 20px color-mix(in oklab, var(--nav-active) 60%, black 40%); }
 
-  main { padding: 20px; max-width: 1200px; margin: 0 auto 110px auto; }
+  main { padding: 20px; max-width: 1200px; margin: 0 auto; } /* Removed bottom margin since player bar is gone */
   section.page { display: none; opacity: 0; transition: opacity 300ms ease-in-out; }
   section.page.active { display: block; opacity: 1; animation: fade-in 0.5s ease; }
   @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -132,43 +195,19 @@
   .viewer.fs .viewer-header,
   .viewer:fullscreen .viewer-header { display: none !important; }
 
-  .player-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 55; backdrop-filter: blur(12px); background: linear-gradient(135deg, color-mix(in oklab, var(--nav-bg) 70%, transparent), rgba(0,0,0,0.25)); border-top: 1px solid var(--surface1); padding: 10px 16px; display: grid; grid-template-columns: 320px 1fr 320px; align-items: center; gap: 14px; box-shadow: 0 -10px 24px var(--shadow-color); }
-  .player-meta { display: flex; align-items: center; gap: 12px; overflow: hidden; }
-  .player-art { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, var(--accent-color), var(--button-color)); box-shadow: 0 8px 20px var(--shadow-color); border: 1px solid var(--surface1); }
-  .player-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-subrow { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-  .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
-  .eq .bar { width: 3px; background: var(--accent-color); border-radius: 2px; height: 4px; animation: eq-bar 1s infinite alternate; }
-  @keyframes eq-bar { 0% { height: 4px; } 100% { height: 12px; } }
-  .eq .bar:nth-child(2) { animation-delay: 0.2s; }
-  .eq .bar:nth-child(3) { animation-delay: 0.4s; }
-  .eq .bar:nth-child(4) { animation-delay: 0.6s; }
-  .player-controls { display: flex; gap: 10px; align-items: center; justify-content: center; }
-  .btn-circle { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 10px 22px color-mix(in oklab, var(--button-color) 50%, black 50%); }
-  .btn-circle.btn-primary { background: linear-gradient(135deg, var(--button-color), var(--accent-color)); color: #0b0b12; }
-  .btn-circle.btn-secondary { background: rgba(49,50,68,0.6); border: 1px solid var(--surface1); color: var(--text-color); }
-  .progress-wrap { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
-  .time-label { font-size: 12px; color: var(--subtext); text-align: center; }
-  .range { -webkit-appearance: none; width: 100%; height: 8px; background: rgba(203,166,247,0.18); border-radius: 8px; outline: none; }
-  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-color); border: 2px solid var(--mantle); box-shadow: 0 2px 8px color-mix(in oklab, var(--accent-color) 60%, black 40%); cursor: pointer; }
-
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .form-col { display: flex; flex-direction: column; gap: 6px; }
   input[type="color"], input[type="text"], input[type="url"], select { padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; }
   textarea { padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; min-height: 80px; }
   hr { border: none; border-top: 1px solid var(--surface1); margin: 16px 0; }
 
-  .wizard { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
-  .wizard-inner { width: 680px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 14px; box-shadow: 0 20px 44px var(--shadow-color); padding: 16px; }
-  .wizard-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--surface1); }
-  .wizard-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
-
   .update-log { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); animation: log-fade 0.5s ease; }
   @keyframes log-fade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   .update-box { width: 520px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; box-shadow: 0 18px 38px var(--shadow-color); padding: 16px; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); font-size: 12px; color: var(--subtext); }
 
-  .home-hero { padding: 20px; border: 1px solid var(--surface1); background: linear-gradient(145deg, rgba(49,50,68,0.5), rgba(49,50,68,0.3)); border-radius: 16px; box-shadow: 0 16px 36px var(--shadow-color); display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; }
+  .home-hero { padding: 20px; border: 1px solid var(--surface1); background: linear-gradient(145deg, rgba(49,50,68,0.5), rgba(49,50,68,0.3)); border-radius: 16px; box-shadow: 0 16px 36px var(--shadow-color); display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: center; }
+  .home-hero .avatar { width: 80px; height: 80px; } /* Bigger avatar */
   .chip { display: inline-block; margin-right: 6px; margin-top: 6px; padding: 4px 8px; border-radius: 999px; background: rgba(203,166,247,0.18); border: 1px solid var(--surface1); font-size: 12px; color: var(--text-color); }
 
   .list { display: grid; gap: 8px; }
@@ -185,66 +224,112 @@
   .modal-preview img { width: 100%; height: 100%; object-fit: cover; }
   .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top: 8px; }
 
+  /* Styles for Shows page */
+  #shows .show-card { cursor: pointer; }
+
+  /* Styles for Shows Modal - Movies page style */
+  #showsModal .modal-inner { grid-template-columns: 1fr; gap: 0; }
+  #showsModal .season-select { margin-bottom: 16px; }
+  #showsModal .season-select select { width: 100%; }
+  #showsModal .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; max-height: 60vh; overflow-y: auto; }
+
   /* Added for scrolling only in games/movies boxes */
-  #moviesGrid, #gamesList {
+  #moviesGrid, #gamesList, #showsGrid {
     max-height: 60vh; /* Limit height to 60% of viewport height for scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden; /* Prevent horizontal scrolling */
     padding-right: 8px; /* Optional: space for scrollbar */
   }
 
-  /* Optimization for Chromebook: Scale UI for common resolutions (e.g., 1366x768) */
+  /* Stylish recent cards */
+  #recentGrid .card { border-radius: 16px; overflow: hidden; position: relative; transition: all 0.3s ease; }
+  #recentGrid .card:hover { box-shadow: 0 12px 24px var(--shadow-color); }
+  #recentGrid .thumb { background: linear-gradient(135deg, var(--accent-color), var(--button-color)); color: white; font-weight: bold; }
+  #recentGrid .info { background: rgba(0,0,0,0.2); }
+
+  /* Optimization for Chromebook: Bigger, more fashionable UI with larger elements, fonts, and padding */
   @media screen and (max-width: 1366px) and (max-height: 768px) {
     body {
-      transform: scale(0.85); /* Adjusted scaling for better fit */
-      transform-origin: top left;
-      width: 117.65%; /* Compensate for scaling to avoid clipping */
-      height: 117.65%;
-      --font-size-base: 14px; /* Smaller base font */
+      --font-size-base: 18px; /* Larger base font for better readability */
     }
     .grid {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Smaller cards for more on screen */
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Larger cards for fashionable look */
+      gap: 24px; /* More spacing */
     }
     main {
       max-width: 100%; /* Full width on smaller screens */
-      padding: 10px; /* Reduce padding */
-      margin-bottom: 90px; /* Adjust bottom margin for player bar */
+      padding: 24px; /* Increased padding for airier feel */
     }
     .topbar {
-      padding: 6px 12px; /* Slightly smaller topbar */
+      padding: 12px 20px; /* Larger topbar */
     }
     .card .thumb {
-      height: 200px; /* Reduce thumb height */
+      height: 280px; /* Larger thumbnails */
+      border-radius: 16px; /* Softer corners for fashion */
     }
-    #settings .form-row {
-      grid-template-columns: 1fr; /* Stack columns for smaller screens */
-      gap: 8px; /* Reduce gap */
+    .btn {
+      padding: 12px 16px; /* Bigger buttons */
+      font-size: 1.1em;
     }
-    #settings h3, #settings h2 { font-size: 16px; } /* Smaller headings */
-    #settings input, #settings select { font-size: 12px; padding: 6px; } /* Smaller inputs */
-    #settings .form-col { gap: 4px; } /* Tighter spacing */
-    #moviesGrid, #gamesList { max-height: 50vh; } /* Tighter scrolling */
+    #moviesGrid, #gamesList, #showsGrid { max-height: 70vh; } /* More scrolling space since no player bar */
+    .home-hero {
+      padding: 24px; /* Larger hero section */
+      grid-template-columns: 120px 1fr; /* Bigger avatar area */
+      gap: 24px;
+    }
+    .avatar { width: 48px; height: 48px; } /* Larger avatars */
   }
 
-  /* Enhanced Chromebook optimizations */
+  /* Enhanced Chromebook optimizations for other common res */
   @media screen and (max-width: 1366px) and (max-height: 768px),
          screen and (max-width: 1280px) and (max-height: 800px) { /* Common Chromebook res */
     body {
-      transform: scale(0.8); /* Further scale down for better fit */
-      transform-origin: top left;
-      width: 125%; /* Compensate */
-      height: 125%;
-      --font-size-base: 13px; /* Even smaller fonts */
+      --font-size-base: 18px; /* Larger fonts */
     }
     .grid {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Even smaller cards */
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjusted for balance */
+      gap: 20px;
     }
-    main { padding: 6px; margin-bottom: 80px; }
-    .card .thumb { height: 160px; }
-    .topbar { padding: 4px 8px; }
-    #moviesGrid, #gamesList { max-height: 45vh; } /* Tighter scrolling */
-    #settings .form-row { grid-template-columns: 1fr; gap: 6px; }
+    main { padding: 20px; }
+    .card .thumb { height: 260px; }
+    .topbar { padding: 10px 16px; }
+    #moviesGrid, #gamesList, #showsGrid { max-height: 65vh; }
+    #settings .form-row {
+      grid-template-columns: 1fr 1fr; /* Keep two columns if possible */
+      gap: 16px; /* Larger gaps */
+    }
+    #settings input, #settings select { padding: 10px; font-size: 16px; } /* Bigger inputs */
   }
+
+  /* Styles for Walkthrough Modal - Fancy Windows Login Style */
+  .walkthrough-modal { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5) url('') no-repeat center/cover; backdrop-filter: blur(20px); }
+  .walkthrough-inner { width: 680px; max-width: 90%; background: rgba(255,255,255,0.1); border: none; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); padding: 48px; position: relative; text-align: center; backdrop-filter: blur(10px); }
+  .walkthrough-inner::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(255,255,255,0.1), transparent); border-radius: 20px; }
+  .walkthrough-step { display: none; opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .walkthrough-step.active { display: block; opacity: 1; transform: translateY(0); animation: fade-slide 0.5s ease; }
+  @keyframes fade-slide { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+  .walkthrough-actions { display: flex; justify-content: space-between; margin-top: 20px; }
+  .splash { animation: splash-effect 1s ease-in-out; }
+  @keyframes splash-effect { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  .animated-text { animation: text-glow 2s infinite alternate; display: inline-block; }
+  @keyframes text-glow { 0% { text-shadow: 0 0 10px var(--accent-color); } 100% { text-shadow: 0 0 20px var(--accent-color); } }
+  .preview-box { margin-top: 10px; padding: 10px; border: 1px solid var(--surface1); border-radius: 8px; background: var(--card-bg); }
+  .preview-text { color: var(--text-color); background: var(--bg-color); padding: 5px; }
+  .preview-btn { background: var(--button-color); color: #0b0b12; padding: 5px 10px; border-radius: 4px; }
+  .walkthrough-inner label { display: block; margin-bottom: 16px; }
+  .walkthrough-inner input, .walkthrough-inner textarea { width: 80%; margin: 0 auto; padding: 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 16px; text-align: center; }
+  .walkthrough-inner input::placeholder, .walkthrough-inner textarea::placeholder { color: rgba(255,255,255,0.7); }
+  .walkthrough-inner h2, .walkthrough-inner h3 { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+  /* Styles for recent dropdown */
+  .recent-menu-btn { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-color); }
+  .recent-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 8px; box-shadow: 0 8px 20px var(--shadow-color); padding: 8px; display: none; opacity: 0; transform: scale(0.9); transition: opacity 200ms ease, transform 200ms ease; z-index: 10; }
+  .recent-dropdown.open { display: block; opacity: 1; transform: scale(1); animation: dropdown-open 0.2s ease; }
+  @keyframes dropdown-open { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  .recent-dropdown button { display: block; width: 100%; text-align: left; padding: 8px; border: none; background: transparent; color: var(--text-color); cursor: pointer; }
+  .recent-dropdown button:hover { background: var(--surface1); }
+  .remove-btn { position: absolute; top: 4px; right: 4px; background: transparent; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; }
+  .remove-btn:hover { color: var(--red); }
 </style>
 </head>
 <body>
@@ -281,7 +366,7 @@
     <button data-target="home" class="active">Home</button>
     <button data-target="movies">Movies</button>
     <button data-target="games">Games</button>
-    <button data-target="music">Music</button>
+    <button data-target="shows">Shows</button>
     <button data-target="proxies">Proxies</button>
     <button data-target="settings">Settings</button>
   </div>
@@ -301,45 +386,16 @@
       </div>
     </div>
     <hr>
-    <h3>Quick Actions</h3>
-    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px,1fr));">
-      <div class="card">
-        <div class="thumb" style="height:150px; place-items:center;">
-          <div class="player-art"></div>
-        </div>
-        <div class="info">
-          <div>
-            <div class="title">Continue Listening</div>
-            <div class="small muted" id="quickSong">No song playing</div>
-          </div>
-          <button class="btn btn-primary" onclick="showPage('music')">Open</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="thumb" style="height:150px; place-items:center;">
-          <span class="title">Latest Movies</span>
-        </div>
-        <div class="info">
-          <div>
-            <div class="title">Watch Now</div>
-            <div class="small muted">Your curated movie grid</div>
-          </div>
-          <button class="btn btn-primary" onclick="showPage('movies')">Open</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="thumb" style="height:150px; place-items:center;">
-          <span class="title">Games</span>
-        </div>
-        <div class="info">
-          <div>
-            <div class="title">Play Instantly</div>
-            <div class="small muted">Load local folder</div>
-          </div>
-          <button class="btn btn-primary" onclick="showPage('games')">Open</button>
-        </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; position: relative;">
+      <h3>Last Left Off</h3>
+      <button class="recent-menu-btn" id="recentMenuBtn">⋮</button>
+      <div class="recent-dropdown" id="recentDropdown">
+        <button onclick="toggleRecent(true)">Hide</button>
+        <button onclick="toggleRecent(false)">Unhide</button>
+        <button onclick="clearAllRecent()">Clear All</button>
       </div>
     </div>
+    <div class="grid" id="recentGrid" style="grid-template-columns: repeat(auto-fit, minmax(240px,1fr));"></div>
   </section>
 
   <section id="movies" class="page">
@@ -347,7 +403,7 @@
       <h2>Movies</h2>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-secondary" onclick="openMovieEditor(null)">Add Movie</button>
-        <button class="btn btn-secondary" onclick="resetMovies()">Reset Grid</button>
+        <button class="btn btn-secondary" onclick="refreshMovies()">Refresh Grid</button>
       </div>
     </div>
     <div class="searchbar">
@@ -374,24 +430,15 @@
     <div class="list" id="gamesList"></div>
   </section>
 
-  <section id="music" class="page">
+  <section id="shows" class="page">
     <div style="display:flex; align-items:center; justify-content:space-between;">
-      <h2>Music Library</h2>
+      <h2>Shows (Experimental)</h2>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-secondary" onclick="addSongPrompt()">Add Google Drive Song</button>
-        <button class="btn btn-secondary" onclick="createPlaylistPrompt()">New Playlist</button>
+        <button class="btn btn-secondary" onclick="resetShows()">Reset</button>
       </div>
     </div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-      <div>
-        <h3>Songs</h3>
-        <div class="list" id="songsList"></div>
-      </div>
-      <div>
-        <h3>Playlists</h3>
-        <div class="list" id="playlistsList"></div>
-      </div>
-    </div>
+    <p class="small muted">Click a show to view episodes in a modal. This is experimental.</p>
+    <div class="grid" id="showsGrid"></div>
   </section>
 
   <section id="proxies" class="page">
@@ -402,7 +449,7 @@
 
   <section id="settings" class="page">
     <h2>Settings</h2>
-    <p class="small muted">Customize background, colors, theme, tab cloaker. Settings persist in localStorage.</p>
+    <p class="small muted">Customize background, colors, theme, tab cloaker, and auto-update. Settings persist in localStorage.</p>
     <div class="form-row">
       <div class="form-col">
         <label>Background Color
@@ -450,10 +497,13 @@
           <select id="presetThemeSelect">
             <option value="">Select preset...</option>
             <option value="dark">Dark</option>
-            <option value="light">Light</option>
             <option value="halloween">Halloween</option>
             <option value="christmas">Christmas</option>
-            <option value="minimalist">Minimalist (Chromebook)</option>
+            <option value="nordic-dark">Nordic Dark</option>
+            <option value="sweet">Sweet</option>
+            <option value="chrome-os">Chrome OS</option>
+            <option value="dracula">Dracula</option>
+            <option value="mandela">Mandela</option>
           </select>
         </label>
       </div>
@@ -514,6 +564,7 @@
     <div style="display:flex; gap:8px; margin-bottom:12px;">
       <button class="btn btn-primary" id="applyTabCloakBtn">Apply Cloak</button>
       <button class="btn btn-secondary" id="cloakGoogleBtn">Cloak as Google</button>
+      <button class="btn btn-secondary" id="cloakCanvasBtn">Cloak as Canvas</button>
       <button class="btn btn-secondary" id="resetCloakBtn">Reset Cloak</button>
     </div>
     <div style="display:flex; gap:8px;">
@@ -532,86 +583,90 @@
         <button class="icon-btn" id="closeOverlayBtn">Close</button>
       </div>
     </div>
-    <iframe class="viewer-iframe" id="viewerIframe" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+    <iframe class="viewer-iframe" id="viewerIframe" allowfullscreen></iframe>
   </div>
 </div>
 
-<div class="player-bar" id="playerBar">
-  <div class="player-meta">
-    <div class="player-art" id="playerArt"></div>
-    <div>
-      <div class="player-title" id="playerTitle">No song selected</div>
-      <div class="player-subrow">
-        <div class="muted small" id="playerArtist">-</div>
-        <div class="eq" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+<!-- New Walkthrough Modal -->
+<div class="walkthrough-modal" id="walkthrough">
+  <div class="walkthrough-inner">
+    <div class="walkthrough-step" id="step-welcome">
+      <h2 class="splash">Welcome to Media Hub!</h2>
+      <p class="small muted">Get ready to customize your experience. Let's set things up!</p>
+    </div>
+    <div class="walkthrough-step" id="step-user">
+      <h3>User Customization</h3>
+      <label>Username
+        <input type="text" id="walkUsername" placeholder="Enter your username">
+      </label>
+      <label>Profile Picture URL
+        <input type="url" id="walkAvatarUrl" placeholder="https://example.com/me.png">
+      </label>
+      <label>Description
+        <textarea id="walkDescription" placeholder="Tell us about yourself"></textarea>
+      </label>
+      <label>Favorite Genres (comma-separated)
+        <input type="text" id="walkGenres" placeholder="Action, RPG, Synthwave">
+      </label>
+      <p class="small muted">These will appear on your home screen before movies and games.</p>
+    </div>
+    <div class="walkthrough-step" id="step-ui">
+      <h3>UI Customization</h3>
+      <div class="form-row">
+        <div class="form-col">
+          <label>Background Color <span class="small muted">(Sets the main background)</span>
+            <input type="color" id="walkBg">
+          </label>
+        </div>
+        <div class="form-col">
+          <label>Wallpaper URL <span class="small muted">(Background image)</span>
+            <input type="url" id="walkWallpaper" placeholder="https://example.com/wallpaper.jpg">
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <label>Overall Theme Color <span class="small muted">(Affects navigation and accents)</span>
+            <input type="color" id="walkOverall">
+          </label>
+        </div>
+        <div class="form-col">
+          <label>Accent Color <span class="small muted">(Highlights and borders)</span>
+            <input type="color" id="walkAccent">
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <label>Button Color <span class="small muted">(Buttons and interactive elements)</span>
+            <input type="color" id="walkButton">
+          </label>
+        </div>
+        <div class="form-col">
+          <label>Text Color <span class="small muted">(All text elements)</span>
+            <input type="color" id="walkText">
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-col">
+          <label>Effect Color <span class="small muted">(Subtle effects and overlays)</span>
+            <input type="color" id="walkEffect">
+          </label>
+        </div>
+      </div>
+      <div class="preview-box">
+        <p class="preview-text">Preview Text</p>
+        <button class="preview-btn">Preview Button</button>
       </div>
     </div>
-  </div>
-  <div>
-    <div class="player-controls">
-      <button class="btn-circle btn-secondary" id="prevBtn" title="Previous">⟨</button>
-      <button class="btn-circle btn-primary" id="playPauseBtn" title="Play/Pause">▶</button>
-      <button class="btn-circle btn-secondary" id="nextBtn" title="Next">⟩</button>
+    <div class="walkthrough-step" id="step-congrats">
+      <h2 class="animated-text">Enjoy Hallows Eve!</h2>
+      <p class="small muted">Your setup is complete. Dive into Media Hub!</p>
     </div>
-    <div class="progress-wrap" style="margin-top:8px;">
-      <span class="time-label" id="currentTimeLabel">0:00</span>
-      <input type="range" min="0" max="1000" step="1" value="0" class="range" id="progressRange" aria-label="Seek">
-      <span class="time-label" id="durationLabel">0:00</span>
-    </div>
-  </div>
-  <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
-    <span class="small muted">Volume</span>
-    <input type="range" min="0" max="1" step="0.01" value="1" class="range" id="volumeRange" aria-label="Volume">
-  </div>
-</div>
-<audio id="audioElement" preload="metadata" crossorigin="anonymous"></audio>
-
-<div class="wizard" id="wizard">
-  <div class="wizard-inner">
-    <div class="wizard-header">
-      <h3 style="margin:0;">Welcome! Let's set up your theme</h3>
-      <span class="badge">Setup Wizard</span>
-    </div>
-    <p class="small muted">Choose your colors. You can change them later in Settings.</p>
-    <div class="form-row">
-      <div class="form-col">
-        <label>Overall Theme Color
-          <input type="color" id="wizOverall">
-        </label>
-      </div>
-      <div class="form-col">
-        <label>Accent Color
-          <input type="color" id="wizAccent">
-        </label>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-col">
-        <label>Button Color
-          <input type="color" id="wizButton">
-        </label>
-      </div>
-      <div class="form-col">
-        <label>Text Color
-          <input type="color" id="wizText">
-        </label>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-col">
-        <label>Effect Color
-          <input type="color" id="wizEffect">
-        </label>
-      </div>
-      <div class="form-col">
-        <label>Background Color
-          <input type="color" id="wizBg">
-        </label>
-      </div>
-    </div>
-    <div class="wizard-actions">
-      <button class="btn btn-secondary" id="wizSkip">Skip</button>
-      <button class="btn btn-primary" id="wizApply">Apply</button>
+    <div class="walkthrough-actions">
+      <button class="btn btn-secondary" id="walkBack">Back</button>
+      <button class="btn btn-primary" id="walkNext">Next</button>
     </div>
   </div>
 </div>
@@ -662,6 +717,7 @@
         </label>
       </div>
       <div class="modal-actions">
+        <button class="btn btn-delete" id="movieEditDelete">Delete</button>
         <button class="btn btn-secondary" id="movieEditCancel">Cancel</button>
         <button class="btn btn-primary" id="movieEditSave">Save</button>
       </div>
@@ -669,17 +725,39 @@
   </div>
 </div>
 
+<!-- New Shows Modal -->
+<div class="modal" id="showsModal">
+  <div class="modal-inner">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <h3 id="showsModalTitle" style="margin:0;">Show Episodes</h3>
+      <button class="icon-btn" id="showsModalClose">Close</button>
+    </div>
+    <div class="form-col season-select">
+      <label>Season
+        <select id="seasonDropdown">
+          <!-- Options added dynamically -->
+        </select>
+      </label>
+    </div>
+    <div class="searchbar">
+      <input type="text" id="episodeSearch" placeholder="Search episodes by title...">
+      <button class="btn btn-secondary" onclick="clearEpisodeSearch()">Clear</button>
+    </div>
+    <div class="episodes-grid" id="episodesGrid"></div>
+  </div>
+</div>
+
 <script>
   const LS_KEYS = {
     setupDone: 'setupDone',
     theme: 'themeSettings',
+    currentTheme: 'currentThemeName',
     profile: 'userProfile',
     movies: 'moviesList',
     games: 'gamesList',
-    songs: 'songsList',
-    playlists: 'playlistsList',
-    lastSong: 'lastSongIndex',
-    currentPlaylist: 'currentPlaylistIndex',
+    shows: 'showsList', // New for shows
+    recentViews: 'recentViews', // New for recent views
+    recentHidden: 'recentHidden', // New for persistent hide
     tabCloak: 'tabCloakSettings',
     viewerWidth: 'viewerWidth',
     viewerHeight: 'viewerHeight',
@@ -710,15 +788,24 @@
     { title: 'Friday Night Funkin', src: './games/Fnf.html', runtime: 'classic' },
     { title: 'New Game Example', src: './games/new-game.html', runtime: 'classic' } // New for merging
   ];
+  const defaultShows = [
+    { title: 'Example Show', seasons: [
+      { season: 1, episodes: [
+        { number: 1, title: 'Pilot', url: 'https://drive.google.com/file/d/example1/preview', coverUrl: '' },
+        { number: 2, title: 'The Adventure Begins', url: 'https://drive.google.com/file/d/example2/preview', coverUrl: '' }
+      ] },
+      { season: 2, episodes: [
+        { number: 1, title: 'Return', url: 'https://drive.google.com/file/d/example3/preview', coverUrl: '' }
+      ] }
+    ] }
+  ];
   const defaultProxies = [
     { title: 'Sakura', url: 'https://144-202-49-64.plesk.page/', description: 'Fast, simple HTTP proxy' },
     { title: 'Petezah', url: 'https://bav1.wadmc.site.cdn.cloudflare.net', description: '' },
     { title: 'Astroid', url: 'https://bav1.wadmc.site.cdn.cloudflare.net', description: '' },
     { title: 'New Proxy Example', url: 'https://new-proxy.example.com', description: 'New for updates' } // New for merging
   ];
-
-  const defaultSongs = [];
-  const defaultPlaylists = [];
+  const defaultUpdateUrl = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/update3.html';
 
   function saveJson(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){} }
   function loadJson(key, fallback){ try{ const raw=localStorage.getItem(key); if(raw==null) return fallback; return JSON.parse(raw); }catch(e){ return fallback; } }
@@ -729,21 +816,24 @@
   function semverCompare(a,b){ const pa=a.split('.').map(n=>parseInt(n,10)||0), pb=b.split('.').map(n=>parseInt(n,10)||0); for(let i=0;i<Math.max(pa.length,pb.length);i++){const ai=pa[i]||0,bi=pb[i]||0; if(ai>bi) return 1; if(ai<bi) return -1;} return 0; }
 
   let theme = loadJson(LS_KEYS.theme, defaultTheme);
+  let currentThemeName = localStorage.getItem(LS_KEYS.currentTheme) || '';
   let profile = loadJson(LS_KEYS.profile, defaultProfile);
   let movies = loadJson(LS_KEYS.movies, defaultMovies);
   let games = loadJson(LS_KEYS.games, defaultGames);
+  let shows = loadJson(LS_KEYS.shows, defaultShows); // New: Load shows
   let proxies = loadJson(LS_KEYS.proxies, defaultProxies); // New: Load/merge proxies
-  let songs = loadJson(LS_KEYS.songs, defaultSongs);
-  let playlists = loadJson(LS_KEYS.playlists, defaultPlaylists);
+  let recentViews = loadJson(LS_KEYS.recentViews, []); // New: Load recent views
+  let recentHidden = localStorage.getItem(LS_KEYS.recentHidden) === 'true'; // New: Persistent hide state
   let cloak = loadJson(LS_KEYS.tabCloak, { title: document.title, icon: '' });
+  let updateSourceUrl = localStorage.getItem(LS_KEYS.updateUrl) || defaultUpdateUrl;
 
-  let currentPlaylistIndex = parseInt(localStorage.getItem(LS_KEYS.currentPlaylist) || '-1', 10);
-  let currentSongIndex = parseInt(localStorage.getItem(LS_KEYS.lastSong) || '0', 10);
-  let isPlaying = false;
   let movieQuery = '';
   let gameQuery = '';
+  let currentShowIndex = null;
+  let episodeQuery = '';
+  let currentSeason = null;
 
-  function applyTheme(t=theme){
+  function applyTheme(t=theme, themeName=currentThemeName){
     const root=document.documentElement;
     root.style.setProperty('--bg-color', t.bgColor || defaultTheme.bgColor);
     root.style.setProperty('--bg-image', t.bgImage && t.bgImage.trim().length>6 ? `url("${t.bgImage}")` : 'none');
@@ -752,16 +842,23 @@
     root.style.setProperty('--button-color', t.buttonColor || defaultTheme.buttonColor);
     root.style.setProperty('--effect-color', t.effectColor || defaultTheme.effectColor);
     root.style.setProperty('--nav-active', t.overallThemeColor || t.accentColor || defaultTheme.accentColor);
+
+    // Apply theme class for layout/button variations
+    document.body.className = ''; // Reset
+    if (themeName) document.body.classList.add(`theme-${themeName}`);
   }
 
   function presetTheme(name){
     let t={...defaultTheme};
-    if(name==='dark'){ t.bgColor=getComputedStyle(document.documentElement).getPropertyValue('--base').trim(); t.textColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim(); t.accentColor=getComputedStyle(document.documentElement).getPropertyValue('--mauve').trim(); t.buttonColor=getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(); t.overallThemeColor=t.accentColor; t.effectColor='rgba(203,166,247,0.3)'; t.bgImage=''; }
-    else if(name==='light'){ t.bgColor='#E6E9EF'; t.textColor='#4C4F69'; t.accentColor='#ACB0BE'; t.buttonColor='#1e66f5'; t.overallThemeColor='#179299'; t.effectColor='rgba(147,153,178,0.25)'; t.bgImage=''; }
-    else if(name==='halloween'){ t.bgColor='#0d0b12'; t.textColor='#F9E2AF'; t.accentColor='#FAB387'; t.buttonColor='#F38BA8'; t.overallThemeColor='#EBA0AC'; t.effectColor='rgba(250,179,135,0.35)'; t.bgImage=''; }
-    else if(name==='christmas'){ t.bgColor='#101418'; t.textColor='#E6E9EF'; t.accentColor='#A6E3A1'; t.buttonColor='#F38BA8'; t.overallThemeColor='#94E2D5'; t.effectColor='rgba(166,227,161,0.35)'; t.bgImage=''; }
-    else if(name==='minimalist'){ t.bgColor='#FFFFFF'; t.textColor='#000000'; t.accentColor='#AAAAAA'; t.buttonColor='#DDDDDD'; t.effectColor='rgba(170,170,170,0.1)'; t.bgImage=''; }
-    theme=t; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm();
+    if(name==='dark'){ t.bgColor='#1E1E2E'; t.textColor='#CDD6F4'; t.accentColor='#CBA6F7'; t.buttonColor='#89B4FA'; t.overallThemeColor='#CBA6F7'; t.effectColor='rgba(203,166,247,0.3)'; t.bgImage=''; }
+    else if(name==='halloween'){ t.bgColor='#121212'; t.textColor='#FFEA00'; t.accentColor='#FF7518'; t.buttonColor='#FF4500'; t.overallThemeColor='#8B0000'; t.effectColor='rgba(255,117,24,0.35)'; t.bgImage=''; } // Enhanced: More orange/pumpkin colors, dark spooky base
+    else if(name==='christmas'){ t.bgColor='#0C0F14'; t.textColor='#FFFFFF'; t.accentColor='#228B22'; t.buttonColor='#FF0000'; t.overallThemeColor='#C71585'; t.effectColor='rgba(34,139,34,0.35)'; t.bgImage=''; } // Enhanced: Dark snowy base, red/green accents, festive pink for highlights
+    else if(name==='nordic-dark'){ t.bgColor='#2E3440'; t.textColor='#D8DEE9'; t.accentColor='#5E81AC'; t.buttonColor='#4C566A'; t.overallThemeColor='#81A1C1'; t.effectColor='rgba(94,129,172,0.3)'; t.bgImage=''; }
+    else if(name==='sweet'){ t.bgColor='#2D1B33'; t.textColor='#E0BBE4'; t.accentColor='#957FB8'; t.buttonColor='#DDA0DD'; t.overallThemeColor='#CDA2D0'; t.effectColor='rgba(149,127,184,0.3)'; t.bgImage=''; }
+    else if(name==='chrome-os'){ t.bgColor='#202124'; t.textColor='#E8EAED'; t.accentColor='#4285F4'; t.buttonColor='#1A73E8'; t.overallThemeColor='#34A853'; t.effectColor='rgba(66,133,244,0.3)'; t.bgImage=''; } // Dark Chrome OS
+    else if(name==='dracula'){ t.bgColor='#282A36'; t.textColor='#F8F8F2'; t.accentColor='#BD93F9'; t.buttonColor='#FF79C6'; t.overallThemeColor='#50FA7B'; t.effectColor='rgba(189,147,249,0.3)'; t.bgImage=''; }
+    else if(name==='mandela'){ t.bgColor='#333333'; t.textColor='#FFFFFF'; t.accentColor='#666666'; t.buttonColor='#999999'; t.overallThemeColor='#CCCCCC'; t.effectColor='rgba(102,102,102,0.3)'; t.bgImage=''; }
+    theme=t; saveJson(LS_KEYS.theme, theme); localStorage.setItem(LS_KEYS.currentTheme, name); currentThemeName = name; applyTheme(t, name); bindSettingsForm();
   }
 
   function showPage(id){
@@ -825,9 +922,7 @@
       const titleDiv=document.createElement('div'); titleDiv.className='title'; titleDiv.textContent=m.title;
       const sub=document.createElement('div'); sub.className='small muted'; sub.textContent='Click to watch';
       left.appendChild(titleDiv); left.appendChild(sub);
-      const editBtn=document.createElement('button'); editBtn.className='icon-btn'; editBtn.textContent='Edit';
-      editBtn.addEventListener('click',(e)=>{ e.stopPropagation(); openMovieEditor(idx); });
-      info.appendChild(left); info.appendChild(editBtn);
+      info.appendChild(left);
       card.appendChild(thumb); card.appendChild(info);
       grid.appendChild(card);
     });
@@ -851,10 +946,17 @@
       else movies[movieEditIndex]={ title, coverUrl: cover, driveLink: link };
       saveJson(LS_KEYS.movies, movies); modal.style.display='none'; document.body.classList.remove('no-scroll'); renderMovies();
     };
+    document.getElementById('movieEditDelete').onclick=()=>{
+      if(confirm('Delete this movie?')){
+        movies.splice(movieEditIndex, 1);
+        saveJson(LS_KEYS.movies, movies);
+        modal.style.display='none'; document.body.classList.remove('no-scroll'); renderMovies();
+      }
+    };
     modal.style.display='flex'; document.body.classList.add('no-scroll');
     modal.addEventListener('click',(e)=>{ if(!e.target.closest('.modal-inner')){ modal.style.display='none'; document.body.classList.remove('no-scroll'); } }, { once:true });
   }
-  function resetMovies(){ if(!confirm('Reset movie grid to defaults?')) return; movies=defaultMovies.slice(); saveJson(LS_KEYS.movies, movies); renderMovies(); }
+  function refreshMovies(){ renderMovies(); }
   function clearMovieSearch(){ movieQuery=''; document.getElementById('movieSearch').value=''; renderMovies(); }
   document.getElementById('movieSearch').addEventListener('input',(e)=>{ movieQuery=e.target.value.trim(); renderMovies(); });
 
@@ -893,6 +995,79 @@
   function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; renderGames(); }
   document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); renderGames(); });
 
+  // New: Render shows
+  function renderShows(){
+    const grid = document.getElementById('showsGrid'); grid.innerHTML = '';
+    shows.forEach((show, idx) => {
+      const card = document.createElement('div'); card.className = 'card show-card';
+      const thumb = document.createElement('div'); thumb.className = 'thumb';
+      thumb.textContent = show.title; // Could add cover if extended
+      thumb.addEventListener('click', () => openShowsModal(idx));
+      const info = document.createElement('div'); info.className = 'info';
+      const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.textContent = show.title;
+      info.appendChild(titleDiv);
+      card.appendChild(thumb); card.appendChild(info);
+      grid.appendChild(card);
+    });
+  }
+
+  let episodeSearchInput;
+  let seasonDropdown;
+  function openShowsModal(idx) {
+    currentShowIndex = idx;
+    const show = shows[idx];
+    document.getElementById('showsModalTitle').textContent = show.title;
+    episodeQuery = '';
+    currentSeason = show.seasons[0]?.season || 1;
+    seasonDropdown = document.getElementById('seasonDropdown');
+    populateSeasonDropdown(show);
+    renderEpisodesGrid();
+    const modal = document.getElementById('showsModal');
+    modal.style.display = 'flex';
+    document.body.classList.add('no-scroll');
+    episodeSearchInput = document.getElementById('episodeSearch');
+    episodeSearchInput.value = '';
+    episodeSearchInput.addEventListener('input', (e) => { episodeQuery = e.target.value.trim(); renderEpisodesGrid(); });
+    seasonDropdown.addEventListener('change', (e) => { currentSeason = parseInt(e.target.value); renderEpisodesGrid(); });
+    document.getElementById('showsModalClose').onclick = () => { modal.style.display = 'none'; document.body.classList.remove('no-scroll'); };
+    modal.addEventListener('click', (e) => { if (!e.target.closest('.modal-inner')) { modal.style.display = 'none'; document.body.classList.remove('no-scroll'); } }, { once: true });
+  }
+
+  function populateSeasonDropdown(show) {
+    seasonDropdown.innerHTML = '';
+    show.seasons.forEach((season) => {
+      const option = document.createElement('option'); option.value = season.season; option.textContent = `Season ${season.season}`;
+      seasonDropdown.appendChild(option);
+    });
+    seasonDropdown.value = currentSeason;
+  }
+
+  function renderEpisodesGrid() {
+    const grid = document.getElementById('episodesGrid'); grid.innerHTML = '';
+    const show = shows[currentShowIndex];
+    if (!show || !show.seasons) return;
+    const selectedSeason = show.seasons.find(s => s.season === currentSeason);
+    if (!selectedSeason) return;
+    const filteredEpisodes = selectedSeason.episodes.filter(ep => (ep.title || '').toLowerCase().includes(episodeQuery.toLowerCase()));
+    filteredEpisodes.forEach((ep) => {
+      const card = document.createElement('div'); card.className = 'card';
+      const thumb = document.createElement('div'); thumb.className = 'thumb';
+      if (ep.coverUrl) {
+        const img = document.createElement('img'); img.src = ep.coverUrl; thumb.appendChild(img);
+      } else {
+        thumb.textContent = `E${ep.number}: ${ep.title}`;
+      }
+      thumb.addEventListener('click', () => openViewer(ep.title, ep.url, 'show'));
+      const info = document.createElement('div'); info.className = 'info';
+      const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.textContent = `E${ep.number}: ${ep.title}`;
+      info.appendChild(titleDiv);
+      card.appendChild(thumb); card.appendChild(info);
+      grid.appendChild(card);
+    });
+  }
+  function clearEpisodeSearch() { episodeQuery = ''; episodeSearchInput.value = ''; renderEpisodesGrid(); }
+  function resetShows() { if (!confirm('Reset shows to default?')) return; shows = defaultShows.slice(); saveJson(LS_KEYS.shows, shows); renderShows(); }
+
   // New: Render proxies dynamically (for merging during updates)
   function renderProxies(){
     const list=document.getElementById('proxiesList'); list.innerHTML='';
@@ -914,7 +1089,7 @@
     document.getElementById('viewerTitle').textContent = title || 'Viewer';
     const iframe = document.getElementById('viewerIframe');
     iframe.src = 'about:blank'; // Reset
-    if (type === 'movie' && src.includes('drive.google.com')) {
+    if (type === 'movie' || type === 'show' && src.includes('drive.google.com')) {
       // Improved embedding for Google Drive
       const fileId = src.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1];
       if (fileId) {
@@ -922,17 +1097,67 @@
       } else {
         iframe.src = src.replace('/view', '/preview');
       }
-      iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
       iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
-      iframe.onload = () => {
-        if (iframe.contentDocument && (iframe.contentDocument.body.innerHTML.includes('error') || iframe.contentDocument.body.innerHTML.includes('blocked'))) {
-          alert('Drive preview error. Ensure the file is public and try again.');
-        }
-      };
     } else {
       iframe.src = src || 'about:blank';
     }
+    logRecentView(type, title, src);
   }
+
+  function logRecentView(type, title, src) {
+    recentViews = recentViews.filter(view => view.title !== title); // Remove if already exists
+    recentViews.unshift({ type, title, src });
+    if (recentViews.length > 5) recentViews.pop(); // Limit to 5
+    saveJson(LS_KEYS.recentViews, recentViews);
+    renderRecent();
+  }
+
+  function renderRecent() {
+    const grid = document.getElementById('recentGrid'); grid.innerHTML = '';
+    if (recentViews.length === 0 || recentHidden) {
+      grid.style.display = 'none';
+      return;
+    }
+    grid.style.display = 'grid';
+    recentViews.forEach((view, idx) => {
+      const card = document.createElement('div'); card.className = 'card';
+      const thumb = document.createElement('div'); thumb.className = 'thumb';
+      thumb.textContent = view.title;
+      thumb.addEventListener('click', () => openViewer(view.title, view.src, view.type));
+      const removeBtn = document.createElement('button'); removeBtn.className = 'remove-btn'; removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeRecent(idx); });
+      thumb.appendChild(removeBtn);
+      const info = document.createElement('div'); info.className = 'info';
+      const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.textContent = view.title;
+      const sub = document.createElement('div'); sub.className = 'small muted'; sub.textContent = view.type.charAt(0).toUpperCase() + view.type.slice(1);
+      info.appendChild(titleDiv); info.appendChild(sub);
+      card.appendChild(thumb); card.appendChild(info);
+      grid.appendChild(card);
+    });
+  }
+
+  function removeRecent(idx) {
+    recentViews.splice(idx, 1);
+    saveJson(LS_KEYS.recentViews, recentViews);
+    renderRecent();
+  }
+
+  function toggleRecent(hide) {
+    recentHidden = hide;
+    localStorage.setItem(LS_KEYS.recentHidden, hide);
+    renderRecent();
+    document.getElementById('recentDropdown').classList.remove('open');
+  }
+
+  function clearAllRecent() {
+    if (confirm('Clear all recent views?')) {
+      recentViews = [];
+      saveJson(LS_KEYS.recentViews, recentViews);
+      renderRecent();
+      document.getElementById('recentDropdown').classList.remove('open');
+    }
+  }
+
   function closeViewer(){
     document.getElementById('overlay').classList.remove('open');
     document.getElementById('viewerIframe').src = 'about:blank';
@@ -961,136 +1186,6 @@
     });
   }
 
-  function normalizeDriveAudio(input){
-    const str=String(input||'').trim(); if(!str) return '';
-    const idMatch=str.match(/(?:\/d\/|id=)([a-zA-Z0-9_-]{10,})/);
-    let id=idMatch? idMatch[1]: null;
-    if(!id && /^[a-zA-Z0-9_-]{10,}$/.test(str)) id=str;
-    if(id) return `https://drive.google.com/uc?export=download&id=${id}`;
-    if(str.startsWith('https://drive.google.com/uc?')) return str;
-    return str;
-  }
-
-  function renderSongs(){
-    const list=document.getElementById('songsList'); list.innerHTML='';
-    songs.forEach((s, idx)=>{
-      const item=document.createElement('div'); item.className='list-item';
-      const left=document.createElement('div');
-      const title=document.createElement('div'); title.className='title'; title.textContent=s.title || 'Untitled';
-      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=s.artist || 'Unknown';
-      left.appendChild(title); left.appendChild(muted);
-      const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
-      const playBtn=document.createElement('button'); playBtn.className='btn btn-primary'; playBtn.textContent='Play';
-      playBtn.addEventListener('click',()=>{ currentPlaylistIndex=-1; localStorage.setItem(LS_KEYS.currentPlaylist, String(currentPlaylistIndex)); playSong(idx); });
-      const addBtn=document.createElement('button'); addBtn.className='btn btn-secondary'; addBtn.textContent='Add to Playlist';
-      addBtn.addEventListener('click',()=>{
-        const plName=prompt('Add to which playlist? Enter name:'); if(!plName) return;
-        let pl=playlists.find(p=>p.name.toLowerCase()===plName.toLowerCase());
-        if(!pl){ pl={ name: plName, songIds: [] }; playlists.push(pl); }
-        pl.songIds.push(idx); saveJson(LS_KEYS.playlists, playlists); renderPlaylists(); alert('Added to playlist: '+pl.name);
-      });
-      right.appendChild(playBtn); right.appendChild(addBtn);
-      item.appendChild(left); item.appendChild(right);
-      list.appendChild(item);
-    });
-  }
-  function renderPlaylists(){
-    const list=document.getElementById('playlistsList'); list.innerHTML='';
-    playlists.forEach((pl, pidx)=>{
-      const item=document.createElement('div'); item.className='list-item';
-      const left=document.createElement('div');
-      const title=document.createElement('div'); title.className='title'; title.textContent=pl.name;
-      const muted=document.createElement('div'); muted.className='muted'; muted.textContent=`${pl.songIds.length} songs`;
-      left.appendChild(title); left.appendChild(muted);
-      const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
-      const playBtn=document.createElement('button'); playBtn.className='btn btn-primary'; playBtn.textContent='Play';
-      playBtn.addEventListener('click',()=>{
-        currentPlaylistIndex=pidx; localStorage.setItem(LS_KEYS.currentPlaylist, String(currentPlaylistIndex));
-        if(pl.songIds.length>0){ playSong(pl.songIds[0]); } else { alert('Playlist is empty.'); }
-      });
-      const editBtn=document.createElement('button'); editBtn.className='btn btn-secondary'; editBtn.textContent='Edit';
-      editBtn.addEventListener('click',()=>editPlaylistPrompt(pidx));
-      right.appendChild(playBtn); right.appendChild(editBtn);
-      item.appendChild(left); item.appendChild(right);
-      list.appendChild(item);
-    });
-  }
-  function addSongPrompt(){
-    const title=prompt('Song title (shown in player):'); if(!title) return;
-    const artist=prompt('Artist (optional):','') || '';
-    const driveInput=prompt('Google Drive audio link or File ID:\nExample: https://drive.google.com/file/d/FILE_ID/view\nOr paste just FILE_ID:','');
-    const art=prompt('Cover Art URL (optional):','');
-    const url=normalizeDriveAudio(driveInput);
-    songs.push({ title, artist, url: url || '', art: art || '' }); saveJson(LS_KEYS.songs, songs); renderSongs();
-  }
-  function createPlaylistPrompt(){ const name=prompt('Playlist name:'); if(!name) return; playlists.push({ name, songIds: [] }); saveJson(LS_KEYS.playlists, playlists); renderPlaylists(); }
-  function editPlaylistPrompt(idx){
-    const pl=playlists[idx];
-    const action=prompt('Edit playlist:\n1) Rename\n2) Remove song by index\n3) Add song by index\n4) Delete playlist\nEnter number:'); if(!action) return;
-    const n=parseInt(action,10);
-    if(n===1){ const name=prompt('New name:', pl.name); if(name) pl.name=name; }
-    else if(n===2){ const si=parseInt(prompt('Song index to remove (0-based):'),10); if(!isNaN(si)) pl.songIds=pl.songIds.filter(id=>id!==si); }
-    else if(n===3){ const si=parseInt(prompt('Song index to add (0-based):'),10); if(!isNaN(si) && songs[si]) pl.songIds.push(si); }
-    else if(n===4){ if(confirm('Delete playlist "'+pl.name+'"?')) playlists.splice(idx,1); }
-    saveJson(LS_KEYS.playlists, playlists); renderPlaylists();
-  }
-
-  function fmtTime(sec){ if(!isFinite(sec)) return '0:00'; const m=Math.floor(sec/60), s=Math.floor(sec%60); return m+':'+String(s).padStart(2,'0'); }
-  function playSong(index){
-    const s=songs[clamp(index,0,songs.length-1)]; if(!s) return;
-    currentSongIndex=index; localStorage.setItem(LS_KEYS.lastSong, String(currentSongIndex));
-    document.getElementById('playerTitle').textContent=s.title || 'Unknown';
-    document.getElementById('playerArtist').textContent=s.artist || 'Unknown';
-    const artEl=document.getElementById('playerArt');
-    if(s.art){ artEl.style.backgroundImage=`url("${s.art}")`; artEl.style.backgroundSize='cover'; artEl.style.backgroundPosition='center'; } else { artEl.style.backgroundImage=''; }
-    const qs=document.getElementById('quickSong'); if(qs) qs.textContent=`${s.title || 'Unknown'} — ${s.artist || 'Unknown'}`;
-    const audioEl=document.getElementById('audioElement');
-    audioEl.pause(); audioEl.src=s.url || ''; audioEl.currentTime=0; audioEl.load();
-    audioEl.play().then(()=>{ document.getElementById('playPauseBtn').textContent='⏸'; })
-    .catch((err)=>{ document.getElementById('playPauseBtn').textContent='▶'; alert('Playback error: ' + err.message + '. Ensure the Drive file is public and accessible.'); });
-  }
-  function nextSong(){
-    if(currentPlaylistIndex>=0 && playlists[currentPlaylistIndex]){
-      const pl=playlists[currentPlaylistIndex]; if(pl.songIds.length===0) return;
-      const nextPos=(pl.songIds.indexOf(currentSongIndex)+1)%pl.songIds.length; playSong(pl.songIds[nextPos]);
-    } else if(songs.length>0){ playSong((currentSongIndex+1)%songs.length); }
-  }
-  function prevSong(){
-    if(currentPlaylistIndex>=0 && playlists[currentPlaylistIndex]){
-      const pl=playlists[currentPlaylistIndex]; if(pl.songIds.length===0) return;
-      const prevPos=(pl.songIds.indexOf(currentSongIndex)-1+pl.songIds.length)%pl.songIds.length; playSong(pl.songIds[prevPos]);
-    } else if(songs.length>0){ playSong((currentSongIndex-1+songs.length)%songs.length); }
-  }
-  function syncProgress(){
-    const audioEl=document.getElementById('audioElement');
-    const cur=audioEl.currentTime||0, dur=audioEl.duration||0;
-    document.getElementById('currentTimeLabel').textContent=fmtTime(cur);
-    document.getElementById('durationLabel').textContent=fmtTime(dur);
-    const progressRange=document.getElementById('progressRange');
-    progressRange.max = dur ? Math.floor(dur*1000) : 1000;
-    progressRange.value = dur ? Math.floor(cur*1000) : 0;
-  }
-  function initPlayerControls(){
-    const audioEl=document.getElementById('audioElement');
-    const playPauseBtn=document.getElementById('playPauseBtn');
-    const prevBtn=document.getElementById('prevBtn');
-    const nextBtn=document.getElementById('nextBtn');
-    const volumeRange=document.getElementById('volumeRange');
-    const progressRange=document.getElementById('progressRange');
-
-    playPauseBtn.addEventListener('click',()=>{ if(!audioEl.src){ playSong(currentSongIndex); return; } if(audioEl.paused){ audioEl.play().catch(()=>{}); } else { audioEl.pause(); } });
-    prevBtn.addEventListener('click', prevSong);
-    nextBtn.addEventListener('click', nextSong);
-    volumeRange.addEventListener('input',()=>{ audioEl.volume=parseFloat(volumeRange.value); });
-    audioEl.addEventListener('play',()=>{ isPlaying=true; playPauseBtn.textContent='⏸'; document.getElementById('playerBar').classList.add('playing'); });
-    audioEl.addEventListener('pause',()=>{ isPlaying=false; playPauseBtn.textContent='▶'; document.getElementById('playerBar').classList.remove('playing'); });
-    audioEl.addEventListener('ended', nextSong);
-    audioEl.addEventListener('timeupdate', syncProgress);
-    audioEl.addEventListener('loadedmetadata', syncProgress);
-    audioEl.addEventListener('error',()=>{ alert('Failed to load track. Ensure Google Drive file is public and URL is correct.'); setTimeout(nextSong,200); });
-    progressRange.addEventListener('input',()=>{ const dur=audioEl.duration||0; if(dur) audioEl.currentTime=parseFloat(progressRange.value)/1000; });
-  }
-
   function bindSettingsForm(){
     document.getElementById('bgColorPicker').value = rgbToHex(theme.bgColor || defaultTheme.bgColor);
     document.getElementById('bgImageUrl').value = theme.bgImage || '';
@@ -1117,7 +1212,7 @@
     theme.buttonColor=document.getElementById('buttonColorPicker').value;
     theme.textColor=document.getElementById('textColorPicker').value;
     theme.effectColor=hexToRgba(document.getElementById('effectColorPicker').value, 0.3);
-    saveJson(LS_KEYS.theme, theme); applyTheme();
+    saveJson(LS_KEYS.theme, theme); applyTheme(theme, currentThemeName);
 
     cloak.title=document.getElementById('tabTitleInput').value.trim() || document.title;
     cloak.icon=document.getElementById('tabIconInput').value.trim();
@@ -1131,27 +1226,12 @@
     localStorage.setItem(LS_KEYS.performanceMode, document.getElementById('performanceModeSelect').value);
     applyCustomSettings();
   }
-  function resetSettings(){ if(!confirm('Reset settings to default theme?')) return; theme={...defaultTheme}; saveJson(LS_KEYS.theme, theme); applyTheme(); bindSettingsForm(); }
+  function resetSettings(){ if(!confirm('Reset settings to default theme?')) return; theme={...defaultTheme}; saveJson(LS_KEYS.theme, theme); localStorage.removeItem(LS_KEYS.currentTheme); currentThemeName = ''; applyTheme(); bindSettingsForm(); }
 
   function applyTabCloak(){
     if(cloak.title) document.title=cloak.title;
     const link=document.getElementById('dynamic-favicon') || (()=>{ const l=document.createElement('link'); l.rel='icon'; l.id='dynamic-favicon'; document.head.appendChild(l); return l; })();
     if(cloak.icon && cloak.icon.length>3) link.href=cloak.icon; else link.removeAttribute('href');
-  }
-
-  function showWizardIfNeeded(){
-    const done=localStorage.getItem(LS_KEYS.setupDone)==='true';
-    if(!done){
-      const wiz=document.getElementById('wizard'); wiz.style.display='flex';
-      document.getElementById('wizOverall').value=rgbToHex(theme.overallThemeColor || theme.accentColor || defaultTheme.accentColor);
-      document.getElementById('wizAccent').value=rgbToHex(theme.accentColor || defaultTheme.accentColor);
-      document.getElementById('wizButton').value=rgbToHex(theme.buttonColor || defaultTheme.buttonColor);
-      document.getElementById('wizText').value=rgbToHex(theme.textColor || defaultTheme.textColor);
-      document.getElementById('wizEffect').value=rgbToHex(extractRGB(theme.effectColor) || '#CBA6F7');
-      document.getElementById('wizBg').value=rgbToHex(theme.bgColor || defaultTheme.bgColor);
-      document.getElementById('wizApply').onclick=()=>{ theme.overallThemeColor=document.getElementById('wizOverall').value; theme.accentColor=document.getElementById('wizAccent').value; theme.buttonColor=document.getElementById('wizButton').value; theme.textColor=document.getElementById('wizText').value; theme.effectColor=hexToRgba(document.getElementById('wizEffect').value, 0.3); theme.bgColor=document.getElementById('wizBg').value; saveJson(LS_KEYS.theme, theme); applyTheme(); localStorage.setItem(LS_KEYS.setupDone,'true'); wiz.style.display='none'; };
-      document.getElementById('wizSkip').onclick=()=>{ localStorage.setItem(LS_KEYS.setupDone,'true'); wiz.style.display='none'; };
-    }
   }
 
   function mergeDefaults(existing, defaults, keyField = 'title') {
@@ -1160,6 +1240,38 @@
       if (!existing.some(ex => ex[keyField] === def[keyField])) merged.push(def);
     });
     return merged;
+  }
+
+  // New update function: Fetch HTML and rewrite document in place
+  function checkForUpdate(userInitiated=false){
+    const url=updateSourceUrl;
+    if(!url) return;
+    fetch(url,{cache:'no-store'})
+      .then(res=>{ if(!res.ok) throw new Error('Failed'); return res.text(); })
+      .then(html=>{
+        const latest=(html.match(/<meta[^>]+name=["']app-version["'][^>]+content=["']([^"']+)["']/i)||[])[1];
+        const cur=document.querySelector('meta[name="app-version"]')?.content || '0.0.0';
+        if(latest && semverCompare(latest, cur)>0){
+          document.getElementById('versionLabel').textContent=`Current ${cur} → Latest ${latest}`;
+          const modal=document.getElementById('updateModal'); modal.style.display='flex';
+          document.getElementById('updateLaterBtn').onclick=()=>{ modal.style.display='none'; };
+          document.getElementById('updateNowBtn').onclick=()=>{
+            // Merge defaults before applying update
+            movies = mergeDefaults(movies, defaultMovies); saveJson(LS_KEYS.movies, movies);
+            games = mergeDefaults(games, defaultGames); saveJson(LS_KEYS.games, games);
+            shows = mergeDefaults(shows, defaultShows); saveJson(LS_KEYS.shows, shows);
+            proxies = mergeDefaults(proxies, defaultProxies, 'title'); saveJson(LS_KEYS.proxies, proxies);
+            modal.style.display='none';
+
+            // Rewrite the document with new HTML (updates in place)
+            document.open();
+            document.write(html);
+            document.close();
+          };
+        } else {
+          if (userInitiated) alert('You are already on the latest version.');
+        }
+      }).catch(()=>{ if (userInitiated) alert('Failed to check updates. Verify URL and CORS.'); });
   }
 
   function bindNav(){ document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click',()=>showPage(btn.dataset.target)); }); }
@@ -1182,27 +1294,110 @@
     }
   });
 
+  // Walkthrough Logic
+  function showWalkthroughIfNeeded(){
+    const done=localStorage.getItem(LS_KEYS.setupDone)==='true';
+    if(!done){
+      const modal=document.getElementById('walkthrough'); modal.style.display='flex';
+      let currentStep = 0;
+      const steps = ['welcome', 'user', 'ui', 'congrats'];
+      const backBtn = document.getElementById('walkBack');
+      const nextBtn = document.getElementById('walkNext');
+
+      function showStep(step) {
+        document.querySelectorAll('.walkthrough-step').forEach(s => s.classList.remove('active'));
+        document.getElementById(`step-${steps[step]}`).classList.add('active');
+        backBtn.style.display = step === 0 ? 'none' : 'block';
+        nextBtn.textContent = step === steps.length - 1 ? 'Finish' : 'Next';
+      }
+
+      backBtn.onclick = () => {
+        if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      };
+
+      nextBtn.onclick = () => {
+        if (currentStep === 1) { // Save user data
+          profile.username = document.getElementById('walkUsername').value.trim() || 'User';
+          profile.avatarUrl = document.getElementById('walkAvatarUrl').value.trim();
+          profile.description = document.getElementById('walkDescription').value.trim();
+          const genresStr = document.getElementById('walkGenres').value.trim();
+          profile.genres = genresStr ? genresStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+          saveJson(LS_KEYS.profile, profile);
+        } else if (currentStep === 2) { // Save UI theme
+          theme.bgColor = document.getElementById('walkBg').value;
+          theme.bgImage = document.getElementById('walkWallpaper').value.trim();
+          theme.overallThemeColor = document.getElementById('walkOverall').value;
+          theme.accentColor = document.getElementById('walkAccent').value;
+          theme.buttonColor = document.getElementById('walkButton').value;
+          theme.textColor = document.getElementById('walkText').value;
+          theme.effectColor = hexToRgba(document.getElementById('walkEffect').value, 0.3);
+          saveJson(LS_KEYS.theme, theme);
+          applyTheme();
+        }
+
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        } else {
+          localStorage.setItem(LS_KEYS.setupDone, 'true');
+          modal.style.display = 'none';
+          renderProfile(); // Update home with new profile data
+          showPage('home'); // Load home screen
+          document.getElementById('updateLog').style.display = 'flex'; // Show update log after walkthrough
+        }
+      };
+
+      // Instant preview for UI step
+      document.getElementById('walkBg').addEventListener('input', (e) => { theme.bgColor = e.target.value; applyTheme(); });
+      document.getElementById('walkWallpaper').addEventListener('input', (e) => { theme.bgImage = e.target.value.trim(); applyTheme(); });
+      document.getElementById('walkOverall').addEventListener('input', (e) => { theme.overallThemeColor = e.target.value; applyTheme(); });
+      document.getElementById('walkAccent').addEventListener('input', (e) => { theme.accentColor = e.target.value; applyTheme(); });
+      document.getElementById('walkButton').addEventListener('input', (e) => { theme.buttonColor = e.target.value; applyTheme(); });
+      document.getElementById('walkText').addEventListener('input', (e) => { theme.textColor = e.target.value; applyTheme(); });
+      document.getElementById('walkEffect').addEventListener('input', (e) => { theme.effectColor = hexToRgba(e.target.value, 0.3); applyTheme(); });
+
+      // Initialize values for UI step
+      document.getElementById('walkBg').value = rgbToHex(theme.bgColor);
+      document.getElementById('walkWallpaper').value = theme.bgImage;
+      document.getElementById('walkOverall').value = rgbToHex(theme.overallThemeColor);
+      document.getElementById('walkAccent').value = rgbToHex(theme.accentColor);
+      document.getElementById('walkButton').value = rgbToHex(theme.buttonColor);
+      document.getElementById('walkText').value = rgbToHex(theme.textColor);
+      document.getElementById('walkEffect').value = rgbToHex(extractRGB(theme.effectColor));
+
+      // Initialize user step
+      document.getElementById('walkUsername').value = profile.username || '';
+      document.getElementById('walkAvatarUrl').value = profile.avatarUrl || '';
+      document.getElementById('walkDescription').value = profile.description || '';
+      document.getElementById('walkGenres').value = Array.isArray(profile.genres) ? profile.genres.join(', ') : (profile.genres || '');
+
+      showStep(currentStep);
+    } else {
+      // If setup done, show update log on home load
+      document.getElementById('updateLog').style.display = 'flex';
+    }
+  }
+
   function init(){
-    applyTheme();
+    applyTheme(theme, currentThemeName);
     applyTabCloak();
     renderProfile();
     initProfileDropdown();
     bindNav();
     renderMovies();
     renderGames();
-    renderSongs();
-    renderPlaylists();
+    renderShows(); // New: Render shows
     renderProxies(); // New: Render proxies
+    renderRecent(); // New: Render recent on init
     bindSettingsForm();
     initOverlayControls();
-    initPlayerControls();
-    showWizardIfNeeded();
     applyCustomSettings();
 
-    // Show animated update log on startup
-    const logModal = document.getElementById('updateLog');
-    logModal.style.display = 'flex';
-    document.getElementById('closeLogBtn').onclick = () => { logModal.style.display = 'none'; };
+    // Show walkthrough or update log
+    showWalkthroughIfNeeded();
 
     const presetSelect = document.getElementById('presetThemeSelect');
     if (presetSelect) {
@@ -1216,16 +1411,12 @@
 
     document.getElementById('applyTabCloakBtn').addEventListener('click',()=>{ cloak.title=document.getElementById('tabTitleInput').value.trim() || cloak.title; cloak.icon=document.getElementById('tabIconInput').value.trim(); saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak(); });
     document.getElementById('cloakGoogleBtn').addEventListener('click',()=>{ cloak={ title:'Google', icon:'https://www.google.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
+    document.getElementById('cloakCanvasBtn').addEventListener('click',()=>{ cloak={ title:'Canvas', icon:'https://ccisd.instructure.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
     document.getElementById('resetCloakBtn').addEventListener('click',()=>{ cloak={ title:'Media Hub', icon:'' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
 
-    if(songs[currentSongIndex]){
-      const s=songs[currentSongIndex];
-      document.getElementById('playerTitle').textContent=s.title || 'Unknown';
-      document.getElementById('playerArtist').textContent=s.artist || 'Unknown';
-      const artEl=document.getElementById('playerArt');
-      if(s.art){ artEl.style.backgroundImage=`url("${s.art}")`; artEl.style.backgroundSize='cover'; artEl.style.backgroundPosition='center'; }
-    }
-    document.getElementById('audioElement').volume = parseFloat(document.getElementById('volumeRange').value || '1');
+    document.getElementById('closeLogBtn').addEventListener('click', () => { document.getElementById('updateLog').style.display = 'none'; });
+    document.getElementById('recentMenuBtn').addEventListener('click', () => { document.getElementById('recentDropdown').classList.toggle('open'); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('#recentMenuBtn') && !e.target.closest('#recentDropdown')) document.getElementById('recentDropdown').classList.remove('open'); });
   }
 
   document.addEventListener('DOMContentLoaded', init);
