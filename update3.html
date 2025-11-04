@@ -79,7 +79,8 @@
   .profile-dropdown input, .profile-dropdown textarea { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; margin-top: 4px; margin-bottom: 8px; }
   .profile-actions { display: flex; gap: 8px; }
 
-  .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: transform 120ms ease, box-shadow 120ms ease, background-color 200ms ease, color 200ms ease; }
+  .btn { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: transform 120ms ease, box-shadow 120ms ease, background-color 200ms ease, color 200ms ease; animation: btn-pulse 1.5s infinite alternate; }
+  @keyframes btn-pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
   .btn-primary { background: var(--button-color); color: #0b0b12; box-shadow: 0 6px 18px color-mix(in oklab, var(--button-color) 60%, black 40%); }
   .btn-primary:hover { transform: translateY(-1px); }
   .btn-secondary { background: transparent; border: 1px solid var(--surface1); color: var(--text-color); }
@@ -90,11 +91,13 @@
   .nav button.active { background: var(--nav-active); color: #0a0a10; border-color: transparent; box-shadow: 0 8px 20px color-mix(in oklab, var(--nav-active) 60%, black 40%); }
 
   main { padding: 20px; max-width: 1200px; margin: 0 auto 110px auto; }
-  section.page { display: none; }
-  section.page.active { display: block; }
+  section.page { display: none; opacity: 0; transition: opacity 300ms ease-in-out; }
+  section.page.active { display: block; opacity: 1; animation: fade-in 0.5s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
-  .card { background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px var(--shadow-color); transition: transform 150ms ease, box-shadow 150ms ease, border-color 200ms ease; position: relative; }
+  .card { background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px var(--shadow-color); transition: transform 150ms ease, box-shadow 150ms ease, border-color 200ms ease; position: relative; animation: card-slide 0.3s ease; }
+  @keyframes card-slide { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   .card:hover { transform: translateY(-2px); box-shadow: 0 14px 28px var(--shadow-color); border-color: var(--accent-color); }
   .card .thumb { width: 100%; height: 240px; background: linear-gradient(135deg, color-mix(in oklab, var(--accent-color) 28%, transparent), color-mix(in oklab, var(--button-color) 28%, transparent)); display: grid; place-items: center; color: var(--text-color); position: relative; }
   .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -107,8 +110,9 @@
   .icon-btn { background: rgba(0,0,0,0.12); border: 1px solid var(--surface1); color: var(--text-color); padding: 6px 8px; border-radius: 8px; cursor: pointer; transition: background-color 200ms ease, border-color 200ms ease, transform 120ms ease; }
   .icon-btn:hover { background: rgba(203,166,247,0.18); transform: translateY(-1px); }
 
-  .overlay { position: fixed; inset: 0; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 60; }
-  .overlay.open { display: flex; }
+  .overlay { position: fixed; inset: 0; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 60; transition: opacity 300ms ease; }
+  .overlay.open { display: flex; opacity: 1; animation: overlay-fade 0.3s ease; }
+  @keyframes overlay-fade { from { opacity: 0; } to { opacity: 1; } }
   .viewer { position: relative; width: var(--viewer-width); height: var(--viewer-height); max-width: none; border-radius: 12px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--surface1); box-shadow: 0 20px 40px var(--shadow-color); display: grid; grid-template-rows: auto 1fr; }
   .viewer-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(49,50,68,0.5); border-bottom: 1px solid var(--surface1); }
   .viewer-iframe { width: 100%; height: 100%; background: #0a0a0f; border: none; display: block; }
@@ -134,7 +138,11 @@
   .player-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .player-subrow { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
   .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
-  .eq .bar { width: 3px; background: var(--accent-color); border-radius: 2px; height: 4px; }
+  .eq .bar { width: 3px; background: var(--accent-color); border-radius: 2px; height: 4px; animation: eq-bar 1s infinite alternate; }
+  @keyframes eq-bar { 0% { height: 4px; } 100% { height: 12px; } }
+  .eq .bar:nth-child(2) { animation-delay: 0.2s; }
+  .eq .bar:nth-child(3) { animation-delay: 0.4s; }
+  .eq .bar:nth-child(4) { animation-delay: 0.6s; }
   .player-controls { display: flex; gap: 10px; align-items: center; justify-content: center; }
   .btn-circle { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 10px 22px color-mix(in oklab, var(--button-color) 50%, black 50%); }
   .btn-circle.btn-primary { background: linear-gradient(135deg, var(--button-color), var(--accent-color)); color: #0b0b12; }
@@ -155,7 +163,8 @@
   .wizard-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--surface1); }
   .wizard-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
-  .update-modal { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); }
+  .update-log { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); animation: log-fade 0.5s ease; }
+  @keyframes log-fade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   .update-box { width: 520px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; box-shadow: 0 18px 38px var(--shadow-color); padding: 16px; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); font-size: 12px; color: var(--subtext); }
 
@@ -163,9 +172,8 @@
   .chip { display: inline-block; margin-right: 6px; margin-top: 6px; padding: 4px 8px; border-radius: 999px; background: rgba(203,166,247,0.18); border: 1px solid var(--surface1); font-size: 12px; color: var(--text-color); }
 
   .list { display: grid; gap: 8px; }
-  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-radius: 10px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); }
-  .list-item .title { font-weight: 600; }
-  .muted { color: var(--subtext); font-size: 12px; }
+  .list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-radius: 10px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); animation: list-item-slide 0.3s ease; }
+  @keyframes list-item-slide { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
   .searchbar { display: flex; gap: 8px; align-items: center; margin: 8px 0 16px 0; }
   .searchbar input { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--surface1); background: rgba(49,50,68,0.5); color: var(--text-color); outline: none; }
@@ -188,17 +196,19 @@
   /* Optimization for Chromebook: Scale UI for common resolutions (e.g., 1366x768) */
   @media screen and (max-width: 1366px) and (max-height: 768px) {
     body {
-      transform: scale(0.9); /* Scale down the entire body slightly for better fit */
+      transform: scale(0.85); /* Adjusted scaling for better fit */
       transform-origin: top left;
-      width: 111.11%; /* Compensate for scaling to avoid clipping */
-      height: 111.11%;
+      width: 117.65%; /* Compensate for scaling to avoid clipping */
+      height: 117.65%;
+      --font-size-base: 14px; /* Smaller base font */
     }
     .grid {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller cards for more on screen */
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Smaller cards for more on screen */
     }
     main {
       max-width: 100%; /* Full width on smaller screens */
       padding: 10px; /* Reduce padding */
+      margin-bottom: 90px; /* Adjust bottom margin for player bar */
     }
     .topbar {
       padding: 6px 12px; /* Slightly smaller topbar */
@@ -206,25 +216,34 @@
     .card .thumb {
       height: 200px; /* Reduce thumb height */
     }
+    #settings .form-row {
+      grid-template-columns: 1fr; /* Stack columns for smaller screens */
+      gap: 8px; /* Reduce gap */
+    }
+    #settings h3, #settings h2 { font-size: 16px; } /* Smaller headings */
+    #settings input, #settings select { font-size: 12px; padding: 6px; } /* Smaller inputs */
+    #settings .form-col { gap: 4px; } /* Tighter spacing */
+    #moviesGrid, #gamesList { max-height: 50vh; } /* Tighter scrolling */
   }
 
   /* Enhanced Chromebook optimizations */
   @media screen and (max-width: 1366px) and (max-height: 768px),
          screen and (max-width: 1280px) and (max-height: 800px) { /* Common Chromebook res */
     body {
-      transform: scale(0.85); /* Further scale down for better fit */
+      transform: scale(0.8); /* Further scale down for better fit */
       transform-origin: top left;
-      width: 117.65%; /* Compensate */
-      height: 117.65%;
-      --font-size-base: 14px; /* Smaller fonts */
+      width: 125%; /* Compensate */
+      height: 125%;
+      --font-size-base: 13px; /* Even smaller fonts */
     }
     .grid {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Even smaller cards */
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Even smaller cards */
     }
-    main { padding: 8px; margin-bottom: 90px; }
-    .card .thumb { height: 180px; }
-    .topbar { padding: 4px 10px; }
-    #moviesGrid, #gamesList { max-height: 50vh; } /* Tighter scrolling */
+    main { padding: 6px; margin-bottom: 80px; }
+    .card .thumb { height: 160px; }
+    .topbar { padding: 4px 8px; }
+    #moviesGrid, #gamesList { max-height: 45vh; } /* Tighter scrolling */
+    #settings .form-row { grid-template-columns: 1fr; gap: 6px; }
   }
 </style>
 </head>
@@ -383,7 +402,7 @@
 
   <section id="settings" class="page">
     <h2>Settings</h2>
-    <p class="small muted">Customize background, colors, theme, tab cloaker, and auto-update. Settings persist in localStorage.</p>
+    <p class="small muted">Customize background, colors, theme, tab cloaker. Settings persist in localStorage.</p>
     <div class="form-row">
       <div class="form-col">
         <label>Background Color
@@ -497,18 +516,6 @@
       <button class="btn btn-secondary" id="cloakGoogleBtn">Cloak as Google</button>
       <button class="btn btn-secondary" id="resetCloakBtn">Reset Cloak</button>
     </div>
-    <hr>
-    <h3>Auto-Update (jsDelivr)</h3>
-    <div class="form-row" style="margin-top:8px;">
-      <div class="form-col" style="grid-column: 1 / -1;">
-        <label>Update Source URL (jsDelivr)
-          <input type="url" id="updateUrlInput" placeholder="https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/update3.html">
-        </label>
-      </div>
-    </div>
-    <div style="display:flex; gap:8px; margin-bottom:12px;">
-      <button class="btn btn-secondary" id="testUpdateBtn">Test Check</button>
-    </div>
     <div style="display:flex; gap:8px;">
       <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
       <button class="btn btn-secondary" onclick="resetSettings()">Reset to Default</button>
@@ -525,7 +532,7 @@
         <button class="icon-btn" id="closeOverlayBtn">Close</button>
       </div>
     </div>
-    <iframe class="viewer-iframe" id="viewerIframe" allowfullscreen></iframe>
+    <iframe class="viewer-iframe" id="viewerIframe" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -557,7 +564,7 @@
     <input type="range" min="0" max="1" step="0.01" value="1" class="range" id="volumeRange" aria-label="Volume">
   </div>
 </div>
-<audio id="audioElement" preload="metadata"></audio>
+<audio id="audioElement" preload="metadata" crossorigin="anonymous"></audio>
 
 <div class="wizard" id="wizard">
   <div class="wizard-inner">
@@ -609,17 +616,24 @@
   </div>
 </div>
 
-<div class="update-modal" id="updateModal">
+<div class="update-log" id="updateLog">
   <div class="update-box">
     <div style="display:flex; align-items:center; justify-content:space-between;">
-      <h3 style="margin:0;">Update available</h3>
-      <span class="badge" id="versionLabel"></span>
+      <h3 style="margin:0;">Update Log</h3>
+      <span class="badge" id="versionLabel">v1.7.1</span>
     </div>
-    <p class="small">A newer version of this app is available from jsDelivr. Update now to get the latest features. Your settings will be preserved.
-    You will be asked to update constantly unless you update the file to the newest html as this is just pulling the data</p>
+    <p class="small">What's new:</p>
+    <ul style="list-style: disc; padding-left: 20px;">
+      <li>Removed auto-update function</li>
+      <li>Fixed Google Drive movie embedding</li>
+      <li>Improved music playback with CORS handling</li>
+      <li>Enhanced Chromebook UI scaling</li>
+      <li>Smaller settings menu for Chromebooks</li>
+      <li>Added smooth animations</li>
+      <li>Animated update log on startup</li>
+    </ul>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
-      <button class="btn btn-secondary" id="updateLaterBtn">Later</button>
-      <button class="btn btn-primary" id="updateNowBtn">Update Now</button>
+      <button class="btn btn-primary" id="closeLogBtn">Close</button>
     </div>
   </div>
 </div>
@@ -667,7 +681,6 @@
     lastSong: 'lastSongIndex',
     currentPlaylist: 'currentPlaylistIndex',
     tabCloak: 'tabCloakSettings',
-    updateUrl: 'updateSourceUrl',
     viewerWidth: 'viewerWidth',
     viewerHeight: 'viewerHeight',
     panicKey: 'panicKey',
@@ -706,7 +719,6 @@
 
   const defaultSongs = [];
   const defaultPlaylists = [];
-  const defaultUpdateUrl = 'https://cdn.jsdelivr.net/gh/lovelygit3/Updates@main/update3.html';
 
   function saveJson(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){} }
   function loadJson(key, fallback){ try{ const raw=localStorage.getItem(key); if(raw==null) return fallback; return JSON.parse(raw); }catch(e){ return fallback; } }
@@ -724,7 +736,6 @@
   let songs = loadJson(LS_KEYS.songs, defaultSongs);
   let playlists = loadJson(LS_KEYS.playlists, defaultPlaylists);
   let cloak = loadJson(LS_KEYS.tabCloak, { title: document.title, icon: '' });
-  let updateSourceUrl = localStorage.getItem(LS_KEYS.updateUrl) || defaultUpdateUrl;
 
   let currentPlaylistIndex = parseInt(localStorage.getItem(LS_KEYS.currentPlaylist) || '-1', 10);
   let currentSongIndex = parseInt(localStorage.getItem(LS_KEYS.lastSong) || '0', 10);
@@ -904,13 +915,18 @@
     const iframe = document.getElementById('viewerIframe');
     iframe.src = 'about:blank'; // Reset
     if (type === 'movie' && src.includes('drive.google.com')) {
-      iframe.src = src;
+      // Improved embedding for Google Drive
+      const fileId = src.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+      if (fileId) {
+        iframe.src = `https://drive.google.com/file/d/${fileId}/preview?usp=embed_googleplus`;
+      } else {
+        iframe.src = src.replace('/view', '/preview');
+      }
       iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
       iframe.onload = () => {
-        if (iframe.contentDocument && iframe.contentDocument.body.innerHTML.includes('error')) {
-          alert('Drive preview error. Trying direct embed...');
-          iframe.src = src.replace('/preview', '/view'); // Fallback
+        if (iframe.contentDocument && (iframe.contentDocument.body.innerHTML.includes('error') || iframe.contentDocument.body.innerHTML.includes('blocked'))) {
+          alert('Drive preview error. Ensure the file is public and try again.');
         }
       };
     } else {
@@ -1031,7 +1047,7 @@
     const audioEl=document.getElementById('audioElement');
     audioEl.pause(); audioEl.src=s.url || ''; audioEl.currentTime=0; audioEl.load();
     audioEl.play().then(()=>{ document.getElementById('playPauseBtn').textContent='⏸'; })
-    .catch(()=>{ document.getElementById('playPauseBtn').textContent='▶'; alert('Playback blocked or link invalid. Make sure the Drive file is public and try pressing Play.'); });
+    .catch((err)=>{ document.getElementById('playPauseBtn').textContent='▶'; alert('Playback error: ' + err.message + '. Ensure the Drive file is public and accessible.'); });
   }
   function nextSong(){
     if(currentPlaylistIndex>=0 && playlists[currentPlaylistIndex]){
@@ -1086,7 +1102,6 @@
     document.getElementById('presetThemeSelect').value='';
     document.getElementById('tabTitleInput').value = cloak.title || '';
     document.getElementById('tabIconInput').value = cloak.icon || '';
-    document.getElementById('updateUrlInput').value = updateSourceUrl || '';
     document.getElementById('viewerWidthInput').value = localStorage.getItem(LS_KEYS.viewerWidth) || '98';
     document.getElementById('viewerHeightInput').value = localStorage.getItem(LS_KEYS.viewerHeight) || '98';
     document.getElementById('panicKeyInput').value = localStorage.getItem(LS_KEYS.panicKey) || 'Escape';
@@ -1107,9 +1122,6 @@
     cloak.title=document.getElementById('tabTitleInput').value.trim() || document.title;
     cloak.icon=document.getElementById('tabIconInput').value.trim();
     saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak();
-
-    const url=document.getElementById('updateUrlInput').value.trim();
-    updateSourceUrl=url; if(url) localStorage.setItem(LS_KEYS.updateUrl, updateSourceUrl);
 
     localStorage.setItem(LS_KEYS.viewerWidth, document.getElementById('viewerWidthInput').value);
     localStorage.setItem(LS_KEYS.viewerHeight, document.getElementById('viewerHeightInput').value);
@@ -1150,37 +1162,6 @@
     return merged;
   }
 
-  // New update function: Fetch HTML and rewrite document in place
-  function checkForUpdate(userInitiated=false){
-    const url=updateSourceUrl;
-    if(!url) return;
-    fetch(url,{cache:'no-store'})
-      .then(res=>{ if(!res.ok) throw new Error('Failed'); return res.text(); })
-      .then(html=>{
-        const latest=(html.match(/<meta[^>]+name=["']app-version["'][^>]+content=["']([^"']+)["']/i)||[])[1];
-        const cur=document.querySelector('meta[name="app-version"]')?.content || '0.0.0';
-        if(latest && semverCompare(latest, cur)>0){
-          document.getElementById('versionLabel').textContent=`Current ${cur} → Latest ${latest}`;
-          const modal=document.getElementById('updateModal'); modal.style.display='flex';
-          document.getElementById('updateLaterBtn').onclick=()=>{ modal.style.display='none'; };
-          document.getElementById('updateNowBtn').onclick=()=>{
-            // Merge defaults before applying update
-            movies = mergeDefaults(movies, defaultMovies); saveJson(LS_KEYS.movies, movies);
-            games = mergeDefaults(games, defaultGames); saveJson(LS_KEYS.games, games);
-            proxies = mergeDefaults(proxies, defaultProxies, 'title'); saveJson(LS_KEYS.proxies, proxies);
-            modal.style.display='none';
-
-            // Rewrite the document with new HTML (updates in place)
-            document.open();
-            document.write(html);
-            document.close();
-          };
-        } else {
-          if (userInitiated) alert('You are already on the latest version.');
-        }
-      }).catch(()=>{ if (userInitiated) alert('Failed to check updates. Verify URL and CORS.'); });
-  }
-
   function bindNav(){ document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click',()=>showPage(btn.dataset.target)); }); }
 
   function applyCustomSettings() {
@@ -1218,8 +1199,10 @@
     showWizardIfNeeded();
     applyCustomSettings();
 
-    // Silent update check on load; manual button shows alerts
-    checkForUpdate(false);
+    // Show animated update log on startup
+    const logModal = document.getElementById('updateLog');
+    logModal.style.display = 'flex';
+    document.getElementById('closeLogBtn').onclick = () => { logModal.style.display = 'none'; };
 
     const presetSelect = document.getElementById('presetThemeSelect');
     if (presetSelect) {
@@ -1234,7 +1217,6 @@
     document.getElementById('applyTabCloakBtn').addEventListener('click',()=>{ cloak.title=document.getElementById('tabTitleInput').value.trim() || cloak.title; cloak.icon=document.getElementById('tabIconInput').value.trim(); saveJson(LS_KEYS.tabCloak, cloak); applyTabCloak(); });
     document.getElementById('cloakGoogleBtn').addEventListener('click',()=>{ cloak={ title:'Google', icon:'https://www.google.com/favicon.ico' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
     document.getElementById('resetCloakBtn').addEventListener('click',()=>{ cloak={ title:'Media Hub', icon:'' }; saveJson(LS_KEYS.tabCloak, cloak); bindSettingsForm(); applyTabCloak(); });
-    document.getElementById('testUpdateBtn').addEventListener('click',()=>checkForUpdate(true));
 
     if(songs[currentSongIndex]){
       const s=songs[currentSongIndex];
