@@ -6,6 +6,10 @@
 <meta name="app-version" content="1.7.1">
 <title>Media Hub</title>
 <link id="dynamic-favicon" rel="icon" href="">
+<!-- Load Undertale-like font (you can replace with actual font URL) -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<!-- Load Pip-Boy-like font for Fallout theme (e.g., Monofonto or similar) -->
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
   :root {
     --rosewater: #F5E0DC;
@@ -45,6 +49,16 @@
     --performance-mode: 0; /* 1 = enabled, reduces effects */
     --viewer-width: 98vw;
     --viewer-height: 98vh;
+
+    /* Theme-specific variables for button layouts and designs */
+    --button-border-radius: 8px;
+    --layout-grid-gap: 16px;
+    --nav-layout: row; /* row or column for nav buttons */
+    --button-padding: 8px 12px;
+    --button-font-size: 1em;
+    --card-border-radius: 12px;
+    --extra-shadow: none;
+    --topbar-flex-direction: row; /* Default row */
   }
 
   html, body {
@@ -124,8 +138,254 @@
     .nav button:hover { background: #FFF; color: #000; }
   }
 
-  .grid { gap: var(--layout-grid-gap, 16px); }
-  .btn { border-radius: var(--button-border-radius, 8px); }
+  /* Enhanced Undertale-styled theme to be more similar to the game */
+  body.theme-undertale {
+    --bg-color: #000000; /* Black void background */
+    --text-color: #FFFFFF; /* White text for dialogue */
+    --accent-color: #FF0000; /* Red for heart/soul and attacks */
+    --button-color: #FFFF00; /* Yellow for menu choices */
+    --effect-color: rgba(255, 0, 0, 0.5); /* Red glow for battles */
+    --nav-bg: rgba(0, 0, 0, 0.8); /* Dark menu bar */
+    --nav-active: #FF0000; /* Active selection in red */
+    --card-bg: #000000; /* Black dialogue boxes */
+    --shadow-color: rgba(255, 255, 255, 0.2); /* White outline shadows */
+    --button-border-radius: 0; /* Square buttons like in game menus */
+    --layout-grid-gap: 8px; /* Tight pixel spacing */
+    --nav-layout: row; /* Horizontal menu like Undertale choices */
+    --button-padding: 10px 20px;
+    --button-font-size: 1.2em;
+    --card-border-radius: 0;
+
+    font-family: 'Press Start 2P', monospace; /* Pixelated font similar to Undertale's */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-shadow: 1px 1px 0 #000000; /* Pixel shadow for text */
+
+    /* Pixelated rendering */
+    image-rendering: pixelated;
+
+    /* Dialogue box style for cards and modals */
+    .card, .modal-inner {
+      border: 4px solid #FFFFFF;
+      background: #000000;
+      padding: 10px;
+      position: relative;
+      box-shadow: 0 0 8px #FFFFFF;
+    }
+    .card::before, .modal-inner::before {
+      content: '*';
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      color: #FFFFFF;
+      font-size: 1.5em;
+    }
+
+    /* Buttons like Undertale choices */
+    .btn {
+      background: #000000;
+      color: var(--button-color);
+      border: 2px solid #FFFFFF;
+      text-transform: uppercase;
+      font-size: var(--button-font-size);
+      padding: var(--button-padding);
+      transition: color 0.2s;
+      margin: 5px;
+    }
+    .btn:hover {
+      color: var(--accent-color);
+    }
+
+    /* Nav like game menu - horizontal layout */
+    .topbar {
+      background: #000000;
+      border-bottom: 4px solid #FFFFFF;
+    }
+    .nav {
+      flex-direction: var(--nav-layout);
+      justify-content: center;
+    }
+    .nav button {
+      background: #000000;
+      color: #FFFFFF;
+      border: 2px solid #FFFFFF;
+      margin: 0 10px; /* Spacing like menu options */
+    }
+    .nav button.active {
+      color: var(--button-color);
+      border-color: var(--accent-color);
+    }
+
+    /* Grid like inventory or battle options - back to grid for better scaling */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--layout-grid-gap);
+      border: 2px solid #FFFFFF;
+      padding: 8px;
+    }
+
+    /* Extra Undertale effects: Heart cursor or something */
+    body { cursor: url('https://static.wikia.nocookie.net/undertale/images/4/4e/Soul.png/revision/latest?cb=20151024003813'), auto; }
+
+    /* Battle mode: Apply glow only to specific elements to avoid breaking UI */
+    body.battle-mode .card, body.battle-mode .btn {
+      box-shadow: 0 0 10px red;
+    }
+    body.battle-mode {
+      --effect-color: rgba(255, 0, 0, 0.8);
+    }
+  }
+
+  /* New: macOS Dark Sonoma inspired theme */
+  body.theme-macos-sonoma-dark {
+    --bg-color: #1C1C1E; /* Dark gray background */
+    --text-color: #FFFFFF;
+    --accent-color: #0A84FF; /* Blue accent */
+    --button-color: #007AFF;
+    --effect-color: rgba(10, 132, 255, 0.3);
+    --nav-bg: rgba(28, 28, 30, 0.8);
+    --nav-active: #0A84FF;
+    --card-bg: rgba(44, 44, 46, 0.75);
+    --shadow-color: rgba(0,0,0,0.5);
+    --button-border-radius: 12px; /* Rounded like macOS buttons */
+    --layout-grid-gap: 20px;
+    --nav-layout: row;
+    --button-padding: 10px 16px;
+    --button-font-size: 1em;
+    --card-border-radius: 16px;
+    --extra-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    .btn { box-shadow: var(--extra-shadow); }
+    .card { box-shadow: var(--extra-shadow); }
+    /* Custom background if toggle on */
+    body { background-image: var(--bg-image, url('https://example.com/macos-sonoma-dark-bg.jpg')); } /* Replace with actual URL */
+  }
+
+  /* New: Candy theme */
+  body.theme-candy {
+    --bg-color: #FFD1DC; /* Light pink background */
+    --text-color: #4B0082;
+    --accent-color: #FF69B4;
+    --button-color: #FFC0CB;
+    --effect-color: rgba(255, 105, 180, 0.3);
+    --nav-bg: rgba(255, 209, 220, 0.6);
+    --nav-active: #FF1493;
+    --card-bg: rgba(255, 192, 203, 0.75);
+    --shadow-color: rgba(75, 0, 130, 0.2);
+    --button-border-radius: 50px; /* Very rounded, candy-like */
+    --layout-grid-gap: 24px;
+    --nav-layout: row;
+    --button-padding: 12px 20px;
+    --button-font-size: 1.1em;
+    --card-border-radius: 24px;
+
+    font-family: 'Comic Sans MS', cursive; /* Fun, candy-like font */
+    .btn { background: linear-gradient(135deg, #FF69B4, #FFC0CB); color: white; }
+    /* Custom background if toggle on */
+    body { background-image: var(--bg-image, url('https://example.com/candy-bg.jpg')); } /* Replace with actual URL */
+  }
+
+  /* New: Flattery theme (minimalist flat) */
+  body.theme-flattery {
+    --bg-color: #F5F5F5; /* Light minimalist background */
+    --text-color: #333333;
+    --accent-color: #000000;
+    --button-color: #FFFFFF;
+    --effect-color: rgba(0,0,0,0.1);
+    --nav-bg: transparent;
+    --nav-active: #000000;
+    --card-bg: #FFFFFF;
+    --shadow-color: transparent; /* No shadows for flat design */
+    --button-border-radius: 0; /* Square, flat buttons */
+    --layout-grid-gap: 10px;
+    --nav-layout: column; /* Vertical nav for minimalist sidebar vibe */
+    --button-padding: 8px 12px;
+    --button-font-size: 0.9em;
+    --card-border-radius: 0;
+    --extra-shadow: none;
+    --topbar-flex-direction: row-reverse; /* Swap user info and nav */
+
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Clean font */
+    .btn { border: 1px solid #000; background: transparent; color: #000; }
+    .btn:hover { background: #000; color: #FFF; }
+    .card { border: 1px solid #DDD; }
+    .nav { flex-direction: column; align-items: flex-start; }
+    .topbar { flex-direction: var(--topbar-flex-direction); justify-content: space-between; }
+    /* No custom background, keep flat */
+  }
+
+  /* New: Fallout Pip-Boy theme */
+  body.theme-fallout {
+    --bg-color: #003300; /* Dark green background */
+    --text-color: #00FF00; /* Green text */
+    --accent-color: #00CC00;
+    --button-color: #006600;
+    --effect-color: rgba(0, 255, 0, 0.3);
+    --nav-bg: rgba(0, 51, 0, 0.8);
+    --nav-active: #00FF00;
+    --card-bg: rgba(0, 51, 0, 0.75);
+    --shadow-color: rgba(0, 255, 0, 0.2);
+    --button-border-radius: 4px; /* Slightly rounded like Pip-Boy buttons */
+    --layout-grid-gap: 12px;
+    --nav-layout: row;
+    --button-padding: 10px 16px;
+    --button-font-size: 1em;
+    --card-border-radius: 4px;
+
+    font-family: 'VT323', monospace; /* Retro terminal font */
+    text-shadow: 0 0 5px #00FF00; /* Glow effect */
+    .btn { background: #003300; border: 2px solid #00FF00; color: #00FF00; }
+    .btn:hover { background: #00FF00; color: #003300; }
+    /* Scanline effect for Pip-Boy feel */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(transparent 0%, transparent 1px, rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px);
+      pointer-events: none;
+    }
+    /* Custom background if toggle on */
+    body { background-image: var(--bg-image, url('https://example.com/pipboy-bg.jpg')); } /* Replace with actual URL */
+  }
+
+  /* Monster Wandering Animation - More Undertale-like (e.g., Flowey or random monster) */
+  .undertale-monster {
+    display: none; /* Hidden by default, shown in theme */
+    position: fixed;
+    z-index: 100;
+    width: 64px;
+    height: 64px;
+    background: url('https://static.wikia.nocookie.net/undertale/images/0/08/Flowey_normal.gif/revision/latest?cb=20151024003813') no-repeat center/cover; /* Flowey GIF or similar Undertale monster */
+    animation: wander-monster 15s linear infinite, bob 1s ease-in-out infinite;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px #FF0000);
+  }
+  body.theme-undertale .undertale-monster {
+    display: block;
+  }
+  @keyframes wander-monster {
+    0% { left: -64px; top: 20%; }
+    25% { left: 100%; top: 20%; }
+    50% { left: 100%; top: 80%; }
+    75% { left: -64px; top: 80%; }
+    100% { left: -64px; top: 20%; }
+  }
+  @keyframes bob {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  .grid { gap: var(--layout-grid-gap, 16px); display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .btn { border-radius: var(--button-border-radius, 8px); padding: var(--button-padding, 8px 12px); font-size: var(--button-font-size, 1em); }
+  .card { border-radius: var(--card-border-radius, 12px); }
+  .nav { flex-direction: var(--nav-layout, row); }
+  .topbar { flex-direction: var(--topbar-flex-direction, row); }
 
   .topbar {
     position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: var(--nav-bg);
@@ -327,9 +587,15 @@
   .recent-dropdown button:hover { background: var(--surface1); }
   .remove-btn { position: absolute; top: 4px; right: 4px; background: transparent; border: none; color: var(--subtext); cursor: pointer; font-size: 16px; }
   .remove-btn:hover { color: var(--red); }
+
+  /* Pagination styles */
+  .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
 </style>
 </head>
-<body>
+<body class="theme-undertale"> <!-- Apply Undertale theme by default -->
+
+<!-- Undertale Monster Element -->
+<div class="undertale-monster"></div>
 
 <div class="topbar">
   <div class="user-id" id="userIdBtn">
@@ -423,6 +689,7 @@
     </div>
     <p class="small muted">enjoy</p>
     <div class="list" id="gamesList"></div>
+    <div class="pagination" id="gamesPagination"></div>
   </section>
 
   <section id="shows" class="page">
@@ -499,7 +766,24 @@
             <option value="chrome-os">Chrome OS</option>
             <option value="dracula">Dracula</option>
             <option value="mandela">Mandela</option>
+            <option value="undertale">Undertale</option>
+            <option value="macos-sonoma-dark">macOS Sonoma Dark</option>
+            <option value="candy">Candy</option>
+            <option value="flattery">Flattery</option>
+            <option value="fallout">Fallout Pip-Boy</option>
           </select>
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-col">
+        <label>Disable Background on Theme Change
+          <input type="checkbox" id="disableBgToggle">
+        </label>
+      </div>
+      <div class="form-col">
+        <label>Undertale Extra: Enable Battle Mode (Red Glow)
+          <input type="checkbox" id="undertaleBattleMode">
         </label>
       </div>
     </div>
@@ -578,7 +862,7 @@
         <button class="icon-btn" id="closeOverlayBtn">Close</button>
       </div>
     </div>
-    <iframe class="viewer-iframe" id="viewerIframe" allowfullscreen></iframe>
+    <iframe class="viewer-iframe" id="viewerIframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
   </div>
 </div>
 
@@ -728,7 +1012,9 @@
     panicUrl: 'panicUrl',
     fontSize: 'fontSize',
     performanceMode: 'performanceMode',
-    proxies: 'proxiesList' // New for dynamic proxies
+    proxies: 'proxiesList', // New for dynamic proxies
+    disableBgOnTheme: 'disableBgOnTheme', // New toggle for background disable
+    undertaleBattleMode: 'undertaleBattleMode' // Extra for Undertale
   };
 
   const defaultTheme = {
@@ -745,10 +1031,11 @@
     { title: 'Insidious', coverUrl: '', driveLink: 'https://drive.google.com/file/d/1X9lu2ezlff8dpqTyQs0Z4b3g3k0tDTVH/preview' },
     { title: ' A Nightmare On Elm Street', coverUrl: '' },
     { title: 'A Nightmare On Elm Street 3', coverUrl: '', driveLink: '' },
-    { title: 'New Movie Example', coverUrl: '', driveLink: '' } // New for merging
+    { title: 'New Movie Example', coverUrl: '', driveLink: '' }, // New for merging
+{ title: 'Insidious3', coverUrl: '', driveLink: 'https://drive.google.com/file/d/1X9lu2ezlff8dpqTyQs0Z4b3g3k0tDTVH/preview' }
   ];
   const defaultGames = [
-   { title: 'Friday Night Funkin', src: './games/Fnf.html', runtime: 'classic' },
+ { title: 'Friday Night Funkin', src: './games/Fnf.html', runtime: 'classic' },
     { title: 'Blackjack', src: './games/Blackjack.html', runtime: 'classic' },
     { title: 'Five Nights At Freddys Ucn', src: './games/Five Nights at Freddy_s_ Ultimate Custom Night.html', runtime: 'classic' },
     { title: 'Five Nights At Candys 2', src: './games/Five Nights at Candy_s 2.html', runtime: 'classic' },
@@ -1090,31 +1377,16 @@
     { title: 'Poke Crystal Clear', src: './games/clpokecrystalclear.html', runtime: 'classic' },
     { title: 'Poke Diamond', src: './games/clpokediamond.html', runtime: 'classic' },
     { title: 'Poke Dream Stone', src: './games/clpokedreamstone.html', runtime: 'classic' },
+    { title: 'Poke E Exe Og', src: './games/clpokeeexeog.html', runtime: 'classic' },
     { title: 'Poke Elysium A', src: './games/clpokeelysiuma.html', runtime: 'classic' },
     { title: 'Poke Elysium B', src: './games/clpokeelysiumb.html', runtime: 'classic' },
     { title: 'Poke Emerald Enhanced', src: './games/clpokeemeraldenhanced.html', runtime: 'classic' },
     { title: 'Poke Emerald Exceeded', src: './games/clpokeemeraldexceeded.html', runtime: 'classic' },
     { title: 'Poke Emerald Horizons', src: './games/clpokeemeraldhorizons.html', runtime: 'classic' },
     { title: 'Poke Emerald Random', src: './games/clpokeemeraldrandom.html', runtime: 'classic' },
-    { title: 'Poke Fire Gold', src: './games/clpokefiregold.html', runtime: 'classic' },
-    { title: 'Poke Flora', src: './games/clpokeflora.html', runtime: 'classic' },
-    { title: 'Poke Gaia', src: './games/clpokegaia.html', runtime: 'classic' },
-    { title: 'Poke Gs Chronicles', src: './games/clpokegschronicles.html', runtime: 'classic' },
-    { title: 'Poke Heart Gold', src: './games/clpokeheartgold.html', runtime: 'classic' },
-    { title: 'Poke Light Platinum', src: './games/clpokelightplatinum.html', runtime: 'classic' },
-    { title: 'Poke Liquid Crysta', src: './games/clpokeliquidcrysta.html', runtime: 'classic' },
-    { title: 'Poke Mega Moemon', src: './games/clpokemegamoemon.html', runtime: 'classic' },
-    { title: 'Pokemon Amnesia', src: './games/clpokemonamnesia.html', runtime: 'classic' },
-    { title: 'Pokemon Clover', src: './games/clpokemonclover.html', runtime: 'classic' },
-    { title: 'Pokemon Crystal', src: './games/clpokemoncrystal.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald', src: './games/clpokemonemerald.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Crest', src: './games/clpokemonemeraldcrest.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Imperium', src: './games/clpokemonemeraldimperium.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Kaizo', src: './games/clpokemonemeraldkaizo.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Mini', src: './games/clpokemonemeraldmini.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Rouge', src: './games/clPokemonemeraldrouge.html', runtime: 'classic' },
-    { title: 'Pokemon Emerald Sea Glass', src: './games/clpokemonemeraldseaglass.html', runtime: 'classic' },
-    { title: 'Pokemon Energized Emerald', src: './games/clpokemonenergizedemerald.html', runtime: 'classic' },
+    { title: 'Poke Emerald Rouge', src: './games/clPokemonemeraldrouge.html', runtime: 'classic' },
+    { title: 'Poke Emerald Sea Glass', src: './games/clpokemonemeraldseaglass.html', runtime: 'classic' },
+    { title: 'Poke Energized Emerald', src: './games/clpokemonenergizedemerald.html', runtime: 'classic' },
     { title: 'Poke Mon Evolved Sfd Gs Dfs', src: './games/clpokemonevolvedsfdgsdfs.html', runtime: 'classic' },
     { title: 'Pokemon Fire Red', src: './games/clpokemonfirered.html', runtime: 'classic' },
     { title: 'Pokemon Fire Red And Leaf Green Plus Edition', src: './games/clpokemonfireredandleafgreenplusedition.html', runtime: 'classic' },
@@ -1493,9 +1765,6 @@
     { title: 'Supreme Duelist', src: './games/clsupremeduelist.html', runtime: 'classic' },
     { title: 'Survev Io', src: './games/clsurvevio.html', runtime: 'classic' },
     { title: 'Survival Race V 2', src: './games/clsurvivalracev2.html', runtime: 'classic' },
-    { title: 'Sushi Cat', src: './games/clsushicat.html', runtime: 'classic' },
-    { title: 'Sushi Cat 2', src: './games/clsushicat2.html', runtime: 'classic' },
-    { title: 'Sushi Unroll', src: './games/clsushiunroll.html', runtime: 'classic' },
     { title: 'Swerve', src: './games/clswerve.html', runtime: 'classic' },
     { title: 'Switch Blade', src: './games/clswitchblade.html', runtime: 'classic' },
     { title: 'Sword And Shield Ultimate Plus', src: './games/clswordandshieldultimateplus.html', runtime: 'classic' },
@@ -1567,17 +1836,6 @@
     { title: 'Tony Hawk Skater 4', src: './games/cltonyhawkskater4.html', runtime: 'classic' },
     { title: 'Tony Hawks Underground', src: './games/cltonyhawksunderground.html', runtime: 'classic' },
     { title: 'Too Many Types', src: './games/cltoomanytypes.html', runtime: 'classic' },
-    { title: 'Top Speed Racing 3D', src: './games/cltopspeedracing3d.html', runtime: 'classic' },
-    { title: 'Toss The Turtle', src: './games/cltosstheturtle.html', runtime: 'classic' },
-    { title: 'Totm', src: './games/cltotm.html', runtime: 'classic' },
-    { title: 'Tower Blocks', src: './games/cltowerblocks.html', runtime: 'classic' },
-    { title: 'Tower Crash 3D', src: './games/cltowercrash3d.html', runtime: 'classic' },
-    { title: 'Town Scraper', src: './games/cltownscraper.html', runtime: 'classic' },
-    { title: 'Trace', src: './games/cltrace.html', runtime: 'classic' },
-    { title: 'Traffic Jam 3D', src: './games/cltrafficjam3d.html', runtime: 'classic' },
-    { title: 'Trap The Cat', src: './games/cltrapthecat.html', runtime: 'classic' },
-    { title: 'Trechorous Trials', src: './games/cltrechoroustrials.html', runtime: 'classic' },
-    { title: 'Trechorous Trials Part 2', src: './games/cltrechoroustrialspart2.html', runtime: 'classic' },
     { title: 'Triple Play 2000', src: './games/cltripleplay2000.html', runtime: 'classic' },
     { title: 'Trivia Crack', src: './games/cltriviacrack.html', runtime: 'classic' },
     { title: 'Troll Face Quest 1', src: './games/cltrollfacequest1.html', runtime: 'classic' },
@@ -2094,7 +2352,7 @@
     { title: 'Doom Z Io', src: './games/cldoomzio.html', runtime: 'classic' },
     { title: 'Douche Bag Life', src: './games/cldouchebaglife.html', runtime: 'classic' },
     { title: 'Down The Mountain', src: './games/cldownthemountain.html', runtime: 'classic' },
-    { title: 'Dragon Ball Advance', src: './games/cldragonballadvance.html', runtime: 'classic' },
+    { title: 'Dragon Ball Advance', src: './games/cląragonballadvance.html', runtime: 'classic' },
     { title: 'Dragon Ball Z The Legacy Of Goku', src: './games/clDragonBallZTheLegacyofGoku.html', runtime: 'classic' },
     { title: 'Dragon Quest Ix', src: './games/clDragonQuestIX.html', runtime: 'classic' },
     { title: 'Draw Climber', src: './games/cldrawclimber.html', runtime: 'classic' },
@@ -2152,9 +2410,7 @@
     { title: 'Escape Road 2', src: './games/clescaperoad2.html', runtime: 'classic' },
     { title: 'Et', src: './games/clet.html', runtime: 'classic' },
     { title: 'Etrian Odd Y Sey', src: './games/cletrianoddyssey.html', runtime: 'classic' },
-    { title: 'Evil Glitch', src: './games/clevilglitch.html',
-
-runtime: 'classic' },
+    { title: 'Evil Glitch', src: './games/clevilglitch.html', runtime: 'classic' },
     { title: 'Excite Bike 64', src: './games/clexcitebike64.html', runtime: 'classic' },
     { title: 'Extreme Run 3D', src: './games/clextremerun3d.html', runtime: 'classic' },
     { title: 'Factory Balls', src: './games/clfactoryballs.html', runtime: 'classic' },
@@ -2254,7 +2510,7 @@ runtime: 'classic' },
     { title: 'Fnf Miku', src: './games/clfnfmiku.html', runtime: 'classic' },
     { title: 'Fnf Mob Mod', src: './games/clfnfmobmod.html', runtime: 'classic' },
     { title: 'Fnf Neo', src: './games/clfnfneo.html', runtime: 'classic' },
-    { title: 'Fnf Poke Pasta Perdition', src: './games/clfnfpokepastaperdition.html', runtime: 'classic' },
+    { title: 'Fnf Poke Pasta Perdition', src: './games/clfnfpokepastaperdition.html', runtime: 'classic'},
     { title: 'Fnf Qt', src: './games/clfnfqt.html', runtime: 'classic' },
     { title: 'Fnf Rev Mixed', src: './games/clfnfrevmixed.html', runtime: 'classic' },
     { title: 'Fnf Rewrite', src: './games/clfnfrewrite.html', runtime: 'classic' },
@@ -2416,8 +2672,9 @@ runtime: 'classic' },
     { title: 'Iron Soldier', src: './games/clironsoldier.html', runtime: 'classic' },
     { title: 'Jack Smith', src: './games/cljacksmith.html', runtime: 'classic' },
     { title: 'Jack Smith Encrypted Or Sm Th N', src: './games/cljacksmithencryptedorsmthn.html', runtime: 'classic' }
-  // New for merging
-  ];
+    // New for merging
+
+     ];
   const defaultShows = [
     { title: 'Example Show', seasons: [
       { season: 1, episodes: [
@@ -2450,18 +2707,23 @@ runtime: 'classic' },
   let profile = loadJson(LS_KEYS.profile, defaultProfile);
   let movies = loadJson(LS_KEYS.movies, defaultMovies);
   let games = loadJson(LS_KEYS.games, defaultGames);
-  let shows = loadJson(LS_KEYS.shows, defaultShows); // New: Load shows
+  let shows = loadJson(LS_KEYS.shows, defaultShows); // New for shows
   let proxies = loadJson(LS_KEYS.proxies, defaultProxies); // New: Load/merge proxies
   let recentViews = loadJson(LS_KEYS.recentViews, []); // New: Load recent views
   let recentHidden = localStorage.getItem(LS_KEYS.recentHidden) === 'true'; // New: Persistent hide state
   let cloak = loadJson(LS_KEYS.tabCloak, { title: document.title, icon: '' });
   let updateSourceUrl = localStorage.getItem(LS_KEYS.updateUrl) || defaultUpdateUrl;
+  let disableBgOnTheme = localStorage.getItem(LS_KEYS.disableBgOnTheme) === 'true';
+  let undertaleBattleMode = localStorage.getItem(LS_KEYS.undertaleBattleMode) === 'true';
 
   let movieQuery = '';
   let gameQuery = '';
   let currentShowIndex = null;
   let episodeQuery = '';
   let currentSeason = null;
+
+  let currentGamePage = 1;
+  const gamesPerPage = 50; // Adjust as needed to balance performance
 
   function applyTheme(t=theme, themeName=currentThemeName){
     const root=document.documentElement;
@@ -2476,24 +2738,39 @@ runtime: 'classic' },
     // Apply theme class for layout/button variations
     document.body.className = ''; // Reset
     if (themeName) document.body.classList.add(`theme-${themeName}`);
+
+    // Extra for Undertale battle mode
+    document.body.classList.toggle('battle-mode', themeName === 'undertale' && undertaleBattleMode);
   }
 
   function presetTheme(name){
     let t={...defaultTheme};
+    let previousBgImage = theme.bgImage; // Preserve previous background
     if(name==='dark'){ t.bgColor='#1E1E2E'; t.textColor='#CDD6F4'; t.accentColor='#CBA6F7'; t.buttonColor='#89B4FA'; t.overallThemeColor='#CBA6F7'; t.effectColor='rgba(203,166,247,0.3)'; t.bgImage=''; }
-    else if(name==='halloween'){ t.bgColor='#121212'; t.textColor='#FFEA00'; t.accentColor='#FF7518'; t.buttonColor='#FF4500'; t.overallThemeColor='#8B0000'; t.effectColor='rgba(255,117,24,0.35)'; t.bgImage=''; } // Enhanced: More orange/pumpkin colors, dark spooky base
-    else if(name==='christmas'){ t.bgColor='#0C0F14'; t.textColor='#FFFFFF'; t.accentColor='#228B22'; t.buttonColor='#FF0000'; t.overallThemeColor='#C71585'; t.effectColor='rgba(34,139,34,0.35)'; t.bgImage=''; } // Enhanced: Dark snowy base, red/green accents, festive pink for highlights
+    else if(name==='halloween'){ t.bgColor='#121212'; t.textColor='#FFEA00'; t.accentColor='#FF7518'; t.buttonColor='#FF4500'; t.overallThemeColor='#8B0000'; t.effectColor='rgba(255,117,24,0.35)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/halloween-bg.jpg)'; } // Example BG URL
+    else if(name==='christmas'){ t.bgColor='#0C0F14'; t.textColor='#FFFFFF'; t.accentColor='#228B22'; t.buttonColor='#FF0000'; t.overallThemeColor='#C71585'; t.effectColor='rgba(34,139,34,0.35)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/christmas-bg.jpg)'; } // Example BG URL
     else if(name==='nordic-dark'){ t.bgColor='#2E3440'; t.textColor='#D8DEE9'; t.accentColor='#5E81AC'; t.buttonColor='#4C566A'; t.overallThemeColor='#81A1C1'; t.effectColor='rgba(94,129,172,0.3)'; t.bgImage=''; }
     else if(name==='sweet'){ t.bgColor='#2D1B33'; t.textColor='#E0BBE4'; t.accentColor='#957FB8'; t.buttonColor='#DDA0DD'; t.overallThemeColor='#CDA2D0'; t.effectColor='rgba(149,127,184,0.3)'; t.bgImage=''; }
     else if(name==='chrome-os'){ t.bgColor='#202124'; t.textColor='#E8EAED'; t.accentColor='#4285F4'; t.buttonColor='#1A73E8'; t.overallThemeColor='#34A853'; t.effectColor='rgba(66,133,244,0.3)'; t.bgImage=''; } // Dark Chrome OS
     else if(name==='dracula'){ t.bgColor='#282A36'; t.textColor='#F8F8F2'; t.accentColor='#BD93F9'; t.buttonColor='#FF79C6'; t.overallThemeColor='#50FA7B'; t.effectColor='rgba(189,147,249,0.3)'; t.bgImage=''; }
     else if(name==='mandela'){ t.bgColor='#333333'; t.textColor='#FFFFFF'; t.accentColor='#666666'; t.buttonColor='#999999'; t.overallThemeColor='#CCCCCC'; t.effectColor='rgba(102,102,102,0.3)'; t.bgImage=''; }
+    else if(name==='undertale'){ t.bgColor='#000000'; t.textColor='#FFFFFF'; t.accentColor='#FF0000'; t.buttonColor='#FFFF00'; t.overallThemeColor='#FF0000'; t.effectColor='rgba(255,0,0,0.5)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/undertale-void-bg.jpg)'; } // Example Undertale BG
+    else if(name==='macos-sonoma-dark'){ t.bgColor='#1C1C1E'; t.textColor='#FFFFFF'; t.accentColor='#0A84FF'; t.buttonColor='#007AFF'; t.overallThemeColor='#0A84FF'; t.effectColor='rgba(10,132,255,0.3)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/macos-sonoma-dark-bg.jpg)'; }
+    else if(name==='candy'){ t.bgColor='#FFD1DC'; t.textColor='#4B0082'; t.accentColor='#FF69B4'; t.buttonColor='#FFC0CB'; t.overallThemeColor='#FF1493'; t.effectColor='rgba(255,105,180,0.3)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/candy-bg.jpg)'; }
+    else if(name==='flattery'){ t.bgColor='#F5F5F5'; t.textColor='#333333'; t.accentColor='#000000'; t.buttonColor='#FFFFFF'; t.overallThemeColor='#000000'; t.effectColor='rgba(0,0,0,0.1)'; t.bgImage= disableBgOnTheme ? previousBgImage : ''; }
+    else if(name==='fallout'){ t.bgColor='#003300'; t.textColor='#00FF00'; t.accentColor='#00CC00'; t.buttonColor='#006600'; t.overallThemeColor='#00FF00'; t.effectColor='rgba(0,255,0,0.3)'; t.bgImage= disableBgOnTheme ? previousBgImage : 'url(https://example.com/pipboy-bg.jpg)'; }
     theme=t; saveJson(LS_KEYS.theme, theme); localStorage.setItem(LS_KEYS.currentTheme, name); currentThemeName = name; applyTheme(t, name); bindSettingsForm();
   }
 
   function showPage(id){
     document.querySelectorAll('.nav button').forEach(btn=>btn.classList.toggle('active', btn.dataset.target===id));
     document.querySelectorAll('section.page').forEach(sec=>sec.classList.toggle('active', sec.id===id));
+    if (id === 'games') {
+      currentGamePage = 1;
+      renderGames();
+    } else if (id === 'home') {
+      renderRecent();
+    }
   }
 
   function renderProfile(){
@@ -2555,9 +2832,13 @@ runtime: 'classic' },
   function clearMovieSearch(){ movieQuery=''; document.getElementById('movieSearch').value=''; renderMovies(); }
   document.getElementById('movieSearch').addEventListener('input',(e)=>{ movieQuery=e.target.value.trim(); renderMovies(); });
 
-  function renderGames(){
-    const list=document.getElementById('gamesList'); list.innerHTML='';
-    const items = games.filter(g => g && (g.title || '').toLowerCase().includes(gameQuery.toLowerCase()));
+  function renderGames(page = currentGamePage){
+    const list = document.getElementById('gamesList'); list.innerHTML='';
+    const filteredGames = games.filter(g => g && (g.title || '').toLowerCase().includes(gameQuery.toLowerCase()));
+    const start = (page - 1) * gamesPerPage;
+    const end = start + gamesPerPage;
+    const items = filteredGames.slice(start, end);
+
     items.forEach(g=>{
       const item=document.createElement('div'); item.className='list-item';
       const left=document.createElement('div');
@@ -2571,10 +2852,39 @@ runtime: 'classic' },
       item.appendChild(left); item.appendChild(right);
       list.appendChild(item);
     });
+
+    renderPagination(filteredGames.length, page);
   }
-  function resetGames(){ if(!confirm('Reset games list to defaults?')) return; games=defaultGames.slice(); saveJson(LS_KEYS.games, games); renderGames(); }
-  function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; renderGames(); }
-  document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); renderGames(); });
+
+  function renderPagination(totalGames, page) {
+    const pagination = document.getElementById('gamesPagination'); pagination.innerHTML = '';
+    const totalPages = Math.ceil(totalGames / gamesPerPage);
+    if (totalPages <= 1) return;
+
+    const prevBtn = document.createElement('button'); prevBtn.className = 'btn btn-secondary'; prevBtn.textContent = 'Previous';
+    prevBtn.disabled = page <= 1;
+    prevBtn.addEventListener('click', () => {
+      if (page > 1) {
+        currentGamePage--;
+        renderGames(currentGamePage);
+      }
+    });
+    pagination.appendChild(prevBtn);
+
+    const nextBtn = document.createElement('button'); nextBtn.className = 'btn btn-secondary'; nextBtn.textContent = 'Next';
+    nextBtn.disabled = page >= totalPages;
+    nextBtn.addEventListener('click', () => {
+      if (page < totalPages) {
+        currentGamePage++;
+        renderGames(currentGamePage);
+      }
+    });
+    pagination.appendChild(nextBtn);
+  }
+
+  function resetGames(){ if(!confirm('Reset games list to defaults?')) return; games=defaultGames.slice(); saveJson(LS_KEYS.games, games); currentGamePage = 1; renderGames(); }
+  function clearGameSearch(){ gameQuery=''; document.getElementById('gameSearch').value=''; currentGamePage = 1; renderGames(); }
+  document.getElementById('gameSearch').addEventListener('input',(e)=>{ gameQuery=e.target.value.trim(); currentGamePage = 1; renderGames(); });
 
   // New: Render shows
   function renderShows(){
@@ -2671,15 +2981,16 @@ runtime: 'classic' },
     const iframe = document.getElementById('viewerIframe');
     iframe.src = 'about:blank'; // Reset
     if (type === 'movie' || type === 'show' && src.includes('drive.google.com')) {
-      // Improved embedding for Google Drive
+      // Improved embedding for Google Drive, with extra params for Chromebooks
       const fileId = src.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1];
       if (fileId) {
-        iframe.src = `https://drive.google.com/file/d/${fileId}/preview?usp=embed_googleplus`;
+        iframe.src = `https://drive.google.com/file/d/${fileId}/preview?usp=sharing`;
       } else {
-        iframe.src = src.replace('/view', '/preview');
+        iframe.src = src.replace('/view', '/preview') + '?usp=sharing';
       }
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
-      iframe.setAttribute('allow', 'autoplay; fullscreen');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
+      iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
+      iframe.setAttribute('referrerpolicy', 'no-referrer');
     } else {
       iframe.src = src || 'about:blank';
     }
@@ -2785,6 +3096,8 @@ runtime: 'classic' },
     document.getElementById('panicUrlInput').value = localStorage.getItem(LS_KEYS.panicUrl) || 'https://www.google.com';
     document.getElementById('fontSizeInput').value = localStorage.getItem(LS_KEYS.fontSize) || '16';
     document.getElementById('performanceModeSelect').value = localStorage.getItem(LS_KEYS.performanceMode) || '0';
+    document.getElementById('disableBgToggle').checked = disableBgOnTheme;
+    document.getElementById('undertaleBattleMode').checked = undertaleBattleMode;
   }
   function saveSettings(){
     theme.bgColor=document.getElementById('bgColorPicker').value;
@@ -2806,7 +3119,12 @@ runtime: 'classic' },
     localStorage.setItem(LS_KEYS.panicUrl, document.getElementById('panicUrlInput').value);
     localStorage.setItem(LS_KEYS.fontSize, document.getElementById('fontSizeInput').value);
     localStorage.setItem(LS_KEYS.performanceMode, document.getElementById('performanceModeSelect').value);
+    disableBgOnTheme = document.getElementById('disableBgToggle').checked;
+    localStorage.setItem(LS_KEYS.disableBgOnTheme, disableBgOnTheme);
+    undertaleBattleMode = document.getElementById('undertaleBattleMode').checked;
+    localStorage.setItem(LS_KEYS.undertaleBattleMode, undertaleBattleMode);
     applyCustomSettings();
+    applyTheme(); // Reapply for extra settings
   }
   function resetSettings(){ if(!confirm('Reset settings to default theme?')) return; theme={...defaultTheme}; saveJson(LS_KEYS.theme, theme); localStorage.removeItem(LS_KEYS.currentTheme); currentThemeName = ''; applyTheme(); bindSettingsForm(); }
 
