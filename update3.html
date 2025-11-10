@@ -630,7 +630,7 @@
     textarea:focus { box-shadow: 0 0 8px var(--accent-color); }
     hr { border: none; border-top: 1px solid var(--surface1); margin: 16px 0; }
 
-    .update-log { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); animation: log-fade 0.5s ease; }
+    .update-log { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; background: color-mix(in oklab, var(--mantle) 75%, black 25%); backdrop-filter: blur(10px); animation: log-fade 0.5s ease; }
     @keyframes log-fade { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     .update-box { width: 520px; max-width: 90%; background: var(--card-bg); border: 1px solid var(--surface1); border-radius: 12px; box-shadow: 0 18px 38px var(--shadow-color); padding: 16px; }
 
@@ -718,7 +718,7 @@
         padding: 8px 12px; /* Balanced buttons */
         font-size: 1em;
       }
-      #moviesGrid, #gamesList, #showsGrid { max-height: 55vh; } /* Balanced scrolling space */
+      #moviesGrid, #gamesList, #showsGrid { max-height: 60vh; } /* Balanced scrolling space */
       .home-hero {
         padding: 16px; /* Balanced hero section */
         grid-template-columns: 80px 1fr; /* Balanced avatar area */
@@ -731,7 +731,7 @@
         gap: 10px;
       }
       #settings input, #settings select, #settings textarea { padding: 8px; font-size: 15px; }
-      #settings { height: calc(100vh - 50px); overflow-y: auto; padding-right: 8px; } /* Scrollable settings box */
+      #settings { height: calc(70vh - 30px); overflow-y: auto; padding-right: 8px; } /* Scrollable settings box */
     }
 
     /* Enhanced Chromebook optimizations for other common res */
@@ -747,7 +747,7 @@
       main { padding: 14px; }
       .card .thumb { height: 300px; }
       .topbar { padding: 7px 10px; }
-      #moviesGrid, #gamesList, #showsGrid { max-height: 55vh; }
+  #gamesList { max-height: 35vh; }
       #settings .form-row {
         grid-template-columns: 1fr; /* Single column */
         gap: 12px; /* Balanced gaps */
@@ -1056,11 +1056,14 @@
   <div class="update-box">
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <h3 style="margin:0;">Update Log</h3>
-      <span class="badge" id="versionLabel">v2.0.0</span>
+      <span class="badge" id="versionLabel">v2.5.0</span>
     </div>
     <p class="small">What's new:</p>
     <ul style="list-style: disc; padding-left: 20px;">
-      <li>Major bugs fixed</li>
+      <li>Fixed Scaling(Somewhat)</li>
+<li>Fixed update log not showing</li>
+<li>Fixed Duped fnaf movie</li>
+<li>Added More Proxies</li>
     </ul>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
       <button class="btn btn-primary" id="closeLogBtn">Close</button>
@@ -1221,7 +1224,6 @@
 { title: 'Terrifier II', driveLink: 'https://drive.google.com/file/d/1_Jjo7rOcCkYt3UryVkV2XvTfrL4QvHTE/preview', coverUrl: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSkHAlskB5Gw4cRJaqyvPvik1sqI4QL2C-bW47Qm9-8tka7ygAG', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Terrifier III', driveLink: 'https://drive.google.com/file/d/1sAj4FqfEIzHPIW7ZUPGGSOFTTaJr5AGI/preview', coverUrl: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTkVkGFm2OyNESsgmpM7uCRSvlUuNnxYhDR7YUia3xhUAkL-e8p', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Five Nights At Freddys Movie', driveLink: 'https://drive.google.com/file/d/1U9iKneXKo4ViYy4bFQIvE_yY6V7RlLVK/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8g3BKsWyIiosuTsSddHFcYtvFj4d2_eHGUfGTRtGtTuHqxErNvWJe9nzTDtYvF9Z8MBPp&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
-{ title: 'Five Nights At Freddys Movie', driveLink: 'https://drive.google.com/file/d/1U9iKneXKo4ViYy4bFQIvE_yY6V7RlLVK/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8g3BKsWyIiosuTsSddHFcYtvFj4d2_eHGUfGTRtGtTuHqxErNvWJe9nzTDtYvF9Z8MBPp&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Beetlejuice', driveLink: 'https://drive.google.com/file/d/1IMCtq2eBH2MTMap_MWVHZ0qBJVHtVKcA/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMWsY2jhKWeGR6YqBJhzM8bmGz3YImBm-tG8YZK929YyGFqQlg_lz-GoywV-kUju1vDdMOSA&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Beetlejuice Beetlejuice', driveLink: 'https://drive.google.com/file/d/1OsCtW4NUV94utDNxmFejUFoH6euf8Ind/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtPXC51uYWe1gM4x4B6gETtLjSgWLP9zmphuHixMOO44cYWK0XkxG6hpU3nYZpODh7NVxRYQ&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'The Purge', driveLink: 'https://drive.google.com/file/d/1PFz-u8_kVFY8Z--NyloACB1DUwiT0oK4/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR45EcJ2-wNAwet249TsKyQCaVPbx4Xez8AJ10w97KpywVSHPLzb20FZugWOfh3fAJfSwo8&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
@@ -1236,7 +1238,6 @@
 { title: 'Pet Sematary II', driveLink: 'https://drive.google.com/file/d/1lux44V88YffuSYuxqaqzVwfIU15r60k_/preview', coverUrl: 'https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcQDadHrN9XkeMBKTRIiNzS9NBjJQKosFevsVmteEghTVP8iH7-B52bF2Hd91TAKXyn6wTPLEzC5UglkGAEQ', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Pet Sematary: Bloodlines', driveLink: 'https://drive.google.com/file/d/122OjLQhI6uIS_qThRkLgUcgJh-U7PxBE/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT94B_MYykQVUneAF3MBe1q58OGS-QHtcdNKoLYzX1zjLHH-lkGpcO2rHpTk3-kqq9JSPXr-Q&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'The Black Phone', driveLink: 'https://drive.google.com/file/d/1ibOSQ1uTdu7_VaEZ0X7KKFpXqB9Rsuzo/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTPNNuA1xFqkx8vcF9E0ohOQPmojx_Ib6J4lsPuJe-eb8QRBgHIpzrOZZKxf7E9wooMQJ5&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
-{ title: 'Five Nights At Freddys Movie', driveLink: 'https://drive.google.com/file/d/1U9iKneXKo4ViYy4bFQIvE_yY6V7RlLVK/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8g3BKsWyIiosuTsSddHFcYtvFj4d2_eHGUfGTRtGtTuHqxErNvWJe9nzTDtYvF9Z8MBPp&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Annabelle', driveLink: 'https://drive.google.com/file/d/12sQn1gxallBigyxC2aDFUWsKqX_g-e-7/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsO8Q41DmT8qcwNWlOFU6wIsbzU9eymMtBYQiwSpCs16m7Oc15Ax5wYpYdxAfDQFNfkD_R&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Annabelle Comes Home', driveLink: 'https://drive.google.com/file/d/1_yZ-5-8mqmu4OKD8mzyfRYyLvIE4VqzM/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV-37t9rkSInJg3F5W3BqJ24JZOoGqWOUPZBkELVKH6lW3d9_mK-Khx2Ihg9apeXi83jID&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
 { title: 'Texas Chainsaw Massacre 2022', driveLink: 'https://drive.google.com/file/d/1DX2PS1WKMKTBCcdwxzbjapo7He1OHTFb/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs1LSojfDHLBIMgXOnOwnP_vagS_pyzWqBBSiV-1AD1rieBX6TGRi8NkQj97z8KQ30wocp2A&s=10', tags: ['Horror'], description: 'An exciting action adventure movie.' },
@@ -2894,7 +2895,8 @@
     // Add more with tags, descriptions, and coverUrl
   ];
   const defaultProxies = [
-    { title: 'Sakura', url: 'https://144-202-49-64.plesk.page/', description: 'Fast, simple HTTP proxy' },
+    { title: 'Void Network', url: 'https://cdn.voidd.network', description: 'A decent proxy with games/apps on it' },
+ { title: 'Frogies Arcade', url: 'https://putanythinghere.william.tienda/', description: 'Mostly Game/app centered' },
      // New for merging
   ];
 
