@@ -8,7 +8,7 @@
 
   <link id="dynamic-favicon" rel="icon" href="">
 
- 
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
@@ -1123,9 +1123,9 @@
   word-break: break-word;
 
   display: -webkit-box;
-  -webkit-line-clamp: 2;     
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;           
+  overflow: hidden;
 }
 
 
@@ -1268,7 +1268,7 @@
   </div>
 
   <main>
- 
+
     <section id="home" class="page active">
       <div class="home-hero">
         <div class="avatar"><img id="homeAvatar" alt="avatar"></div>
@@ -1298,7 +1298,7 @@
       </div>
     </section>
 
-  
+
     <section id="movies" class="page">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <h2>Movies</h2>
@@ -1864,6 +1864,8 @@
 { title: 'Harry Potter And The Half Blood Prince', driveLink: 'https://drive.google.com/file/d/1QfAnvJtU3oR7IV2CrN2qRx4vFThjbbe1/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlFQRwv7SucqkpDGNPMRIlS7OMgOHUntlsoxb3dFZjG4Qz0kfhrsUipvl1U4UWRbxUlxay&s=10', tags: ['Family','Fantasy'], description: 'An exciting action adventure movie.' },
 { title: 'Harry Potter And The Deathly Hallows Part 1', driveLink: 'https://drive.google.com/file/d/17UlhT2qVX10O8AksEEdWuaUqoVF78-oH/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6PytDGUMEDz4CnDk7el_p6XZPMgGei7VMbCbocqnn6XiR8k3MvupV7Icl0Wld3udmDGXj7Q&s=10', tags: ['Family','Fantasy'], description: 'An exciting action adventure movie.' },
 { title: 'Harry Potter And The Deathly Hallows Part 2', driveLink: 'https://drive.google.com/file/d/16jXkeJny6L8MrC_7issz4AtANAzNDJqw/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa23uIbRmm7JbE1wLE3d4g0jNJJK5JKDSVj53cDL6JjgIBdiU8B09OiP-e7OLwAufsIDoX&s=10', tags: ['Fantasy','Adventure'], description: 'An exciting action adventure movie.' },
+{ title: 'Happy Gilmore', driveLink: 'https://drive.google.com/file/d/0B_gF_cJaMa7FZ1ZJYnp6NnN0NXM/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC0AR9i5lWNRaAu72OceSeTHKXJlxZmnJSYLxbfzyUgMTvy-HafsSVdlvXCFAyYTuSnoWNXQ&s=10', tags: ['Comedy','Sport'], description: 'An exciting action adventure movie.' },
+{ title: '8 Mile', driveLink: 'https://drive.google.com/file/d/1xY1oROITHj7A5XwpKvyVy2RUjjnj1ryH/preview', coverUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjZDKvSUQ1MTNdOF0gNB6pHdatt53N28IBbgZuPRa8ZVHB-AQZc0h6Rhi21plX2zKALi1HHg&s=10', tags: ['Musical','Drama'], description: 'An exciting action adventure movie.' },
 
 
 
@@ -3464,7 +3466,7 @@
     { title: 'Iron Soldier', src: './games/clironsoldier.html', runtime: 'classic' },
     { title: 'Jack Smith', src: './games/cljacksmith.html', runtime: 'classic' },
     { title: 'Jack Smith Encrypted Or Sm Th N', src: './games/cljacksmithencryptedorsmthn.html', runtime: 'classic' }
- 
+
   ];
     const defaultShows = [
       {
@@ -3491,7 +3493,12 @@
     ];
 
     const defaultProxies = [
-      { title: 'Sakura', url: 'https://144-202-49-64.plesk.page/', description: 'Fast, simple HTTP proxy' }
+      { title: 'Galaxy', url: 'https://galxy.autos.cdn.cloudflare.net/', description: 'A drak themed Proxy' },
+       { title: 'Void Network', url: 'https://void.radio.fm.cdn.cloudflare.net/', description: 'A dark themed Proxy' },
+        { title: 'Vortex', url: 'https://void.radio.fm.cdn.cloudflare.net/', description: 'Needs Registering' },
+         { title: 'Frogies Arcade', url: 'https://powerschool.nsd160.org.cdn.cloudflare.net/', description: '' },
+           { title: 'DaydreamX', url: 'https://daydreamx.pro.cdn.cloudflare.net/', description: '' },
+
     ];
 
     function saveJson(key, obj) {
@@ -3773,7 +3780,7 @@
       return bookmarks.some(b => b.type === type && b.idx === originalIdx);
     }
 
-   
+
 
     function renderMovies() {
       const grid = document.getElementById('moviesGrid');
@@ -4678,7 +4685,7 @@
 
     setInterval(updateClock, 1000);
 
- 
+
 
     function init() {
       applyTheme(theme, currentThemeName);
@@ -4688,7 +4695,7 @@
       initProfileDropdown();
       bindNav();
       renderMovies();
-      renderGames(true);     
+      renderGames(true);
       renderShows();
       renderProxies();
       bindSettingsForm();
