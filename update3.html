@@ -241,6 +241,183 @@
       object-fit: cover;
     }
 
+    .section-hero {
+      background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+    }
+
+    .section-hero .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      color: var(--nav-active);
+      margin: 0 0 6px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-hero .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+      font-weight: 600;
+    }
+
+    .stat-pill.accent {
+      background: color-mix(in oklab, var(--accent-color) 14%, transparent);
+      border-color: color-mix(in oklab, var(--accent-color) 40%, transparent);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px 0;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-color);
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    }
+
+    .pill.active {
+      background: color-mix(in oklab, var(--accent-color) 22%, transparent);
+      border-color: color-mix(in oklab, var(--accent-color) 45%, transparent);
+      color: #0b0b12;
+    }
+
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+
+    .media-card .thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.35) 100%);
+      pointer-events: none;
+    }
+
+    .media-card .thumb .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.45);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .media-card .info {
+      align-items: flex-start;
+      padding: 12px 14px;
+      gap: 10px;
+    }
+
+    .media-card .title {
+      font-size: 1.05em;
+    }
+
+    .home-panels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 18px 0 12px 0;
+    }
+
+    .home-panel {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(140deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .home-panel .panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .home-panel .tag-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--nav-active);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .home-panel .stat {
+      font-weight: 800;
+      font-size: 1.4em;
+      color: var(--nav-active);
+    }
+
+    .home-panel .panel-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .home-panel.emerald {
+      background: linear-gradient(140deg, rgba(148, 226, 213, 0.22), rgba(12, 18, 32, 0.85));
+      border-color: rgba(148,226,213,0.35);
+    }
+
+    .home-panel.violet {
+      background: linear-gradient(140deg, rgba(203,166,247,0.25), rgba(12, 10, 30, 0.86));
+      border-color: rgba(203,166,247,0.4);
+    }
+
 
 
     body.theme-nordic-dark {
@@ -1311,7 +1488,43 @@
       </div>
       <div id="searchResults" class="grid" style="margin-top: 20px; display: none;"></div>
 
-      <hr>
+      <div class="home-panels">
+        <div class="home-panel violet">
+          <div class="panel-top">
+            <span class="tag-label"><i class="fas fa-clapperboard"></i> Movies vault</span>
+            <span class="stat" id="homeMovieCount">0</span>
+          </div>
+          <p class="small">Hand-picked cinema with upgraded art direction. Jump in or let us pick something fresh for you.</p>
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="homeMoviesBtn">Open Movies</button>
+            <button class="btn btn-secondary" id="surpriseMovieBtn">Surprise Me</button>
+          </div>
+        </div>
+
+        <div class="home-panel emerald">
+          <div class="panel-top">
+            <span class="tag-label"><i class="fas fa-ghost"></i> Arcade ready</span>
+            <span class="stat" id="homeGameCount">0</span>
+          </div>
+          <p class="small">New styling with richer covers and bookmark flair. Shuffle to a random title or browse the grid.</p>
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="homeGamesBtn">Open Games</button>
+            <button class="btn btn-secondary" id="surpriseGameBtn">Shuffle Game</button>
+          </div>
+        </div>
+
+        <div class="home-panel">
+          <div class="panel-top">
+            <span class="tag-label"><i class="fas fa-bookmark"></i> Saved spots</span>
+            <span class="stat" id="homeBookmarkCount">0</span>
+          </div>
+          <p class="small">Reorganized bookmark chips now float to the top of every grid for quick jumps.</p>
+          <div class="panel-actions">
+            <button class="btn btn-secondary" data-target="movies">Movie Grid</button>
+            <button class="btn btn-secondary" data-target="games">Game Grid</button>
+          </div>
+        </div>
+      </div>
 
       <div class="home-extra">
         <h3>Quick Bookmarks</h3>
@@ -1322,32 +1535,63 @@
 
 
     <section id="movies" class="page">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <h2>Movies</h2>
-        <div style="display:flex; gap:8px;">
+      <div class="section-hero">
+        <div>
+          <div class="eyebrow"><i class="fas fa-sparkles"></i> Curated cinema</div>
+          <h2 style="margin:4px 0;">Movies</h2>
+          <p class="small muted">New glass cards, brighter poster badges, and a refreshed navigator for your saved picks.</p>
+          <div class="hero-actions">
+            <span class="stat-pill"><i class="fas fa-film"></i> <span id="movieTotalCount">0</span> titles</span>
+            <span class="stat-pill accent"><i class="fas fa-star"></i> <span id="movieBookmarkCount">0</span> favorites</span>
+          </div>
+        </div>
+        <div class="hero-buttons">
           <button class="btn btn-secondary" onclick="refreshMovies()">Refresh Grid</button>
+          <button class="btn btn-secondary" onclick="clearMovieSearch()">Clear Search</button>
+          <button class="btn btn-primary" id="movieSurpriseBtn"><i class="fas fa-wand-magic-sparkles"></i> Random Movie</button>
         </div>
       </div>
       <div class="searchbar">
         <input type="text" id="movieSearch" placeholder="Search movies by title or tag...">
         <button class="btn btn-secondary" onclick="clearMovieSearch()">Clear</button>
       </div>
-      <div class="grid" id="moviesGrid"></div>
+      <div class="pill-filters" id="movieFilters">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="bookmarked">Bookmarked</button>
+        <button class="pill" data-filter="covers">With posters</button>
+      </div>
+      <div class="grid media-grid" id="moviesGrid"></div>
     </section>
 
 
     <section id="games" class="page">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <h2>Games</h2>
-        <div style="display:flex; gap:8px;">
+      <div class="section-hero">
+        <div>
+          <div class="eyebrow"><i class="fas fa-ghost"></i> Neon arcade</div>
+          <h2 style="margin:4px 0;">Games</h2>
+          <p class="small muted">Infinite scroll stays, but cards now glow with richer thumbs and clearer bookmark hits.</p>
+          <div class="hero-actions">
+            <span class="stat-pill"><i class="fas fa-gamepad"></i> <span id="gameTotalCount">0</span> titles</span>
+            <span class="stat-pill accent"><i class="fas fa-heart"></i> <span id="gameBookmarkCount">0</span> favorites</span>
+          </div>
+        </div>
+        <div class="hero-buttons">
           <button class="btn btn-secondary" onclick="resetGames()">Reset List</button>
+          <button class="btn btn-secondary" onclick="clearGameSearch()">Clear Search</button>
+          <button class="btn btn-primary" id="gameSurpriseBtn"><i class="fas fa-dice"></i> Shuffle Game</button>
         </div>
       </div>
       <div class="searchbar">
         <input type="text" id="gameSearch" placeholder="Search games by title...">
         <button class="btn btn-secondary" onclick="clearGameSearch()">Clear</button>
       </div>
-      <div class="grid" id="gamesGrid"></div>
+      <div class="pill-filters" id="gameFilters">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="bookmarked">Bookmarked</button>
+        <button class="pill" data-filter="cover">With art</button>
+        <button class="pill" data-filter="playable">Playable links</button>
+      </div>
+      <div class="grid media-grid" id="gamesGrid"></div>
     </section>
 
     <section id="shows" class="page">
@@ -3577,7 +3821,9 @@
     let bookmarks = loadJson(LS_KEYS.bookmarks, []);
 
     let movieQuery = '';
+    let movieFilter = 'all';
     let gameQuery = '';
+    let gameFilter = 'all';
     let showQuery = '';
     let currentShowIndex = null;
     let episodeQuery = '';
@@ -3802,7 +4048,41 @@
       return bookmarks.some(b => b.type === type && b.idx === originalIdx);
     }
 
+    function updateMovieStats(filteredCount = movies.length) {
+      const favs = bookmarks.filter(b => b.type === 'movie').length;
+      const totalEl = document.getElementById('movieTotalCount');
+      const favEl = document.getElementById('movieBookmarkCount');
+      if (totalEl) totalEl.textContent = filteredCount + ' / ' + movies.length;
+      if (favEl) favEl.textContent = favs;
+    }
 
+    function updateGameStats(filteredCount = games.length) {
+      const favs = bookmarks.filter(b => b.type === 'game').length;
+      const totalEl = document.getElementById('gameTotalCount');
+      const favEl = document.getElementById('gameBookmarkCount');
+      if (totalEl) totalEl.textContent = filteredCount + ' / ' + games.length;
+      if (favEl) favEl.textContent = favs;
+    }
+
+    function updateHomeStats() {
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+
+      setText('homeMovieCount', movies.length);
+      setText('homeGameCount', games.length);
+      setText('homeBookmarkCount', bookmarks.length);
+    }
+
+
+
+    function movieMatchesFilter(m) {
+      const originalIdx = movies.indexOf(m);
+      if (movieFilter === 'bookmarked' && !isBookmarked('movie', originalIdx)) return false;
+      if (movieFilter === 'covers' && !m.coverUrl) return false;
+      return true;
+    }
 
     function renderMovies() {
       const grid = document.getElementById('moviesGrid');
@@ -3810,8 +4090,9 @@
 
       let items = movies.filter(function(m) {
         const q = movieQuery.toLowerCase();
-        return (m.title || '').toLowerCase().includes(q) ||
+        const matchesQuery = (m.title || '').toLowerCase().includes(q) ||
           (m.tags || []).some(tag => tag.toLowerCase().includes(q));
+        return matchesQuery && movieMatchesFilter(m);
       });
 
       // Bookmarked movies first
@@ -3823,19 +4104,29 @@
         return bBookmarked - aBookmarked;
       });
 
+      updateMovieStats(items.length);
+      updateHomeStats();
+
       items.forEach(function(m) {
         const originalIdx = movies.indexOf(m);
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card media-card';
 
         const thumb = document.createElement('div');
         thumb.className = 'thumb';
+        thumb.style.position = 'relative';
         if (m.coverUrl) {
           const img = document.createElement('img');
           img.src = m.coverUrl;
           thumb.appendChild(img);
         } else {
           thumb.textContent = m.title;
+        }
+        if (isBookmarked('movie', originalIdx)) {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = 'Saved';
+          thumb.appendChild(badge);
         }
         thumb.addEventListener('click', function() {
           openViewer(m.title, m.driveLink, 'movie');
@@ -3898,6 +4189,16 @@
       renderMovies();
     });
 
+    function surpriseMovie() {
+      const pool = movies.filter(m => movieMatchesFilter(m) && (
+        (m.title || '').toLowerCase().includes(movieQuery.toLowerCase()) ||
+        (m.tags || []).some(tag => tag.toLowerCase().includes(movieQuery.toLowerCase()))
+      ));
+      if (!pool.length) return;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      openViewer(pick.title, pick.driveLink, 'movie');
+    }
+
 
 
     let infiniteGamesIndex = 0;
@@ -3907,7 +4208,16 @@
     function getFilteredSortedGames() {
       let filtered = games.filter(g =>
         g && (g.title || '').toLowerCase().includes((gameQuery || '').toLowerCase())
-      );
+      ).filter(g => {
+        const originalIdx = games.indexOf(g);
+        if (gameFilter === 'bookmarked' && !isBookmarked('game', originalIdx)) return false;
+        if (gameFilter === 'cover') {
+          const thumbUrl = g.iconUrl || g.coverUrl || g.thumbnail || g.img || g.image || '';
+          if (!thumbUrl) return false;
+        }
+        if (gameFilter === 'playable' && !g.src) return false;
+        return true;
+      });
 
       // Sort so bookmarked games show first (on initial full render)
       filtered.sort((a, b) => {
@@ -3926,6 +4236,8 @@
       if (!grid) return;
 
       const filteredGames = getFilteredSortedGames();
+      updateGameStats(filteredGames.length);
+      updateHomeStats();
 
       if (initial) {
         grid.innerHTML = '';
@@ -3942,10 +4254,11 @@
         const originalIdx = games.indexOf(g);
 
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card media-card';
 
         const thumb = document.createElement('div');
         thumb.className = 'thumb';
+        thumb.style.position = 'relative';
 
 
         const thumbUrl =
@@ -3956,17 +4269,23 @@
           g.image ||
           '';
 
-      if (thumbUrl) {
-  const img = document.createElement('img');
-  img.src = thumbUrl;
-  thumb.appendChild(img);
-} else {
+        if (thumbUrl) {
+          const img = document.createElement('img');
+          img.src = thumbUrl;
+          thumb.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.style.fontSize = '32px';
+          placeholder.textContent = '🎮';
+          thumb.appendChild(placeholder);
+        }
 
-  const placeholder = document.createElement('div');
-  placeholder.style.fontSize = '32px';
-  placeholder.textContent = '🎮';
-  thumb.appendChild(placeholder);
-}
+        if (isBookmarked('game', originalIdx)) {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = 'Saved';
+          thumb.appendChild(badge);
+        }
 
         thumb.addEventListener('click', () => {
           if (!viewerOpen) openViewer(g.title, g.src, 'game');
@@ -4036,6 +4355,13 @@
       document.getElementById('gameSearch').value = '';
       infiniteGamesIndex = 0;
       renderGames(true);
+    }
+
+    function surpriseGame() {
+      const filtered = getFilteredSortedGames();
+      if (!filtered.length) return;
+      const pick = filtered[Math.floor(Math.random() * filtered.length)];
+      if (!viewerOpen) openViewer(pick.title, pick.src, 'game');
     }
 
     document.getElementById('gameSearch').addEventListener('input', function(e) {
@@ -4484,6 +4810,47 @@
       });
     }
 
+    function bindHomeActions() {
+      const goMovies = document.getElementById('homeMoviesBtn');
+      const goGames = document.getElementById('homeGamesBtn');
+      const surpriseMovieBtn = document.getElementById('surpriseMovieBtn');
+      const surpriseGameBtn = document.getElementById('surpriseGameBtn');
+      const movieShuffleBtn = document.getElementById('movieSurpriseBtn');
+      const gameShuffleBtn = document.getElementById('gameSurpriseBtn');
+
+      if (goMovies) goMovies.addEventListener('click', () => showPage('movies'));
+      if (goGames) goGames.addEventListener('click', () => showPage('games'));
+      if (surpriseMovieBtn) surpriseMovieBtn.addEventListener('click', surpriseMovie);
+      if (surpriseGameBtn) surpriseGameBtn.addEventListener('click', surpriseGame);
+      if (movieShuffleBtn) movieShuffleBtn.addEventListener('click', surpriseMovie);
+      if (gameShuffleBtn) gameShuffleBtn.addEventListener('click', surpriseGame);
+
+      document.querySelectorAll('.home-panel [data-target]').forEach(btn => {
+        btn.addEventListener('click', () => showPage(btn.dataset.target));
+      });
+    }
+
+    function bindMediaFilters() {
+      const moviePills = document.querySelectorAll('#movieFilters .pill');
+      moviePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          movieFilter = pill.dataset.filter;
+          moviePills.forEach(p => p.classList.toggle('active', p === pill));
+          renderMovies();
+        });
+      });
+
+      const gamePills = document.querySelectorAll('#gameFilters .pill');
+      gamePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          gameFilter = pill.dataset.filter;
+          gamePills.forEach(p => p.classList.toggle('active', p === pill));
+          infiniteGamesIndex = 0;
+          renderGames(true);
+        });
+      });
+    }
+
     function applyCustomSettings() {
       const root = document.documentElement;
       root.style.setProperty('--viewer-width', (localStorage.getItem(LS_KEYS.viewerWidth) || '98') + 'vw');
@@ -4512,6 +4879,7 @@
         bookmarks.push({ type, idx, title });
       }
       saveJson(LS_KEYS.bookmarks, bookmarks);
+      updateHomeStats();
     }
 
     function renderBookmarks() {
@@ -4714,8 +5082,11 @@
       applyTabCloak();
       renderProfile();
       renderBookmarks();
+      updateHomeStats();
       initProfileDropdown();
       bindNav();
+      bindHomeActions();
+      bindMediaFilters();
       renderMovies();
       renderGames(true);
       renderShows();
