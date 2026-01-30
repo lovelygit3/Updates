@@ -1,0 +1,12 @@
+{
+  "movies": [],
+  "games": [
+    {
+      "title": "My R2 Hosted Game",
+      "r2Path": "games/my-game/index.html",
+      "description": "Put the full folder in R2."
+    }
+  ],
+  "shows": [],
+  "proxies": []
+}

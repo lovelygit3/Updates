@@ -1,0 +1,13 @@
+name = "media-hub-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-01-30"
+
+# If you want to attach to a route on an existing zone:
+# routes = [
+#   { pattern = "api.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
+
+# R2 binding:
+[[r2_buckets]]
+binding = "ASSETS_BUCKET"
+bucket_name = "YOUR_BUCKET_NAME"
